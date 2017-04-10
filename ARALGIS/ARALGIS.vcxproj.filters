@@ -1,0 +1,426 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ChangeDetection">
+      <UniqueIdentifier>{f637019b-6686-4333-b75f-511ac512c165}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ChangeDetection\HeaderFiles">
+      <UniqueIdentifier>{a91d85d9-c594-4dc2-a136-c4bdefe2b475}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ChangeDetection\SourceFiles">
+      <UniqueIdentifier>{f14e4290-62e3-4da1-813f-c9a8a81b8910}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ChangeDetection\ProcessingAlgorithms">
+      <UniqueIdentifier>{8f8969d2-5e2a-40f0-b35e-3da0fff793a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OdroidCommunicator">
+      <UniqueIdentifier>{2bc8d30b-d8f3-41ff-aba2-76ac239b5401}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OdroidCommunicator\HeaderFiles">
+      <UniqueIdentifier>{4e24780f-a568-417d-8505-ca589e7def96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OdroidCommunicator\SourceFiles">
+      <UniqueIdentifier>{aa343050-79f9-4832-b4ef-8702d930f125}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CameraInterface">
+      <UniqueIdentifier>{db2ee5da-f978-40ff-84ad-596f712c06b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CameraInterface\HeaderFiles">
+      <UniqueIdentifier>{71e77fda-6a60-4bbb-832f-71c09a6d74b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CameraInterface\SourceFiles">
+      <UniqueIdentifier>{f33c2992-6a9f-4e24-b5f8-81dfe1efb326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BitmapDisplay">
+      <UniqueIdentifier>{3227aa5b-7809-4403-8a3e-105e78e44f24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BitmapDisplay\HeaderFiles">
+      <UniqueIdentifier>{f90865ec-4dd3-4598-9cc7-8d40863ab80b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BitmapDisplay\SourceFiles">
+      <UniqueIdentifier>{0f8229a1-d74a-4082-9402-a375929d9df4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageFiltering">
+      <UniqueIdentifier>{04b80714-dad7-4efa-b49a-db505b44c5f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageFiltering\HeaderFiles">
+      <UniqueIdentifier>{f31daa7e-c87c-4b07-b5a7-f13da58c0914}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageFiltering\SourceFiles">
+      <UniqueIdentifier>{f84cc144-f068-4d32-bb1f-c05b616ebe67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PTSCommunicator">
+      <UniqueIdentifier>{ff57ab9e-5279-4cb2-921b-dace8ea14fad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PTSCommunicator\HeaderFiles">
+      <UniqueIdentifier>{ba300e27-917a-4128-8e63-dfbef316d180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PTSCommunicator\SourceFiles">
+      <UniqueIdentifier>{5be9f997-8911-4154-be21-225843778041}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ARALGISView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\HeaderFiles\ChangeDetectController.h">
+      <Filter>ChangeDetection\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\HeaderFiles\ChangeDetector.h">
+      <Filter>ChangeDetection\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\DifferenceCalculator.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\DisplayMatches.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\Histogram.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\HistogramMatch.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\HomographyEstimator.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\Image.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\ImageDisplayer.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\ImagePartition.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\KapurThreshold.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\MatchCombinerEliminator.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\MeanDifferenceCalculator.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\OtsuThreshold.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\PreprocessImage.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\RobustMatcher.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\RosinThreshold.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\Settings.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\SpectralAngleMapper.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\ThreshBora.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\ThreshBora1.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\ThresholdSAM.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\TransformImage.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="OdroidCommunicator\HeaderFiles\OdroidCommunicator.h">
+      <Filter>OdroidCommunicator\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraInterface\HeaderFiles\CameraDataReceiver.h">
+      <Filter>CameraInterface\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraInterface\HeaderFiles\ReceiveCameraImage.h">
+      <Filter>CameraInterface\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ARALGIS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ARALGISDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InitGlobalVars.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BitmapDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraStartStop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BitmapDisplay\HeaderFiles\MatBitmapConvert.h">
+      <Filter>BitmapDisplay\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="BitmapDisplay\HeaderFiles\PkMattoGDI.h">
+      <Filter>BitmapDisplay\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="BitmapDisplay\HeaderFiles\SapToGDI.h">
+      <Filter>BitmapDisplay\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="BitmapDisplay\HeaderFiles\Showpic.h">
+      <Filter>BitmapDisplay\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorFormView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WndResizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFiltering\HeaderFiles\cvt.hpp">
+      <Filter>ImageFiltering\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-cv.hpp">
+      <Filter>ImageFiltering\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-file.hpp">
+      <Filter>ImageFiltering\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-image.hpp">
+      <Filter>ImageFiltering\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-ml.hpp">
+      <Filter>ImageFiltering\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-timer.hpp">
+      <Filter>ImageFiltering\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFiltering\HeaderFiles\Includes.h">
+      <Filter>ImageFiltering\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="PTSCommunicator\HeaderFiles\MessageDefinitions.h">
+      <Filter>PTSCommunicator\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="PTSCommunicator\HeaderFiles\PTSCommunicator.h">
+      <Filter>PTSCommunicator\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="BitmapDisplay\HeaderFiles\PictureCtrl.h">
+      <Filter>BitmapDisplay\HeaderFiles</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ARALGISView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChangeDetection\SourceFiles\ChangeDetectController.cpp">
+      <Filter>ChangeDetection\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ChangeDetection\SourceFiles\ChangeDetector.cpp">
+      <Filter>ChangeDetection\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="OdroidCommunicator\SourceFiles\OdroidCommunicator.cpp">
+      <Filter>OdroidCommunicator\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraInterface\SourceFiles\CameraDataReceiver.cpp">
+      <Filter>CameraInterface\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraInterface\SourceFiles\ReceiveCameraImage.cpp">
+      <Filter>CameraInterface\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ARALGIS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ARALGISDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InitGlobalVars.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraStartStop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapDisplay\SourceFiles\MatBitmapConvert.cpp">
+      <Filter>BitmapDisplay\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapDisplay\SourceFiles\PkMattoGDI.cpp">
+      <Filter>BitmapDisplay\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapDisplay\SourceFiles\SapToGDI.cpp">
+      <Filter>BitmapDisplay\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapDisplay\SourceFiles\Showpic.cpp">
+      <Filter>BitmapDisplay\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorFormView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WndResizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\attack.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\CelikTjahjadi2012.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\ChanduStanichWuTrager2014.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\comp.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\cvt.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\DBSBTC2011.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\detection.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\DMS2012.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\edgedetection.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\enhancement.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\filtering.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\fuzzyCMeans.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\halftoning.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\iCLUDMS2016.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\IW_PSNR.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\IW_SSIM.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\KMeans.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\KNN.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\labeling.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\LAT2011.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\LiuGuo2015.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\mldata.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\MS_SSIM.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\MSRCP2014.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\NADD.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\NRCIR2009.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\PGF1999.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\pixkit-file.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\pixkit-timer.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\pohe.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\qualityassessment.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\retinex.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\WangZhengHuLi2013.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\YangTsai1998.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="PTSCommunicator\SourceFiles\PTSCommunicator.cpp">
+      <Filter>PTSCommunicator\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapDisplay\SourceFiles\PictureCtrl.cpp">
+      <Filter>BitmapDisplay\SourceFiles</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ARALGIS.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\ARALGIS.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\ARALGISDoc.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ARALGIS.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Toolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
