@@ -70,6 +70,15 @@
     <Filter Include="PTSCommunicator\SourceFiles">
       <UniqueIdentifier>{5be9f997-8911-4154-be21-225843778041}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Database">
+      <UniqueIdentifier>{e668c1f8-385b-42c1-928b-150c93055f4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Database\HeaderFiles">
+      <UniqueIdentifier>{a1dadaa2-f477-4e9e-ac7c-99bb0943b34b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Database\SourceFiles">
+      <UniqueIdentifier>{c4cc699d-9978-4dc7-82bf-a4ae66ef86bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -233,6 +242,9 @@
     </ClInclude>
     <ClInclude Include="BitmapDisplay\HeaderFiles\PictureCtrl.h">
       <Filter>BitmapDisplay\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="UserTable.h">
+      <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -400,6 +412,9 @@
     </ClCompile>
     <ClCompile Include="BitmapDisplay\SourceFiles\PictureCtrl.cpp">
       <Filter>BitmapDisplay\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="UserTable.cpp">
+      <Filter>Database\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
