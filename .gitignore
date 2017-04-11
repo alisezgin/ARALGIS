@@ -16,3 +16,4 @@ x64/Debug/ARALGIS.pgd
 ..gitignore.un~
 *.gitignore~
 ARALGIS.v12.suo
+*.APS
