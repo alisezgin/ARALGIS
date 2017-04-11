@@ -22,7 +22,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_CREATE()
 	ON_WM_MOVING()
 	ON_WM_NCLBUTTONDBLCLK()
-	ON_MESSAGE(WM_PTS_LOST, &CMainFrame::OnPtsLost)
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -51,6 +50,9 @@ CMainFrame::~CMainFrame()
 
 	if (m_PTSCommunicator)
 		delete m_PTSCommunicator;
+
+	if (m_OdroidCommunicator)
+		delete m_OdroidCommunicator;
 
 	// Don't forget to release the semaphore
 	if (!ReleaseSemaphore(m_hMutex,  // handle to semaphore
@@ -143,8 +145,70 @@ void CMainFrame::NotifyProcPTSComm(LPVOID lpParam, UINT nCode)
 		case PTS_DISPLAY_IMAGE:
 			pView->DisplayPTSImage();
 			break;
+
 		case PTS_DELETE_IMAGE:
 			pView->DeletePTSImage();
+			break;
+
+		case PTS_CONNECTION_LOST:
+		{
+			pView->UpdatePTSStatus(false);
+			::MessageBox(NULL,
+				(LPCWSTR)L"PTS Baðlantýsý Kayboldu",
+				(LPCWSTR)WARNINGWINDOW_TITLE,
+				MB_OK | MB_ICONERROR
+				);
+			break;
+		}
+
+		case PTS_CONNECTION_OK:
+		{
+			pView->UpdatePTSStatus(true);
+			::MessageBox(NULL,
+				(LPCWSTR)L"PTS Baðlantýsý Kuruldu",
+				(LPCWSTR)WARNINGWINDOW_TITLE,
+				MB_OK | MB_ICONERROR
+				);
+			break;
+		}
+		default:
+			break;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// 
+// FUNCTION:	CMainFrame::NotifyProcOdroidComm
+// 
+// DESCRIPTION:	Handles the notification messages sent by OdroidCommunicator.
+//              Updates the GUI according to the received message 
+//
+// INPUTS:		
+// 
+// NOTES:	
+// 
+// MODIFICATIONS:
+// 
+// Name				Date		Version		Comments
+// BN              28032017	    1.0			Origin
+// 
+//////////////////////////////////////////////////////////////////////////////// 
+void CMainFrame::NotifyProcOdroidComm(LPVOID lpParam, UINT nCode)
+{
+	CMainFrame* pFrame = (CMainFrame*)lpParam;
+
+	CARALGISView* pView = static_cast<CARALGISView*>(pFrame->GetActiveView());
+
+	if (pView)
+	{
+		switch (nCode)
+		{
+		case ODROID_DISPLAY_IMAGE:
+			//pView->DisplayPTSImage();
+			break;
+		case ODROID_DELETE_IMAGE:
+			//pView->DeletePTSImage();
 			break;
 		default:
 			break;
@@ -211,8 +275,9 @@ void CMainFrame::Activate()
 		m_PTSCommunicator = new CPTSCommunicator;
 		m_PTSCommunicator->Start(NotifyProcPTSComm, this);
 
-
-
+		// start the thread for Odroid communication
+		m_OdroidCommunicator = new COdroidCommunicator;
+		m_OdroidCommunicator->Start(NotifyProcOdroidComm, this);
 	}
 }
 
@@ -350,15 +415,3 @@ void CMainFrame::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 	}
 }
 
-
-afx_msg LRESULT CMainFrame::OnPtsLost(WPARAM wParam, LPARAM lParam)
-{
-	::MessageBox( NULL,
-		          (LPCWSTR)L"PTS Baðlantýsý Kayboldu",
-				  (LPCWSTR)WARNINGWINDOW_TITLE,
-		          MB_OK | MB_ICONERROR
-		        );
-
-
-	return 0;
-}

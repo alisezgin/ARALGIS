@@ -7,6 +7,7 @@
 
 #include ".\\CameraInterface\\HeaderFiles\\CameraDataReceiver.h"
 #include ".\\PTSCommunicator\\HeaderFiles\\PTSCommunicator.h"
+#include ".\\OdroidCommunicator\\HeaderFiles\\OdroidCommunicator.h"
 
 
 
@@ -22,6 +23,7 @@ public:
 
 	CCameraDataReceiver *m_CameraDataReceiver;
 	CPTSCommunicator  *m_PTSCommunicator;
+	COdroidCommunicator *m_OdroidCommunicator;
 
 protected:
 	bool m_IsFirstTime;
@@ -29,6 +31,7 @@ protected:
 	// Operations
 public:
 	static void CALLBACK NotifyProcPTSComm(LPVOID lpParam, UINT nCode);
+	static void CALLBACK NotifyProcOdroidComm(LPVOID lpParam, UINT nCode);
 
 	void Activate();
 
@@ -63,8 +66,7 @@ protected:
 public:
 	afx_msg void OnMoving(UINT fwSide, LPRECT pRect);
 	afx_msg void OnNcLButtonDblClk(UINT nHitTest, CPoint point);
-protected:
-	afx_msg LRESULT OnPtsLost(WPARAM wParam, LPARAM lParam);
+
 };
 
 

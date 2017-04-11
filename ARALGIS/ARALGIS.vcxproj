@@ -205,6 +205,7 @@
     <ClInclude Include="CameraInterface\HeaderFiles\CameraDataReceiver.h" />
     <ClInclude Include="CameraInterface\HeaderFiles\ReceiveCameraImage.h" />
     <ClInclude Include="CameraStartStop.h" />
+    <ClInclude Include="ColourButton.h" />
     <ClInclude Include="ChangeDetection\HeaderFiles\ChangeDetectController.h" />
     <ClInclude Include="ChangeDetection\HeaderFiles\ChangeDetector.h" />
     <ClInclude Include="ChangeDetection\ProcessingAlgorithms\DifferenceCalculator.h" />
@@ -240,7 +241,8 @@
     <ClInclude Include="InitGlobalVars.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="OdroidCommunicator\HeaderFiles\OdroidCommunicator.h" />
-    <ClInclude Include="PTSCommunicator\HeaderFiles\MessageDefinitions.h" />
+    <ClInclude Include="OdroidCommunicator\HeaderFiles\OdroidMessageDefinitions.h" />
+    <ClInclude Include="PTSCommunicator\HeaderFiles\PTSMessageDefinitions.h" />
     <ClInclude Include="PTSCommunicator\HeaderFiles\PTSCommunicator.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -263,6 +265,7 @@
     <ClCompile Include="ChangeDetection\SourceFiles\ChangeDetectController.cpp" />
     <ClCompile Include="ChangeDetection\SourceFiles\ChangeDetector.cpp" />
     <ClCompile Include="ColorFormView.cpp" />
+    <ClCompile Include="ColourButton.cpp" />
     <ClCompile Include="ImageFiltering\SourceFiles\attack.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>

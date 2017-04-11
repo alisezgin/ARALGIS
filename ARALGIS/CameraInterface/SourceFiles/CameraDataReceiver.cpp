@@ -66,7 +66,7 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 {
 	CCameraDataReceiver *pServer = (CCameraDataReceiver*)pParam;
 
-	HANDLE	Handles[21];
+	HANDLE	Handles[14];
 	Handles[0] = pServer->ShutdownEvent;
 	Handles[1] = g_CameraStartDataRecieveEvent;
 	Handles[2] = g_CameraStopDataRecieveEvent;
@@ -80,6 +80,8 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 	Handles[10] = g_SetTimerFrameRateEvent;
 	Handles[11] = g_KillTimerEvent;
 	Handles[12] = g_ResetTimerEvent;
+	Handles[13] = g_CameraChangeSampleRateEvent;
+
 
 	// this line is very important and must be present for each launched thread.
 	// COM is initialized as Multi-Threaded Apartment Model
@@ -89,7 +91,7 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 
 	for (;;)
 	{
-		DWORD EventCaused = WaitForMultipleObjects(13,
+		DWORD EventCaused = WaitForMultipleObjects(14,
 			Handles,
 			FALSE,
 			INFINITE);
@@ -167,6 +169,21 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 			ResetEvent(g_CameraStopDataRecieveEvent);
 
 			pServer->m_MyCamera.StopDataReception();
+
+			EnterCriticalSection(&g_SomeHandlingCS);
+
+			// enable the other database handling actions
+			//isDatabaseHandlingInProgress = FALSE;
+
+			LeaveCriticalSection(&g_SomeHandlingCS);
+		}
+
+		else if (EventCaused == (WAIT_OBJECT_0 + 13)) // Change Camera Sample Rate
+		{
+			// reset the event for further processing
+			ResetEvent(g_CameraChangeSampleRateEvent);
+
+			//pServer->m_MyCamera.StopDataReception();
 
 			EnterCriticalSection(&g_SomeHandlingCS);
 

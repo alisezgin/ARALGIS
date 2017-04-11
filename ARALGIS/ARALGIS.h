@@ -32,6 +32,9 @@ extern HANDLE g_CameraStartDataRecieveEvent;
 // event used for stopping camera data reception
 extern HANDLE g_CameraStopDataRecieveEvent;
 
+// event used for changing camera sample rate
+extern HANDLE g_CameraChangeSampleRateEvent;
+
 // event used for pausing camera data reception
 extern HANDLE g_CameraPauseDataRecieveEvent;
 
@@ -61,6 +64,19 @@ extern HANDLE g_ResetTimerEvent;
 
 // event used for resetting timer 
 //extern HANDLE g_CameraDataReadyEvent;
+
+
+// event used for sending open barrier message to odroid 
+extern HANDLE g_OdroidOpenBarrierEvent;
+
+// event used for sending close barrier message to odroid  
+extern HANDLE g_OdroidCloseBarrierEvent;
+
+// event used for sending start heating message to odroid 
+extern HANDLE g_OdroidStartHeatingEvent;
+
+// event used for sending stop heating message to odroid 
+extern HANDLE g_OdroidStopHeatingEvent;
 
 // global variable to hold CV image from Camera
 extern cv::Mat g_CVImage;

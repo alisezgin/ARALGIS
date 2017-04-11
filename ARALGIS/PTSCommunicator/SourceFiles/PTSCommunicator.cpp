@@ -2,7 +2,7 @@
 #include "ARALGIS.h"
 #include "..\HeaderFiles\PTSCommunicator.h"
 #include "MainFrm.h"
-#include "..\HeaderFiles\MessageDefinitions.h"
+#include "..\HeaderFiles\PTSMessageDefinitions.h"
 
 
 
@@ -174,197 +174,6 @@ BOOL CPTSCommunicator::Shutdown()
 
 	return TRUE;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// 
-// FUNCTION:	CPTSCommunicator::AcceptThread
-// 
-// DESCRIPTION:	thread function for accepting the PTS Socket 
-// 
-// INPUTS:		
-// 
-// NOTES:	
-// 
-// MODIFICATIONS:
-// 
-// Name				Date		Version		Comments
-// BN            26082003	1.0			Origin
-// 
-////////////////////////////////////////////////////////////////////////////////
-UINT __stdcall CPTSCommunicator::AcceptThread(LPVOID pParam)
-{
-	//CPTSCommunicator *pPTSCommunicator = (CPTSCommunicator*)pParam;
-
-	//WSANETWORKEVENTS	NetworkEvents;
-	//int result;
-
-	//TRACE("\n\n PTS Accept Thread Started\n");
-
-	//struct addrinfo* resultAddr = NULL;
-	//struct addrinfo hints;
-	//int iResult;
-
-	//BYTE buffer[15];
-	//int dCamId = 0;
-
-
-	//ZeroMemory(&hints, sizeof(hints));
-	//hints.ai_family = AF_INET;
-	//hints.ai_socktype = SOCK_STREAM;
-	//hints.ai_protocol = IPPROTO_TCP;
-	//hints.ai_flags = AI_PASSIVE;
-
-	//// Resolve the address and port
-	//iResult = getaddrinfo(NULL, ARALGIS_PTS_TCP_PORT_CHAR, &hints, &resultAddr);
-	//if (iResult != 0)
-	//{
-	//	TRACE("getaddrinfo failed with error: %d failure CPTSCommunicator::PTSCommunicatorThread\n", iResult);
-	//	WSACleanup();
-	//	return THREADEXIT_SUCCESS;
-	//}
-
-	//// Create a SOCKET for connecting to server
-	//pPTSCommunicator->ListenSocket = socket(resultAddr->ai_family, resultAddr->ai_socktype, resultAddr->ai_protocol);
-	//if (pPTSCommunicator->ListenSocket == INVALID_SOCKET)
-	//{
-	//	TRACE("socket failed with error: %d failure CPTSCommunicator::PTSCommunicatorThread\n", WSAGetLastError());
-	//	freeaddrinfo(resultAddr);
-	//	WSACleanup();
-	//	return THREADEXIT_SUCCESS;
-	//}
-
-	//// Setup the TCP listening socket
-	//iResult = bind(pPTSCommunicator->ListenSocket, resultAddr->ai_addr, (int)resultAddr->ai_addrlen);
-	//if (iResult == SOCKET_ERROR)
-	//{
-	//	TRACE("bind failed with error: %d failure CPTSCommunicator::PTSCommunicatorThread\n", WSAGetLastError());
-	//	freeaddrinfo(resultAddr);
-	//	closesocket(pPTSCommunicator->ListenSocket);
-	//	WSACleanup();
-	//	return THREADEXIT_SUCCESS;
-	//}
-
-	//// Set the mode of the socket to be nonblocking
-	//u_long iMode = 1;
-	//iResult = ioctlsocket(pPTSCommunicator->ListenSocket, FIONBIO, &iMode);
-
-	//if (iResult == SOCKET_ERROR)
-	//{
-	//	TRACE("ioctlsocket failed with error: %d failure CPTSCommunicator::PTSCommunicatorThread\n", WSAGetLastError());
-	//	closesocket(pPTSCommunicator->ListenSocket);
-	//	WSACleanup();
-	//	exit(1);
-	//}
-
-	//freeaddrinfo(resultAddr);
-
-	//iResult = listen(pPTSCommunicator->ListenSocket, SOMAXCONN);
-	//if (iResult == SOCKET_ERROR)
-	//{
-	//	TRACE("listen failed with error: %d failure CPTSCommunicator::PTSCommunicatorThread\n", WSAGetLastError());
-	//	closesocket(pPTSCommunicator->ListenSocket);
-	//	WSACleanup();
-	//	return THREADEXIT_SUCCESS;
-	//}
-
-
-	//// Create Notification Event for Listen Socket
-	//WSAEVENT NotificationEventListen = WSACreateEvent();
-	//if (NotificationEventListen == WSA_INVALID_EVENT)
-	//{
-	//	TRACE("WSACreateEvent(ListenSocket) %d failure for Event CPTSCommunicator::PTSCommunicatorThread\n",
-	//		WSAGetLastError());
-	//	closesocket(pPTSCommunicator->ListenSocket);
-	//	return THREADEXIT_SUCCESS;
-	//}
-
-	//// selects the READ, WRITE, ACCEPT, CONNECT and CLOSE operations 
-	//result = WSAEventSelect(pPTSCommunicator->ClientSocket, NotificationEventListen, FD_ACCEPT);
-
-	//
-	//WSAEVENT Handles[2];
-
-	//Handles[0] = pPTSCommunicator->ShutdownEvent;
-	//Handles[1] = NotificationEventListen;
-
-	//for (;;)
-	//{
-	//	DWORD EventCaused = WSAWaitForMultipleEvents(2,
-	//		Handles,
-	//		FALSE,
-	//		100,  //WSA_INFINITE, 
-	//		FALSE);
-
-	//	if (EventCaused == WAIT_FAILED || EventCaused == WAIT_OBJECT_0)
-	//	{
-	//		if (EventCaused == WAIT_FAILED)
-	//			TRACE("WaitForMultipleObjects(...) %d failure CPTSCommunicator::PTSCommunicatorThread\n",
-	//			GetLastError());
-	//		TRACE("PTSCommunicatorThread Shutting Down ...\n");
-	//		closesocket(pPTSCommunicator->ClientSocket);
-	//		return THREADEXIT_SUCCESS;
-	//	}
-	//	else
-	//	{
-	//		if (WaitForSingleObject(pPTSCommunicator->ShutdownEvent, 0) == WAIT_OBJECT_0)
-	//		{
-	//			TRACE("PTSCommunicatorThread Shutting Down normally ...\n");
-	//			return THREADEXIT_SUCCESS;
-	//		}
-
-	//		// Check if it is an event coming from Listen Aocket
-	//		if (EventCaused == WAIT_OBJECT_0 + 1)
-	//		{
-	//			result = WSAEnumNetworkEvents(pPTSCommunicator->ClientSocket,
-	//										  NotificationEventListen,
-	//										  &NetworkEvents);
-
-	//			if (result == SOCKET_ERROR)
-	//			{
-	//				TRACE("WSAEnumNetworkEvents(...) %d failure CPTSCommunicator::PTSCommunicatorThread\n",
-	//					WSAGetLastError());
-	//				closesocket(pPTSCommunicator->ClientSocket);
-	//				return THREADEXIT_SUCCESS;
-	//			}
-
-	//			// data received from Server
-	//			if (NetworkEvents.lNetworkEvents & FD_ACCEPT)
-	//			{
-	//				// Accept a client socket
-	//				pPTSCommunicator->ClientSocket = accept(pPTSCommunicator->ListenSocket, NULL, NULL);
-	//				if (pPTSCommunicator->ClientSocket == INVALID_SOCKET)
-	//				{
-	//					TRACE("accept failed with error: %d failure CPTSCommunicator::PTSCommunicatorThread\n", WSAGetLastError());
-	//					closesocket(pPTSCommunicator->ListenSocket);
-	//					WSACleanup();
-	//					return THREADEXIT_SUCCESS;
-	//				}
-	//				pPTSCommunicator->m_bClientedAccepted = true;
-
-	//				// Launch PTSCommunicator Thread
-	//				pPTSCommunicator->ThreadPTSCommunicator = (HANDLE)_beginthreadex(   NULL,
-	//																					0,
-	//																					PTSCommunicatorThread,
-	//																					this,
-	//																					0,
-	//																					&pPTSCommunicator->ThreadID
-	//																				 );
-
-	//				if (!pPTSCommunicator->ThreadPTSCommunicator)
-	//				{
-	//					TRACE("_beginthreadex(...) failure, PTSCommunicator::Start\n");
-	//					return FALSE;
-	//				}
-
-	//				TRACE("PTSCommunicator ThreadID %x ...\n", pPTSCommunicator->ThreadID);
-	//			}
-	//		}
-	//	} // wait failed
-	//} // infite for loop
-
-	return THREADEXIT_SUCCESS;
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // 
@@ -546,9 +355,7 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 						return THREADEXIT_SUCCESS;
 					}
 					pPTSCommunicator->m_bClientedAccepted = true;
-
-
-
+					pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_CONNECTION_OK);
 
 
 
@@ -638,10 +445,10 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 
 										int dImageSize;
 
-										BYTE a = buffer[IMAGE_SIZE_CALC_1];
-										BYTE b = buffer[IMAGE_SIZE_CALC_2];
-										BYTE c = buffer[IMAGE_SIZE_CALC_3];
-										BYTE d = buffer[IMAGE_SIZE_CALC_4];
+										//BYTE a = buffer[IMAGE_SIZE_CALC_1];
+										//BYTE b = buffer[IMAGE_SIZE_CALC_2];
+										//BYTE c = buffer[IMAGE_SIZE_CALC_3];
+										//BYTE d = buffer[IMAGE_SIZE_CALC_4];
 
 										dImageSize = buffer[IMAGE_SIZE_CALC_1] * 16777216 +
 											buffer[IMAGE_SIZE_CALC_2] * 65536 +
@@ -716,20 +523,6 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 								}
 							}
 
-							///
-							// handle ACCEPT operations 
-							//else if (NetworkEvents.lNetworkEvents & FD_ACCEPT)
-							//{
-							//	TRACE("PTSCommunicator Thread Socket ACCEPT\n");
-							//}
-
-							//// handle WRITE operations 
-							//else if (NetworkEvents.lNetworkEvents & FD_WRITE)
-							//{
-							//	TRACE("PTSCommunicator Thread Socket WRITE\n");
-							//}
-
-
 							//// READ OPERATIONS UPTO HERE
 							// we can handle close operations also
 							else if (NetworkEvents.lNetworkEvents & FD_CLOSE)
@@ -738,10 +531,8 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 
 								pPTSCommunicator->m_bClientedAccepted = false;
 
-								CMainFrame* pMFrame =
-									static_cast<CMainFrame*>(pPTSCommunicator->m_pFrame);
+								pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_CONNECTION_LOST);
 
-								pMFrame->PostMessage(WM_PTS_LOST, 0, 0);
 							} // FD_CLOSE
 						} // network event
 					}// client socket event

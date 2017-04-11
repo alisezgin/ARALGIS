@@ -225,14 +225,20 @@
     <ClInclude Include="ImageFiltering\HeaderFiles\Includes.h">
       <Filter>ImageFiltering\HeaderFiles</Filter>
     </ClInclude>
-    <ClInclude Include="PTSCommunicator\HeaderFiles\MessageDefinitions.h">
-      <Filter>PTSCommunicator\HeaderFiles</Filter>
-    </ClInclude>
     <ClInclude Include="PTSCommunicator\HeaderFiles\PTSCommunicator.h">
       <Filter>PTSCommunicator\HeaderFiles</Filter>
     </ClInclude>
     <ClInclude Include="BitmapDisplay\HeaderFiles\PictureCtrl.h">
       <Filter>BitmapDisplay\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="PTSCommunicator\HeaderFiles\PTSMessageDefinitions.h">
+      <Filter>PTSCommunicator\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="OdroidCommunicator\HeaderFiles\OdroidMessageDefinitions.h">
+      <Filter>OdroidCommunicator\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ColourButton.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -400,6 +406,9 @@
     </ClCompile>
     <ClCompile Include="BitmapDisplay\SourceFiles\PictureCtrl.cpp">
       <Filter>BitmapDisplay\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ColourButton.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

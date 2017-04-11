@@ -38,6 +38,13 @@
 #define IDC_STATIC_PLAKA                1014
 #define IDC_EDIT1                       1015
 #define IDC_EDIT_KAMERA_NO              1015
+#define IDC_BUTTON_BARRIER_OPEN         1016
+#define IDC_BUTTON_BARRIER_CLOSE        1017
+#define IDC_BUTTON_HEATER_ON            1018
+#define IDC_BUTTON_HEATER_OFF           1019
+#define IDC_BUTTON_BARRIER_STATUS       1020
+#define IDC_BUTTON_HEATER_STATUS        1021
+#define IDC_BUTTON_PTS_STATUS           1022
 #define ID_KAMERA_KONFIG32771           32771
 #define ID_KAMERA_KAY32772              32772
 #define ID_KAMERA_RESIMG32773           32773
@@ -84,7 +91,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        313
 #define _APS_NEXT_COMMAND_VALUE         32810
-#define _APS_NEXT_CONTROL_VALUE         1016
+#define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

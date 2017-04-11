@@ -66,6 +66,7 @@ void InitializeGlobalVars()
 
 	g_CameraStartDataRecieveEvent =		CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_CameraStopDataRecieveEvent =		CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_CameraChangeSampleRateEvent =     CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_CameraPauseDataRecieveEvent =		CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_CameraConfigFileChangeEvent =		CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_CameraSelectStreamFileEvent =		CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -75,6 +76,11 @@ void InitializeGlobalVars()
 	g_SetTimerFrameRateEvent =			CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_KillTimerEvent =					CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_ResetTimerEvent =					CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_OdroidOpenBarrierEvent =			CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_OdroidCloseBarrierEvent =			CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_OdroidStartHeatingEvent =			CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_OdroidStopHeatingEvent =			CreateEvent(NULL, TRUE, FALSE, NULL);
+
 
 	//g_CameraDataReadyEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
@@ -116,6 +122,7 @@ void DeleteGlobalVariables()
 
 	CloseHandle(g_CameraStartDataRecieveEvent);
 	CloseHandle(g_CameraStopDataRecieveEvent);
+	CloseHandle(g_CameraChangeSampleRateEvent);
 	CloseHandle(g_CameraPauseDataRecieveEvent); 
 	CloseHandle(g_CameraConfigFileChangeEvent);
 	CloseHandle(g_CameraSelectStreamFileEvent); 
@@ -126,6 +133,10 @@ void DeleteGlobalVariables()
 	CloseHandle(g_KillTimerEvent);
 	CloseHandle(g_ResetTimerEvent);
 	//CloseHandle(g_CameraDataReadyEvent);
+	CloseHandle(g_OdroidOpenBarrierEvent);
+	CloseHandle(g_OdroidCloseBarrierEvent);
+	CloseHandle(g_OdroidStartHeatingEvent);
+	CloseHandle(g_OdroidStopHeatingEvent);
 
 	CloseHandle(g_PTSTriggerEvent);
 	CloseHandle(g_PTSLostEvent);

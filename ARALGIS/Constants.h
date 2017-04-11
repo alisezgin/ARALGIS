@@ -4,8 +4,10 @@
 
 #define WM_UPDATE_CONTROLS    (WM_USER + 1)  // User message for updating controls
 
-// server comm send to main frame that server socket closed
-#define WM_PTS_LOST (WM_USER + 2)
+
+
+// Odroid comm send to main frame that client socket closed
+#define WM_ODROID_LOST (WM_USER + 3)
 
 #define MAX_BORA (5)
 
@@ -35,9 +37,11 @@
 
 
 // ARALGIS TCP PORTS
-#define ARALGIS_ODROID_TCP_PORT (2554)
+#define ARALGIS_ODROID_TCP_PORT_INT (2554)
+#define ARALGIS_ODROID_TCP_PORT_CHAR ("2554")
 #define ARALGIS_PTS_TCP_PORT_CHAR ("1000") 
 #define ARALGIS_PTS_TCP_PORT_INT (1000) 
+
 
 
 #define IP_ADDRESS_LEN       (16)

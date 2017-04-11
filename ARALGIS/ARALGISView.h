@@ -17,6 +17,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include "afxwin.h"
 
+#include "ColourButton.h"
 
 class CARALGISDoc;
 
@@ -57,6 +58,10 @@ public:
 
 	void DisplayPTSImage();
 	void DeletePTSImage();
+
+	void UpdatePTSStatus(bool aStatus);
+	void UpdateBarrierStatus(bool aStatus);
+	void UpdateHeaterStatus(bool aStatus);
 
 protected:
 	void Rotate90(cv::Mat &matImage, int rotflag);
@@ -114,6 +119,15 @@ public:
 	afx_msg void OnRotate180();
 	virtual void OnInitialUpdate();
 
+	afx_msg void OnBnClickedButtonBarrierOpen();
+	afx_msg void OnBnClickedButtonBarrierClose();
+	afx_msg void OnBnClickedButtonHeaterOn();
+	afx_msg void OnBnClickedButtonHeaterOff();
+
+protected:
+	CClrButton m_BarrierStatus;
+	CClrButton m_HeaterStatus;
+	CClrButton m_PTS_Status;
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

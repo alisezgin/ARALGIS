@@ -32,6 +32,9 @@ HANDLE g_CameraStartDataRecieveEvent;
 // event used for stopping camera data reception
 HANDLE g_CameraStopDataRecieveEvent;
 
+// event used for changing camera sample rate
+HANDLE g_CameraChangeSampleRateEvent;
+
 // event used for pausing camera data reception
 HANDLE g_CameraPauseDataRecieveEvent;
 
@@ -73,6 +76,18 @@ HANDLE g_PTSTriggerEvent;
 
 // event used for triggering PTS 
 HANDLE g_PTSLostEvent;
+
+// event used for sending open barrier message to odroid 
+HANDLE g_OdroidOpenBarrierEvent;
+
+// event used for sending close barrier message to odroid  
+HANDLE g_OdroidCloseBarrierEvent;
+
+// event used for sending start heating message to odroid 
+HANDLE g_OdroidStartHeatingEvent;
+
+// event used for sending stop heating message to odroid 
+HANDLE g_OdroidStopHeatingEvent;
 
 // PTS IP
 char g_PtsIP[IP_ADDRESS_LEN + 1];

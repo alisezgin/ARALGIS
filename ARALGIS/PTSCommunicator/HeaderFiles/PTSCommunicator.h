@@ -17,7 +17,8 @@
 
 #define PTS_DISPLAY_IMAGE      0x0001
 #define PTS_DELETE_IMAGE       0x0002
-
+#define PTS_CONNECTION_LOST    0x0003
+#define PTS_CONNECTION_OK	   0x0004
 
 
 
@@ -42,11 +43,9 @@ public:
 private:				
 	static UINT	__stdcall	PTSCommunicatorThread(LPVOID);								
 	static UINT __stdcall   CommThread(LPVOID);
-	static UINT __stdcall   AcceptThread(LPVOID);
 
 	HANDLE					ThreadPTSCommunicator; 
 	HANDLE					ThreadComm; 
-	HANDLE					ThreadAccept;
 
 	unsigned int		    ThreadID;					
 	HANDLE				    ShutdownEvent;

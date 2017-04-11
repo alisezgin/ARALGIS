@@ -5,6 +5,9 @@
 #include "stdafx.h"
 // SHARED_HANDLERS can be defined in an ATL project implementing preview, thumbnail
 // and search filter handlers and allows sharing of document code with that project.
+
+#include "afxbutton.h"
+
 #ifndef SHARED_HANDLERS
 #include "ARALGIS.h"
 #endif
@@ -52,6 +55,10 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_COMMAND(ID_RESMID32801, &CARALGISView::OnRotate90CW)
 	ON_COMMAND(ID_RESMID32802, &CARALGISView::OnRotate90CCW)
 	ON_COMMAND(ID_RESMID32803, &CARALGISView::OnRotate180)
+	ON_BN_CLICKED(IDC_BUTTON_BARRIER_OPEN, &CARALGISView::OnBnClickedButtonBarrierOpen)
+	ON_BN_CLICKED(IDC_BUTTON_BARRIER_CLOSE, &CARALGISView::OnBnClickedButtonBarrierClose)
+	ON_BN_CLICKED(IDC_BUTTON_HEATER_ON, &CARALGISView::OnBnClickedButtonHeaterOn)
+	ON_BN_CLICKED(IDC_BUTTON_HEATER_OFF, &CARALGISView::OnBnClickedButtonHeaterOff)
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -68,13 +75,17 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 	m_RefImgBMP = new CShowpic;
 	m_TestImgBMP = new CShowpic;
 
-
 	strcpy_s(m_FilenameRef, "C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp\0");
 	strcpy_s(m_FilenameTest, "C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1Diff4-handCropped.bmp\0");
 }
 
 CARALGISView::~CARALGISView()
 {
+	if (m_RefImgBMP)
+		delete m_RefImgBMP;
+
+	if (m_TestImgBMP)
+		delete m_TestImgBMP;
 }
 
 void CARALGISView::DoDataExchange(CDataExchange* pDX)
@@ -87,6 +98,9 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_PLAKA, m_PlakaStr);
 	DDX_Control(pDX, IDC_EDIT_PLAKA, m_PlakaCtrl);
 	DDX_Control(pDX, IDC_STATIC_PLAKA, m_CarPlakaImageStatic);
+	//DDX_Control(pDX, IDC_BUTTON_BARRIER_STATUS, m_BarrierStatus);
+	//DDX_Control(pDX, IDC_BUTTON_HEATER_STATUS, m_HeaterStatus);
+	//DDX_Control(pDX, IDC_BUTTON_PTS_STATUS, m_PTS_Status);
 }
 
 BOOL CARALGISView::PreCreateWindow(CREATESTRUCT& cs)
@@ -183,8 +197,15 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.InvokeOnResized();
 	ASSERT(bOk);
 
-
 	CString sDebugInfo = m_resizer.GetDebugInfo();
+
+	m_BarrierStatus.SubclassDlgItem(IDC_BUTTON_BARRIER_STATUS, this);
+	m_HeaterStatus.SubclassDlgItem(IDC_BUTTON_HEATER_STATUS, this);
+	m_PTS_Status.SubclassDlgItem(IDC_BUTTON_PTS_STATUS, this);
+
+	m_BarrierStatus.SetColour(WHITE, RED);
+	m_HeaterStatus.SetColour(WHITE, RED);
+	m_PTS_Status.SetColour(WHITE, RED);
 }
 
 
@@ -529,4 +550,68 @@ void CARALGISView::DeletePTSImage()
 
 }
 
+void CARALGISView::UpdatePTSStatus(bool aStatus)
+{
+	if (aStatus == true)
+	{
+		m_PTS_Status.SetColour(WHITE, GREEN);
+	}
+	else
+	{
+		m_PTS_Status.SetColour(WHITE, RED);
+	}
+}
 
+void CARALGISView::UpdateBarrierStatus(bool aStatus)
+{
+	if (aStatus == true)
+	{
+		m_BarrierStatus.SetColour(WHITE, GREEN);
+	}
+	else
+	{
+		m_BarrierStatus.SetColour(WHITE, RED);
+	}
+}
+
+void CARALGISView::UpdateHeaterStatus(bool aStatus)
+{
+	if (aStatus == true)
+	{
+		m_HeaterStatus.SetColour(WHITE, GREEN);
+	}
+	else
+	{
+		m_HeaterStatus.SetColour(WHITE, RED);
+	}
+}
+
+
+
+
+void CARALGISView::OnBnClickedButtonBarrierOpen()
+{
+	// TODO: Add your control notification handler code here
+	SetEvent(g_OdroidOpenBarrierEvent);
+}
+
+
+void CARALGISView::OnBnClickedButtonBarrierClose()
+{
+	// TODO: Add your control notification handler code here
+	SetEvent(g_OdroidCloseBarrierEvent);
+}
+
+
+void CARALGISView::OnBnClickedButtonHeaterOn()
+{
+	// TODO: Add your control notification handler code here
+	SetEvent(g_OdroidStartHeatingEvent);
+}
+
+
+void CARALGISView::OnBnClickedButtonHeaterOff()
+{
+	// TODO: Add your control notification handler code here
+	SetEvent(g_OdroidStopHeatingEvent);
+}
