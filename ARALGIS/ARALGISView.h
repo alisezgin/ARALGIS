@@ -128,6 +128,8 @@ protected:
 	CClrButton m_BarrierStatus;
 	CClrButton m_HeaterStatus;
 	CClrButton m_PTS_Status;
+public:
+	afx_msg void OnBnClickedGrpTest();
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

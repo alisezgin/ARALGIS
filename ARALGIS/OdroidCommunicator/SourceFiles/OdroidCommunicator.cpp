@@ -489,28 +489,40 @@ UINT __stdcall COdroidCommunicator::CommThread(LPVOID pParam)
 		{
 			TRACE("CommThread OdroidTriggerEvent Received\n");
 			ResetEvent(g_OdroidOpenBarrierEvent);
-			pOdroidCommunicator->SendOdroidOpenBarrierMessage();
+			if (pOdroidCommunicator->m_bClientedAccepted == true)
+			{
+				pOdroidCommunicator->SendOdroidOpenBarrierMessage();
+			}
 		}
 
 		else if (EventCaused == WAIT_OBJECT_0 + 2) // send  Odroid close barrier message
 		{
 			TRACE("CommThread OdroidTriggerEvent Received\n");
 			ResetEvent(g_OdroidCloseBarrierEvent);
-			pOdroidCommunicator->SendOdroidCloseBarrierMessage();
+			if (pOdroidCommunicator->m_bClientedAccepted == true)
+			{
+				pOdroidCommunicator->SendOdroidCloseBarrierMessage();
+			}
 		}
 
 		else if (EventCaused == WAIT_OBJECT_0 + 3) // send  Odroid start heating message
 		{
 			TRACE("CommThread OdroidTriggerEvent Received\n");
 			ResetEvent(g_OdroidStartHeatingEvent);
-			pOdroidCommunicator->SendOdroidStartHeatingMessage();
-		}
+			if (pOdroidCommunicator->m_bClientedAccepted == true)
+			{
+				pOdroidCommunicator->SendOdroidStartHeatingMessage();
+			}
+		} 
 
 		else if (EventCaused == WAIT_OBJECT_0 + 4) // send  Odroid stop heating message
 		{
 			TRACE("CommThread OdroidTriggerEvent Received\n");
 			ResetEvent(g_OdroidStopHeatingEvent);
-			pOdroidCommunicator->SendOdroidStopHeatingMessage();
+			if (pOdroidCommunicator->m_bClientedAccepted == true)
+			{
+				pOdroidCommunicator->SendOdroidStopHeatingMessage();
+			}
 		}
 	}
 

@@ -59,6 +59,7 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_BN_CLICKED(IDC_BUTTON_BARRIER_CLOSE, &CARALGISView::OnBnClickedButtonBarrierClose)
 	ON_BN_CLICKED(IDC_BUTTON_HEATER_ON, &CARALGISView::OnBnClickedButtonHeaterOn)
 	ON_BN_CLICKED(IDC_BUTTON_HEATER_OFF, &CARALGISView::OnBnClickedButtonHeaterOff)
+	ON_BN_CLICKED(IDC_GRP_TEST, &CARALGISView::OnBnClickedGrpTest)
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -98,9 +99,6 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_PLAKA, m_PlakaStr);
 	DDX_Control(pDX, IDC_EDIT_PLAKA, m_PlakaCtrl);
 	DDX_Control(pDX, IDC_STATIC_PLAKA, m_CarPlakaImageStatic);
-	//DDX_Control(pDX, IDC_BUTTON_BARRIER_STATUS, m_BarrierStatus);
-	//DDX_Control(pDX, IDC_BUTTON_HEATER_STATUS, m_HeaterStatus);
-	//DDX_Control(pDX, IDC_BUTTON_PTS_STATUS, m_PTS_Status);
 }
 
 BOOL CARALGISView::PreCreateWindow(CREATESTRUCT& cs)
@@ -153,7 +151,6 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetAnchor(IDC_BMP_TEST, ANCHOR_ALL);
 	ASSERT(bOk);
 
-	//CUIntArray arrID2;
 	arrID.RemoveAll();
 
 	arrID.Add(IDC_GRP_REF);
@@ -184,6 +181,55 @@ void CARALGISView::OnInitialUpdate()
 	CSize size2(0, 200); // cy member will be ignored
 	bOk = m_resizer.SetMinimumSize(_T("Ref_Panel"), size2);
 	ASSERT(bOk);
+
+	//arrID.RemoveAll();
+
+	//arrID.Add(IDC_STATIC_PTS);
+	//arrID.Add(IDC_BUTTON_PTS_STATUS);
+
+	//arrID.Add(IDC_STATIC_BARRIER);
+	//arrID.Add(IDC_BUTTON_BARRIER_OPEN);
+	//arrID.Add(IDC_BUTTON_BARRIER_CLOSE);
+	//arrID.Add(IDC_BUTTON_BARRIER_STATUS);
+
+	//arrID.Add(IDC_STATIC_HEATER);
+	//arrID.Add(IDC_BUTTON_HEATER_ON);
+	//arrID.Add(IDC_BUTTON_HEATER_OFF);
+	//arrID.Add(IDC_BUTTON_HEATER_STATUS);
+
+	//bOk = m_resizer.CreatePanel(_T("Peripheral_Panel"), &arrID, TRUE);
+	//ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_STATIC_PTS, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_PTS_STATUS, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_STATIC_BARRIER, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_OPEN, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_CLOSE, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_STATUS, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_STATIC_HEATER, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_ON, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_OFF, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_STATUS, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
 
 
 
@@ -614,4 +660,10 @@ void CARALGISView::OnBnClickedButtonHeaterOff()
 {
 	// TODO: Add your control notification handler code here
 	SetEvent(g_OdroidStopHeatingEvent);
+}
+
+
+void CARALGISView::OnBnClickedGrpTest()
+{
+	// TODO: Add your control notification handler code here
 }

@@ -30,7 +30,6 @@ void InitializeGlobalVars()
 
 	for (i = 0; i <= MAX_BORA; i++)
 	{
-		//AccountDataReceivedEvent[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
 		//ResponseReceivedFromTerminal[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
 		//PrintingThreadsTimerEvent[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
 		//CopyThreadsTimerEvent[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
