@@ -2,8 +2,8 @@
 
 #include "..\..\Constants.h"
 
-// AccountingPC - Server Communication Messages Constants
-// Information about Messages coming from UDP client/JAMES/SitePlayer/CMD
+// ARALGIS - Client Communication Messages Constants
+// Information about Messages going/coming to/from TCP client
 #define MESSAGE_LENGTH         (16)
 
 #define ODROID_MESSAGE_INDICATOR (1)
