@@ -22,8 +22,8 @@
 #define MESSAGE_RESERVED2_POS  (6)
 #define MESSAGE_RESERVED2_SIZE (2) // 2 bytes reserved
 
-#define TIME_POS           (7)
-#define TIME_SIZE          (8)
+#define TIME_POS           (8)
+#define TIME_SIZE          (4)
 
 #define MESSAGE_CAR_DETECTED_NO (1)
 #define MESSAGE_CAR_FINISHED_NO (2)
@@ -33,6 +33,8 @@
 #define MESSAGE_CLOSE_BARRIRER_NO (5)
 #define MESSAGE_START_HEATING_NO  (6)
 #define MESSAGE_STOP_HEATING_NO   (7)
+#define MESSAGE_START_ALARM_NO    (8)
+#define MESSAGE_STOP_ALARM_NO     (9)
 
 
 typedef struct _MessageOdroid {

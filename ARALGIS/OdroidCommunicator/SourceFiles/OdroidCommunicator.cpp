@@ -567,19 +567,19 @@ BOOL COdroidCommunicator::ControlMessage(BYTE *message)
 	     ( (int) message[MESSAGE_VAL_POS + 1] != (int) 0XF) )
 		return FALSE;
 
-	if ( (int) message[MESSAGE_RESERVED2_POS] != (int) 0XF)
+	if ( (int) message[MESSAGE_RESERVED2_POS] != (int) 0X0)
 		return FALSE;
-	if ( (int) message[MESSAGE_RESERVED2_POS + 1] != (int) 0XF)
+	if ( (int) message[MESSAGE_RESERVED2_POS + 1] != (int) 0X0)
 		return FALSE;
 
-	if (( (int) message[MESSAGE_ID_POS] != (int)MESSAGE_CAR_SPEED_NO) &&
-		( (int) message[TIME_POS]    != (int)0XF) &&
-		( (int)message[TIME_POS + 1] != (int)0XF) &&
-		( (int)message[TIME_POS + 2] != (int)0XF) &&
+	if (((int)message[MESSAGE_ID_POS] != (int)MESSAGE_CAR_SPEED_NO) &&
+		((int)message[TIME_POS] != (int)0XF) ||
+		((int)message[TIME_POS + 1] != (int)0XF) ||
+		((int)message[TIME_POS + 2] != (int)0XF) ||
 		( (int)message[TIME_POS + 3] != (int)0XF))
 		return FALSE;
 
-	return TRUE; /// boraN always return TRUE for the time being
+	return TRUE;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -612,7 +612,7 @@ void COdroidCommunicator::SendOdroidOpenBarrierMessage()
 	messageToSend.valueContent[1] = 0xF;
 	messageToSend.reserved2[0] = 0x0;
 	messageToSend.reserved2[1] = 0x0;
-	messageToSend.messageTime = 0xFFFFFFFF;
+	messageToSend.messageTime = 0xFFFF;
 
 	memcpy_s(data, size_t(MESSAGE_LENGTH), &messageToSend, size_t(MESSAGE_LENGTH));
 	
@@ -667,7 +667,7 @@ void COdroidCommunicator::SendOdroidCloseBarrierMessage()
 	messageToSend.valueContent[1] = 0xF;
 	messageToSend.reserved2[0] = 0x0;
 	messageToSend.reserved2[1] = 0x0;
-	messageToSend.messageTime = 0xFFFFFFFF;
+	messageToSend.messageTime = 0xFFFFF;
 
 	memcpy_s(data, size_t(MESSAGE_LENGTH), &messageToSend, size_t(MESSAGE_LENGTH));
 
@@ -722,7 +722,7 @@ void COdroidCommunicator::SendOdroidStartHeatingMessage()
 	messageToSend.valueContent[1] = 0xF;
 	messageToSend.reserved2[0] = 0x0;
 	messageToSend.reserved2[1] = 0x0;
-	messageToSend.messageTime = 0xFFFFFFFF;
+	messageToSend.messageTime = 0xFFFF;
 
 	memcpy_s(data, size_t(MESSAGE_LENGTH), &messageToSend, size_t(MESSAGE_LENGTH));
 
@@ -777,7 +777,7 @@ void COdroidCommunicator::SendOdroidStopHeatingMessage()
 	messageToSend.valueContent[1] = 0xF;
 	messageToSend.reserved2[0] = 0x0;
 	messageToSend.reserved2[1] = 0x0;
-	messageToSend.messageTime = 0xFFFFFFFF;
+	messageToSend.messageTime = 0xFFFF;
 
 	memcpy_s(data, size_t(MESSAGE_LENGTH), &messageToSend, size_t(MESSAGE_LENGTH));
 
