@@ -99,7 +99,8 @@ void CClrButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	if (state & ODS_DISABLED)
 	{
-		DrawFilledRect(dc, button_rect, disabled_background_colour);
+		//DrawFilledRect(dc, button_rect, disabled_background_colour);
+		DrawFilledRect(dc, button_rect, background_colour);
 	}
 	else
 	{
@@ -122,15 +123,15 @@ void CClrButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		}
 	}
 
-	if (state & ODS_DISABLED)
-	{
-		offset_button_rect = button_rect;
-		offset_button_rect.OffsetRect(1, 1);
+	//if (state & ODS_DISABLED)
+	//{
+	//	offset_button_rect = button_rect;
+	//	offset_button_rect.OffsetRect(1, 1);
 
-		DrawButtonText(dc, offset_button_rect, buffer, CLR_BTN_WHITE);
-		DrawButtonText(dc, button_rect, buffer, CLR_BTN_DGREY);
-	}
-	else
+	//	DrawButtonText(dc, offset_button_rect, buffer, CLR_BTN_WHITE);
+	//	DrawButtonText(dc, button_rect, buffer, CLR_BTN_DGREY);
+	//}
+	//else
 	{
 		DrawButtonText(dc, button_rect, buffer, text_colour);
 	}

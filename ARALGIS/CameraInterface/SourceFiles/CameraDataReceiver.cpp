@@ -175,6 +175,9 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 			// enable the other database handling actions
 			//isDatabaseHandlingInProgress = FALSE;
 
+			SetEvent(g_DisplayBitmapEvent); //// bora temporaru code for the time being
+
+
 			LeaveCriticalSection(&g_SomeHandlingCS);
 		}
 

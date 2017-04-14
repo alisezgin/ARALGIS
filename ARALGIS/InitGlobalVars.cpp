@@ -78,6 +78,8 @@ void InitializeGlobalVars()
 	g_OdroidCloseBarrierEvent =			CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_OdroidStartHeatingEvent =			CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_OdroidStopHeatingEvent =			CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_OdroidStartAlarmEvent =			CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_OdroidStopAlarmEvent =			CreateEvent(NULL, TRUE, FALSE, NULL);
 
 
 	//g_CameraDataReadyEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -135,6 +137,9 @@ void DeleteGlobalVariables()
 	CloseHandle(g_OdroidCloseBarrierEvent);
 	CloseHandle(g_OdroidStartHeatingEvent);
 	CloseHandle(g_OdroidStopHeatingEvent);
+	CloseHandle(g_OdroidStartAlarmEvent);
+	CloseHandle(g_OdroidStopAlarmEvent);
+
 
 	CloseHandle(g_PTSTriggerEvent);
 	CloseHandle(g_PTSLostEvent);

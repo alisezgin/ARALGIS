@@ -20,6 +20,7 @@ public:
 // (Note: You must use an ODBC driver version that is version 3.5 or greater
 // to support both Unicode and these conversions).
 
+	// database table variables
 	long	m_UserID;
 	CStringA	m_FirstName;
 	CStringA	m_LastName;

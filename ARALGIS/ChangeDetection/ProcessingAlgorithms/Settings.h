@@ -33,23 +33,23 @@
 
 //#define  DISPLAY_IMAGES_PERSPECTIVE ///////////////
 
-#define  DISPLAY_IMAGES_THRESHOLD // need this //////////////////////
+//#define  DISPLAY_IMAGES_THRESHOLD // need this //////////////////////
 
 //#define DISPLAY_IMAGES_DEBUG_FINAL_PROCESS
 
-#define DISPLAY_IMAGES_MEAN_FILTER
+//#define DISPLAY_IMAGES_MEAN_FILTER
 
 //#define DISPLAY_IMAGES_DEBUG_FINAL_SIFT
 
-#define DISPLAY_SAM // need this //////////////////////
+//#define DISPLAY_SAM // need this //////////////////////
 
-#define DISPLAY_ROSIN  //////////////////
+//#define DISPLAY_ROSIN  //////////////////
 
 //#define DISPLAY_PARTITION
 //#define DISPLAY_DEBUG_PARTITION
-#define DISPLAY_DEBUG_PARTITION_LESS // need this ////////
-#define DISPLAY_PARTITION_REF_KP // need this/////////
-#define DISPLAY_CONCAN_IMAGE // need this/////////////
+//#define DISPLAY_DEBUG_PARTITION_LESS // need this ////////
+//#define DISPLAY_PARTITION_REF_KP // need this/////////
+//#define DISPLAY_CONCAN_IMAGE // need this/////////////
 //#define DISPLAY_CONCAN_IMAGE_INTERMEDIATE
 //#define CONCAN_DISPLAY_BW//////////
 // definition of debug display images ends here 

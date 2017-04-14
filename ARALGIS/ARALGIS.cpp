@@ -89,6 +89,12 @@ HANDLE g_OdroidStartHeatingEvent;
 // event used for sending stop heating message to odroid 
 HANDLE g_OdroidStopHeatingEvent;
 
+// event used for sending start alarm message to odroid 
+HANDLE g_OdroidStartAlarmEvent;
+
+// event used for sending stop alarm message to odroid 
+HANDLE g_OdroidStopAlarmEvent;
+
 // PTS IP
 char g_PtsIP[IP_ADDRESS_LEN + 1];
 

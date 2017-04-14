@@ -7,6 +7,7 @@
 #define MESSAGE_LENGTH         (16)
 
 #define ODROID_MESSAGE_INDICATOR (1)
+#define ARALGIS_MESSAGE_INDICATOR (2)
 
 #define MESSAGE_FROM_POS       (0)
 
@@ -16,14 +17,14 @@
 
 #define MESSAGE_RESERVED1_SIZE (2) // 2 bytes reserved
 
-#define MESSAGE_VAL_POS (5)
+#define MESSAGE_VAL_POS (4)
 #define MESSAGE_VAL_SIZE (2)
 
 #define MESSAGE_RESERVED2_POS  (6)
 #define MESSAGE_RESERVED2_SIZE (2) // 2 bytes reserved
 
 #define TIME_POS           (8)
-#define TIME_SIZE          (4)
+#define TIME_SIZE          (8)
 
 #define MESSAGE_CAR_DETECTED_NO (1)
 #define MESSAGE_CAR_FINISHED_NO (2)
@@ -43,7 +44,7 @@ typedef struct _MessageOdroid {
 	unsigned char reserved1[MESSAGE_RESERVED1_SIZE];
 	unsigned char valueContent[MESSAGE_VAL_SIZE];
 	unsigned char reserved2[MESSAGE_RESERVED2_SIZE];	
-	long          messageTime;
+	unsigned char messageTime[TIME_SIZE];
 } MessageOdroid;
 
 typedef struct _ReceivedMessage{

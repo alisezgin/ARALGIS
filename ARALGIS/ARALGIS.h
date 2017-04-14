@@ -78,6 +78,12 @@ extern HANDLE g_OdroidStartHeatingEvent;
 // event used for sending stop heating message to odroid 
 extern HANDLE g_OdroidStopHeatingEvent;
 
+// event used for sending start alarm message to odroid 
+extern HANDLE g_OdroidStartAlarmEvent;
+
+// event used for sending stop alarm message to odroid 
+extern HANDLE g_OdroidStopAlarmEvent;
+
 // global variable to hold CV image from Camera
 extern cv::Mat g_CVImage;
 

@@ -204,12 +204,25 @@ void CMainFrame::NotifyProcOdroidComm(LPVOID lpParam, UINT nCode)
 	{
 		switch (nCode)
 		{
-		case ODROID_DISPLAY_IMAGE:
-			//pView->DisplayPTSImage();
+		case ODROID_CONNECTION_LOST:
+			pView->UpdatePeripheralStatus(false);
+
+			::MessageBox(NULL,
+				(LPCWSTR)L"Çevre Birimler ile Baðlantý Kayboldu",
+				(LPCWSTR)WARNINGWINDOW_TITLE,
+				MB_OK | MB_ICONERROR
+				);
 			break;
-		case ODROID_DELETE_IMAGE:
-			//pView->DeletePTSImage();
-			break;
+
+		case ODROID_CONNECTION_OK:
+			pView->UpdatePeripheralStatus(true);
+
+			::MessageBox(NULL,
+				(LPCWSTR)L"Çevre Birimler ile Baðlantý Kuruldu",
+				(LPCWSTR)WARNINGWINDOW_TITLE,
+				MB_OK | MB_ICONERROR
+				);
+			break;			break;
 		default:
 			break;
 		}

@@ -248,7 +248,7 @@
     </ClInclude>
     <ClInclude Include="ColourButton.h">
       <Filter>Header Files</Filter>
-  </ClInclude>
+    </ClInclude>
     <ClInclude Include="UserTable.h">
       <Filter>Database\HeaderFiles</Filter>
     </ClInclude>

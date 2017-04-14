@@ -11,8 +11,8 @@
 #include "ARALGIS.h"
 #include "Constants.h"
 
-#define ODROID_DISPLAY_IMAGE      0x0001
-#define ODROID_DELETE_IMAGE       0x0002
+#define ODROID_CONNECTION_LOST      0x0001
+#define ODROID_CONNECTION_OK       0x0002
 
 
 #define THREADEXIT_SUCCESS	  0x1234
@@ -54,6 +54,8 @@ private:
 	void SendOdroidCloseBarrierMessage();
 	void SendOdroidStartHeatingMessage();
 	void SendOdroidStopHeatingMessage();
+	void SendOdroidStartAlarmMessage();
+	void SendOdroidStopAlarmMessage();
 
 	BOOL ControlMessage(BYTE *message);
 };

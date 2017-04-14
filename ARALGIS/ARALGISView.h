@@ -19,6 +19,7 @@
 
 #include "ColourButton.h"
 
+
 class CARALGISDoc;
 
 class CARALGISView : public CColorFormView
@@ -60,8 +61,7 @@ public:
 	void DeletePTSImage();
 
 	void UpdatePTSStatus(bool aStatus);
-	void UpdateBarrierStatus(bool aStatus);
-	void UpdateHeaterStatus(bool aStatus);
+	void UpdatePeripheralStatus(bool aStatus);
 
 protected:
 	void Rotate90(cv::Mat &matImage, int rotflag);
@@ -125,11 +125,12 @@ public:
 	afx_msg void OnBnClickedButtonHeaterOff();
 
 protected:
-	CClrButton m_BarrierStatus;
-	CClrButton m_HeaterStatus;
 	CClrButton m_PTS_Status;
+	CClrButton m_PeripheralStatus;
+
 public:
-	afx_msg void OnBnClickedGrpTest();
+	afx_msg void OnBnClickedButtonAlarmOn();
+	afx_msg void OnBnClickedButtonAlarmOff();
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

@@ -123,11 +123,11 @@ BOOL CPTSCommunicator::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
 										  &ThreadID );
 	if(!ThreadComm)
 	{
-		TRACE("_beginthreadex(...) failure, PTSCommunicator::Start CommThread\n");
+		TRACE("_beginthreadex(...) failure, PTSCommunicator::Start PTSCommThread\n");
 		return FALSE;
 	}
 
-	TRACE("CommThread ThreadID %x ...\n", ThreadID);
+	TRACE("PTSCommThread ThreadID %x ...\n", ThreadID);
 
 	bRun = TRUE;
 
@@ -579,15 +579,15 @@ UINT __stdcall CPTSCommunicator::CommThread(LPVOID pParam)
 		if(EventCaused == WAIT_FAILED || EventCaused == WAIT_OBJECT_0)
 		{
 			if(EventCaused == WAIT_FAILED)
-				TRACE( "CommThread Shutting Down %d ...\n",  GetLastError());
+				TRACE( "PTSCommThread Shutting Down %d ...\n",  GetLastError());
 			else
-				TRACE( "CommThread Shutting Down Normally ...\n");
+				TRACE( "PTSCommThread Shutting Down Normally ...\n");
 			return THREADEXIT_SUCCESS;
 		}
 
 		else if (EventCaused == WAIT_OBJECT_0 + 1) // Trigger PTS To make Licence Plate Recognition
 		{
-			TRACE("CommThread PTSTriggerEvent Received\n");
+			TRACE("PTSCommThread PTSTriggerEvent Received\n");
 			ResetEvent(g_PTSTriggerEvent);
 			pPTSCommunicator->SendTriggerMessage();
 		}

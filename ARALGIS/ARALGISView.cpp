@@ -59,7 +59,8 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_BN_CLICKED(IDC_BUTTON_BARRIER_CLOSE, &CARALGISView::OnBnClickedButtonBarrierClose)
 	ON_BN_CLICKED(IDC_BUTTON_HEATER_ON, &CARALGISView::OnBnClickedButtonHeaterOn)
 	ON_BN_CLICKED(IDC_BUTTON_HEATER_OFF, &CARALGISView::OnBnClickedButtonHeaterOff)
-	ON_BN_CLICKED(IDC_GRP_TEST, &CARALGISView::OnBnClickedGrpTest)
+	ON_BN_CLICKED(IDC_BUTTON_ALARM_ON, &CARALGISView::OnBnClickedButtonAlarmOn)
+	ON_BN_CLICKED(IDC_BUTTON_ALARM_OFF, &CARALGISView::OnBnClickedButtonAlarmOff)
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -182,24 +183,6 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetMinimumSize(_T("Ref_Panel"), size2);
 	ASSERT(bOk);
 
-	//arrID.RemoveAll();
-
-	//arrID.Add(IDC_STATIC_PTS);
-	//arrID.Add(IDC_BUTTON_PTS_STATUS);
-
-	//arrID.Add(IDC_STATIC_BARRIER);
-	//arrID.Add(IDC_BUTTON_BARRIER_OPEN);
-	//arrID.Add(IDC_BUTTON_BARRIER_CLOSE);
-	//arrID.Add(IDC_BUTTON_BARRIER_STATUS);
-
-	//arrID.Add(IDC_STATIC_HEATER);
-	//arrID.Add(IDC_BUTTON_HEATER_ON);
-	//arrID.Add(IDC_BUTTON_HEATER_OFF);
-	//arrID.Add(IDC_BUTTON_HEATER_STATUS);
-
-	//bOk = m_resizer.CreatePanel(_T("Peripheral_Panel"), &arrID, TRUE);
-	//ASSERT(bOk);
-
 	bOk = m_resizer.SetAnchor(IDC_STATIC_PTS, ANCHOR_RIGHT);
 	ASSERT(bOk);
 
@@ -209,16 +192,13 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetAnchor(IDC_STATIC_BARRIER, ANCHOR_RIGHT);
 	ASSERT(bOk);
 
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_PERIPHERAL_STATUS, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
 	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_OPEN, ANCHOR_RIGHT);
 	ASSERT(bOk);
 
 	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_CLOSE, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_STATUS, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_STATIC_HEATER, ANCHOR_RIGHT);
 	ASSERT(bOk);
 
 	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_ON, ANCHOR_RIGHT);
@@ -227,7 +207,10 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_OFF, ANCHOR_RIGHT);
 	ASSERT(bOk);
 
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_STATUS, ANCHOR_RIGHT);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_ON, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_OFF, ANCHOR_RIGHT);
 	ASSERT(bOk);
 
 
@@ -245,12 +228,10 @@ void CARALGISView::OnInitialUpdate()
 
 	CString sDebugInfo = m_resizer.GetDebugInfo();
 
-	m_BarrierStatus.SubclassDlgItem(IDC_BUTTON_BARRIER_STATUS, this);
-	m_HeaterStatus.SubclassDlgItem(IDC_BUTTON_HEATER_STATUS, this);
+	m_PeripheralStatus.SubclassDlgItem(IDC_BUTTON_PERIPHERAL_STATUS, this);
 	m_PTS_Status.SubclassDlgItem(IDC_BUTTON_PTS_STATUS, this);
 
-	m_BarrierStatus.SetColour(WHITE, RED);
-	m_HeaterStatus.SetColour(WHITE, RED);
+	m_PeripheralStatus.SetColour(WHITE, RED);
 	m_PTS_Status.SetColour(WHITE, RED);
 }
 
@@ -608,31 +589,17 @@ void CARALGISView::UpdatePTSStatus(bool aStatus)
 	}
 }
 
-void CARALGISView::UpdateBarrierStatus(bool aStatus)
+void CARALGISView::UpdatePeripheralStatus(bool aStatus)
 {
 	if (aStatus == true)
 	{
-		m_BarrierStatus.SetColour(WHITE, GREEN);
+		m_PeripheralStatus.SetColour(WHITE, GREEN);
 	}
 	else
 	{
-		m_BarrierStatus.SetColour(WHITE, RED);
+		m_PeripheralStatus.SetColour(WHITE, RED);
 	}
 }
-
-void CARALGISView::UpdateHeaterStatus(bool aStatus)
-{
-	if (aStatus == true)
-	{
-		m_HeaterStatus.SetColour(WHITE, GREEN);
-	}
-	else
-	{
-		m_HeaterStatus.SetColour(WHITE, RED);
-	}
-}
-
-
 
 
 void CARALGISView::OnBnClickedButtonBarrierOpen()
@@ -662,8 +629,15 @@ void CARALGISView::OnBnClickedButtonHeaterOff()
 	SetEvent(g_OdroidStopHeatingEvent);
 }
 
-
-void CARALGISView::OnBnClickedGrpTest()
+void CARALGISView::OnBnClickedButtonAlarmOn()
 {
 	// TODO: Add your control notification handler code here
+	SetEvent(g_OdroidStartAlarmEvent);
+}
+
+
+void CARALGISView::OnBnClickedButtonAlarmOff()
+{
+	// TODO: Add your control notification handler code here
+	SetEvent(g_OdroidStopAlarmEvent);
 }

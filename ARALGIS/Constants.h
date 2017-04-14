@@ -6,9 +6,6 @@
 
 
 
-// Odroid comm send to main frame that client socket closed
-#define WM_ODROID_LOST (WM_USER + 3)
-
 #define MAX_BORA (5)
 
 #define MAX_STRINGTABLE_STR_SIZE (256)
