@@ -1,5 +1,5 @@
+*.sdf
 *.opensdf
-ARALGIS.sdf
 *.log
 *.pch
 *.res
@@ -9,7 +9,6 @@ ARALGIS.sdf
 *.sbr
 *.exe
 *.pdb
-ipch/aralgis-549d8167/aralgis-eebd63ad.ipch
 *.bsc
 x64/Debug/ARALGIS.pgd
 *.suo
