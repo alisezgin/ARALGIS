@@ -21,6 +21,8 @@ public:
 	static Mat  CopyBmpDataToMat(Gdiplus::BitmapData* pi_Data);
 	static Gdiplus::Bitmap* CopyMatToBmp(Mat& i_Mat);
 
+
+
 private:
 	static CLSID GetEncoderClsid(const WCHAR* u16_File);
 

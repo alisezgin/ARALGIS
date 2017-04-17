@@ -48,16 +48,16 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	imgReference.copyTo(img1);
 	imgTest.copyTo(img2);
 
-	ImageDisplayer imageDisplayer;
-	char title1[1000];
-	strcpy_s(title1, "ORIGINAL IMAGES TOGETHER--");
-	imageDisplayer.displayImages(imgReference, imgTest, title1);
+	//ImageDisplayer imageDisplayer;
+	//char title1[1000];
+	//strcpy_s(title1, "ORIGINAL IMAGES TOGETHER--");
+	//imageDisplayer.displayImages(imgReference, imgTest, title1);
 
 
-	ImageDisplayer imageDisplayerClr;
-	char titleClr[1000];
-	strcpy_s(titleClr, "ORIGINAL COLOUR IMAGES TOGETHER--");
-	imageDisplayerClr.displayImages(imgReferenceClr, imgTestClr, titleClr);
+	//ImageDisplayer imageDisplayerClr;
+	//char titleClr[1000];
+	//strcpy_s(titleClr, "ORIGINAL COLOUR IMAGES TOGETHER--");
+	//imageDisplayerClr.displayImages(imgReferenceClr, imgTestClr, titleClr);
 
 
 #ifdef  DISPLAY_DEBUG_PARTITION

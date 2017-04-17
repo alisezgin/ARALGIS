@@ -8,6 +8,9 @@
 
 #include "afxbutton.h"
 
+//#include <gdiplus.h>
+//#pragma comment(lib, "gdiplus.lib")
+
 #ifndef SHARED_HANDLERS
 #include "ARALGIS.h"
 #endif
@@ -47,20 +50,13 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_COMMAND(ID_RESIMG32774, &CARALGISView::OnDisplaySelectedBitmap)
 	ON_COMMAND(ID_RESIMG32775, &CARALGISView::OnDisplayOpenCV)
 	ON_COMMAND(ID_KAMERA_DURUDU, &CARALGISView::OnCameraStartStop)
-	ON_COMMAND(ID_AYD32778, &CARALGISView::OnHistoEqualize)
-	ON_COMMAND(ID_KAMERA_ALANSE32779, &CARALGISView::OnSelectArea)
-	ON_COMMAND(ID_RESIMSE32781, &CARALGISView::OnSelectOriginal)
-	ON_COMMAND(ID_RESIMSE32782, &CARALGISView::OnSelectFiltered)
-	ON_COMMAND(ID_RESIMSE32799, &CARALGISView::OnImageSelectArea)
-	ON_COMMAND(ID_RESMID32801, &CARALGISView::OnRotate90CW)
-	ON_COMMAND(ID_RESMID32802, &CARALGISView::OnRotate90CCW)
-	ON_COMMAND(ID_RESMID32803, &CARALGISView::OnRotate180)
 	ON_BN_CLICKED(IDC_BUTTON_BARRIER_OPEN, &CARALGISView::OnBnClickedButtonBarrierOpen)
 	ON_BN_CLICKED(IDC_BUTTON_BARRIER_CLOSE, &CARALGISView::OnBnClickedButtonBarrierClose)
 	ON_BN_CLICKED(IDC_BUTTON_HEATER_ON, &CARALGISView::OnBnClickedButtonHeaterOn)
 	ON_BN_CLICKED(IDC_BUTTON_HEATER_OFF, &CARALGISView::OnBnClickedButtonHeaterOff)
 	ON_BN_CLICKED(IDC_BUTTON_ALARM_ON, &CARALGISView::OnBnClickedButtonAlarmOn)
 	ON_BN_CLICKED(IDC_BUTTON_ALARM_OFF, &CARALGISView::OnBnClickedButtonAlarmOff)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -69,10 +65,10 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 , m_PlakaStr(_T(""))
 {
 	// TODO: add construction code here
-	for (int i = 0; i < MAX_BUFFER; i++)
-	{
-		m_selList[i] = TRUE;
-	}
+	//for (int i = 0; i < MAX_BUFFER; i++)
+	//{
+	//	m_selList[i] = TRUE;
+	//}
 
 	m_RefImgBMP = new CShowpic;
 	m_TestImgBMP = new CShowpic;
@@ -283,9 +279,20 @@ CARALGISDoc* CARALGISView::GetDocument() const // non-debug version is inline
 
 afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 {
+	cv::Mat dMat1, dMat2;
+
+	g_CVImageTest = cv::imread("C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp", cv::IMREAD_COLOR);
+
+	transpose(g_CVImageTest, dMat1);
+	flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
+	dMat2.copyTo(g_CVImageTest);
+
+	convertMattoBmpTest();
+
+	//m_TestImgBMP->GetcvImage(g_CVImageTest);
 
 	cv::namedWindow("GörüntüXX", cv::WINDOW_NORMAL);
-	cv::imshow("GörüntüXX", g_CVImage);
+	cv::imshow("GörüntüXX", g_CVImageTest);
 	cv::waitKey(1500);
 
 	// get Singleton ChangeDetectionController and start the change detection process
@@ -293,6 +300,65 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 
 	return 0;
 }
+
+void CARALGISView::convertMattoBmpTest()
+{
+	m_TestImgBMP->m_un32ImageWidth = g_CVImageTest.cols;
+	m_TestImgBMP->m_un32ImageHeight = g_CVImageTest.rows;
+	m_TestImgBMP->m_un32ImageBits = CAM_BITS;
+	m_TestImgBMP->m_iSizeImage = (DWORD)g_CVImageTest.elemSize() * m_TestImgBMP->m_un32ImageWidth * m_TestImgBMP->m_un32ImageHeight;
+
+	if (m_TestImgBMP->m_pImageBytes)
+	{
+		delete m_TestImgBMP->m_pImageBytes;
+		m_TestImgBMP->m_pImageBytes = NULL;
+	}
+	
+	m_TestImgBMP->m_pImageBytes = new BYTE[m_TestImgBMP->m_iSizeImage];
+
+	m_TestImgBMP->MakeBMPHeader();
+
+	//cv::cvtColor(*m_InImage, *m_InImage, CV_BGRA2RGBA);
+	m_gdiPlus.Init();
+	Gdiplus::Bitmap* pBitmap;
+	pBitmap = m_gdiPlus.CopyMatToBmp(g_CVImageTest);
+
+	Gdiplus::BitmapData i_Data;
+	Gdiplus::Rect k_Rect(0, 0, pBitmap->GetWidth(), pBitmap->GetHeight());
+
+	Gdiplus::PixelFormat e_Format;
+
+	switch (g_CVImageTest.channels())
+	{
+		case 1: 
+			e_Format = PixelFormat8bppIndexed; 
+			break;
+
+		case 3: 
+			e_Format = PixelFormat24bppRGB;    
+			break;
+
+		case 4: 
+			e_Format = PixelFormat32bppARGB;   
+			break;
+
+		default: 
+			throw L"Image format not supported.";
+	}
+
+	if (Gdiplus::Ok != pBitmap->LockBits(&k_Rect, Gdiplus::ImageLockModeWrite, e_Format, &i_Data))
+	{
+		delete pBitmap;
+		throw L"Error locking Bitmap.";
+	}
+
+	m_TestImgBMP->ShowImage((BYTE*)i_Data.Scan0);
+	GetDocument()->UpdateAllViews(nullptr, 0, 0);
+	pBitmap->UnlockBits(&i_Data);
+
+	delete pBitmap;
+}
+
 
 
 void CARALGISView::OnCameraConfig()
@@ -326,231 +392,7 @@ void CARALGISView::OnCameraStartStop()
 	dDlg.DoModal();
 }
 
-////////////////// histogram equalization begins //////////////////////////
-void CARALGISView::OnHistoEqualize()
-{
-	cv::Mat image_eq;
 
-	image_eq.create(g_CVImage.rows, g_CVImage.cols, CV_8UC3);
-
-	//separate channels, equalize histograms and them merge them
-	std::vector<cv::Mat> channels, channels_eq;
-	cv::split(g_CVImage, channels);
-	for (int i = 0; i < channels.size(); i++)
-	{
-		cv::Mat eq;
-		cv::equalizeHist(channels[i], eq);
-		channels_eq.push_back(eq);
-	}
-
-	cv::merge(channels_eq, image_eq);
-
-	/// bora Sil !!!!!
-	image_eq.copyTo(m_CVImageHistoCrop);
-
-	cv::namedWindow("Aydinlik", cv::WINDOW_NORMAL);
-	cv::imshow("Aydinlik", image_eq);
-	cv::waitKey(1500);
-}
-////////////////// histogram equalization ends //////////////////////////
-
-////////////////// image cropping (Area Selection) begins //////////////////////////
-// Global variables
-// Flags updated according to left mouse button activity
-bool ldown = false, lup = false;
-// Original image
-cv::Mat img;
-cv::Mat imgToCopy;
-
-// Starting and ending points of the user's selection
-cv::Point corner1, corner2;
-// ROI
-cv::Rect box;
-// Callback function for mouse events
-static void mouse_callback(int event, int x, int y, int d, void* ptr)
-{
-	// When the left mouse button is pressed, 
-	// record its position and save it in corner1
-	if (event == cv::EVENT_LBUTTONDOWN)
-	{
-		ldown = true;
-		corner1.x = x;
-		corner1.y = y;
-		//std::cout << "Corner 1 recorded at " << corner1 << std::endl;
-	}
-
-	// When the left mouse button is released, 
-	//record its position and save it in corner2
-	if (event == cv::EVENT_LBUTTONUP)
-	{
-		// Also check if user selection is bigger than 20 pixels (jut for fun!)
-		if (abs(x - corner1.x) > 20 && abs(y - corner1.y) > 20)
-		{
-			lup = true;
-			corner2.x = x;
-			corner2.y = y;
-			//std::cout << "Corner 2 recorded at " << corner2 << std::endl << std::endl;
-		}
-		else
-		{
-			//std::cout << "Please select a bigger region" << std::endl;
-			ldown = false;
-		}
-	}
-
-	// Update the box showing the selected region 
-	// as the user drags the mouse
-	if (ldown == true && lup == false)
-	{
-		cv::Point pt;
-		pt.x = x;
-		pt.y = y;
-		cv::Mat local_img = img.clone();
-		cv::rectangle(local_img, corner1, pt, cv::Scalar(0, 0, 255));
-		cv::imshow("Alan Secme", local_img);
-	}
-
-
-	// Define ROI and crop it out when both corners have been selected
-	if (ldown == true && lup == true)
-	{
-		box.width = abs(corner1.x - corner2.x);
-		box.height = abs(corner1.y - corner2.y);
-		box.x = cv::min(corner1.x, corner2.x);
-		box.y = cv::min(corner1.y, corner2.y);
-		// Make an image out of just the selected ROI and display it in a new window
-		//cv::Mat crop(img, box);
-		cv::Mat crop(imgToCopy, box);
-
-		cv::Mat* m_BN = (cv::Mat*) ptr;
-		crop.copyTo(*m_BN);
-
-		cv::namedWindow("Secili Alan", cv::WINDOW_NORMAL);
-		cv::imshow("Secili Alan", crop);
-
-
-		//imwrite("C:\\SW-Projects\\uvss-images\\new\\2500\\car-1000-handCropped.jpg", crop);
-
-		ldown = false;
-		lup = false;
-	}
-}
-
-bool isImageCropped = false;
-
-void CARALGISView::OnSelectArea()
-{
-	// TODO: Add your command handler code here
-	isImageCropped = false;
-
-	g_CVImage.copyTo(imgToCopy);
-
-	g_CVImage.copyTo(img);
-
-	ldown = false;
-	lup = false;
-
-	cv::namedWindow("Alan Secme", cv::WINDOW_NORMAL);
-	cv::imshow("Alan Secme", g_CVImage);
-	cv::waitKey(1500);
-
-	// Set the mouse event callback function
-	cv::setMouseCallback("Alan Secme", mouse_callback, &m_CVCroppedImage);
-	// Exit by pressing 'q'
-	//cv::waitKey(1500);
-
-	m_BN.copyTo(m_CVCroppedImage);
-
-	isImageCropped = true;
-}
-////////////////// image cropping ends //////////////////////////
-
-
-
-void CARALGISView::OnSelectOriginal()
-{
-	// TODO: Add your command handler code here
-}
-
-
-void CARALGISView::OnSelectFiltered()
-{
-	m_CVImageHistoCrop.copyTo(g_CVImage);
-}
-
-
-void CARALGISView::OnImageSelectArea()
-{
-	// TODO: Add your command handler code here
-	if (isImageCropped == true)
-	{
-		m_CVCroppedImage.copyTo(g_CVImage);
-	}
-}
-
-
-
-// rotate 90 degrees CW, CCW or 180
-void CARALGISView::Rotate90(cv::Mat &matImage, int rotflag)
-{
-	//1=CW, 2=CCW, 3=180
-	if (rotflag == 1)
-	{
-		transpose(matImage, matImage);
-		flip(matImage, matImage, 1); //transpose+flip(1)=CW
-	}
-	else if (rotflag == 2)
-	{
-		transpose(matImage, matImage);
-		flip(matImage, matImage, 0); //transpose+flip(0)=CCW     
-	}
-	else if (rotflag == 3)
-	{
-		flip(matImage, matImage, -1);    //flip(-1)=180          
-	}
-	else if (rotflag != 0)
-	{ //if not 0,1,2,3:
-		::MessageBox(NULL, _T("Rotation Error"), NULL, MB_OK);
-	}
-}
-
-void CARALGISView::OnRotate90CW()
-{
-	// TODO: Add your control notification handler code here
-	cv::Mat rotImg;
-	g_CVImage.copyTo(rotImg);
-	Rotate90(rotImg, 1);
-
-	cv::namedWindow("Rotated 90 CW ", cv::WINDOW_NORMAL);
-	imshow("Rotated 90 CW ", rotImg);
-	cv::waitKey(1500);
-}
-
-
-void CARALGISView::OnRotate90CCW()
-{
-	// TODO: Add your command handler code here
-	cv::Mat rotImg;
-	g_CVImage.copyTo(rotImg);
-	Rotate90(rotImg, 2);
-
-	cv::namedWindow("Rotated 90 CCW", cv::WINDOW_NORMAL);
-	imshow("Rotated 90 CCW", rotImg);
-	cv::waitKey(1500);
-}
-
-
-void CARALGISView::OnRotate180()
-{
-	// TODO: Add your command handler code here
-	cv::Mat rotImg;
-	g_CVImage.copyTo(rotImg);
-	Rotate90(rotImg, 3);
-
-	cv::namedWindow("Rotated 180", cv::WINDOW_NORMAL);
-	imshow("Rotated 180", rotImg);
-	cv::waitKey(1500);
-}
 
 void CARALGISView::DisplayPTSImage()
 {
@@ -640,4 +482,29 @@ void CARALGISView::OnBnClickedButtonAlarmOff()
 {
 	// TODO: Add your control notification handler code here
 	SetEvent(g_OdroidStopAlarmEvent);
+
+	SetEvent(g_KillTimerEvent);
 }
+
+
+void CARALGISView::SetTimerPeriodCamera()
+{
+	// added by bora, start 1 second interval timer
+	SetTimer(CAMERA_TIMER_ID, g_iTimerPeriod, NULL);
+}
+
+void CARALGISView::KillTimerCamera()
+{
+	KillTimer(CAMERA_TIMER_ID);
+}
+
+
+void CARALGISView::OnTimer(UINT_PTR nIDEvent)
+{
+	if (nIDEvent == CAMERA_TIMER_ID)
+	{
+		SetEvent(g_mCameraTimerEvent);
+	} // End if.
+	CColorFormView::OnTimer(nIDEvent);
+}
+

@@ -48,6 +48,7 @@ public:
 	void DisplayRecordSelectDialog();
 	void UpdateControls();
 	void OnWaitableTimer();
+	void OnTimerCamera();
 	int GetFrameTime();
 	void SetFrameTime(int aframeTime);
 

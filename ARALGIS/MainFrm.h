@@ -22,7 +22,7 @@ protected: // create from serialization only
 public:
 
 	CCameraDataReceiver *m_CameraDataReceiver;
-	CPTSCommunicator  *m_PTSCommunicator;
+	CPTSCommunicator     *m_PTSCommunicator;
 	COdroidCommunicator *m_OdroidCommunicator;
 
 protected:
@@ -32,6 +32,8 @@ protected:
 public:
 	static void CALLBACK NotifyProcPTSComm(LPVOID lpParam, UINT nCode);
 	static void CALLBACK NotifyProcOdroidComm(LPVOID lpParam, UINT nCode);
+	static void CALLBACK NotifyProcCameraComm(LPVOID lpParam, UINT nCode);
+
 
 	void Activate();
 
@@ -65,7 +67,7 @@ protected:
 
 public:
 	afx_msg void OnMoving(UINT fwSide, LPRECT pRect);
-	afx_msg void OnNcLButtonDblClk(UINT nHitTest, CPoint point);
+	//afx_msg void OnNcLButtonDblClk(UINT nHitTest, CPoint point);
 
 };
 

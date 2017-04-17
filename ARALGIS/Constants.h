@@ -13,8 +13,9 @@
 
 // timer period = 250 miliseconds
 #define TIMER_PERIOD_IN_MS  (250)
+#define CAMERA_TIMER_ID (111)
 
-#define MAX_BUFFER            (30)
+#define MAX_BUFFER            (90)
 #define IMAGE_HEIGHT (480) // 960 or 480
 #define MAX_BMP_WINDOW (250)
 

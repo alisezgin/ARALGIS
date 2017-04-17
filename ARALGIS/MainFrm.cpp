@@ -205,6 +205,7 @@ void CMainFrame::NotifyProcOdroidComm(LPVOID lpParam, UINT nCode)
 		switch (nCode)
 		{
 		case ODROID_CONNECTION_LOST:
+		{
 			pView->UpdatePeripheralStatus(false);
 
 			::MessageBox(NULL,
@@ -212,9 +213,11 @@ void CMainFrame::NotifyProcOdroidComm(LPVOID lpParam, UINT nCode)
 				(LPCWSTR)WARNINGWINDOW_TITLE,
 				MB_OK | MB_ICONERROR
 				);
+		}
 			break;
 
 		case ODROID_CONNECTION_OK:
+		{
 			pView->UpdatePeripheralStatus(true);
 
 			::MessageBox(NULL,
@@ -222,7 +225,49 @@ void CMainFrame::NotifyProcOdroidComm(LPVOID lpParam, UINT nCode)
 				(LPCWSTR)WARNINGWINDOW_TITLE,
 				MB_OK | MB_ICONERROR
 				);
-			break;			break;
+		}
+			break;			
+
+		default:
+			break;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// 
+// FUNCTION:	CMainFrame::NotifyProcCameraComm
+// 
+// DESCRIPTION:	Handles the notification messages sent by CameraDataReceiver.
+//              Updates the GUI according to the received message 
+//
+// INPUTS:		
+// 
+// NOTES:	
+// 
+// MODIFICATIONS:
+// 
+// Name				Date		Version		Comments
+// BN              28032017	    1.0			Origin
+// 
+//////////////////////////////////////////////////////////////////////////////// 
+void CMainFrame::NotifyProcCameraComm(LPVOID lpParam, UINT nCode)
+{
+	CMainFrame* pFrame = (CMainFrame*)lpParam;
+
+	CARALGISView* pView = static_cast<CARALGISView*>(pFrame->GetActiveView());
+
+	if (pView)
+	{
+		switch (nCode)
+		{
+		case SET_TIMER_PERIOD_CAMERA:
+			pView->SetTimerPeriodCamera();
+			break;
+
+		case KILL_TIMER_CAMERA:
+			pView->KillTimerCamera();
+
 		default:
 			break;
 		}
@@ -282,15 +327,45 @@ void CMainFrame::Activate()
 
 		// start the thread for receiving camera data
 		m_CameraDataReceiver = new CCameraDataReceiver;
-		m_CameraDataReceiver->Start();
+		if (!m_CameraDataReceiver->Start(NotifyProcCameraComm, this))
+		{
+			delete m_CameraDataReceiver;
+			m_CameraDataReceiver = NULL;
+
+			::MessageBox(NULL,
+				(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Kamera",
+				(LPCWSTR)WARNINGWINDOW_TITLE,
+				MB_OK | MB_ICONERROR
+				);
+		}
 
 		// start the thread for PTS communication
 		m_PTSCommunicator = new CPTSCommunicator;
-		m_PTSCommunicator->Start(NotifyProcPTSComm, this);
+		if (!m_PTSCommunicator->Start(NotifyProcPTSComm, this))
+		{
+			delete m_PTSCommunicator;
+			m_PTSCommunicator = NULL;
+
+			::MessageBox(NULL,
+				(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Plaka Tanýma Sistemi",
+				(LPCWSTR)WARNINGWINDOW_TITLE,
+				MB_OK | MB_ICONERROR
+				);
+		}
 
 		// start the thread for Odroid communication
 		m_OdroidCommunicator = new COdroidCommunicator;
-		m_OdroidCommunicator->Start(NotifyProcOdroidComm, this);
+		if (!m_OdroidCommunicator->Start(NotifyProcOdroidComm, this))
+		{
+			delete m_OdroidCommunicator;
+			m_OdroidCommunicator = NULL;
+
+			::MessageBox(NULL,
+				(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Çevre Birimler",
+				(LPCWSTR)WARNINGWINDOW_TITLE,
+				MB_OK | MB_ICONERROR
+				);
+		}
 	}
 }
 
@@ -370,7 +445,7 @@ ATOM CMainFrame::MyRegisterClass(HINSTANCE hInstance)
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
-	wcex.hIcon = LoadIcon(hInstance, (LPCTSTR)_T("CopierControl"));
+	wcex.hIcon = LoadIcon(hInstance, (LPCTSTR)_T("ARALGIS"));
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = (LPCTSTR)_T("ARALGIS");
@@ -417,14 +492,14 @@ void CMainFrame::OnMoving(UINT fwSide, LPRECT pRect)
 }
 
 
-void CMainFrame::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
-{
-	// TODO: Add your message handler code here and/or call default
-
-	if (nHitTest != HTCAPTION)
-	{
-		// invoke the super-class (default) behavior 
-		CFrameWnd::OnNcLButtonDblClk(nHitTest, point);
-	}
-}
+//void CMainFrame::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
+//{
+//	// TODO: Add your message handler code here and/or call default
+//
+//	if (nHitTest != HTCAPTION)
+//	{
+//		// invoke the super-class (default) behavior 
+//		CFrameWnd::OnNcLButtonDblClk(nHitTest, point);
+//	}
+//}
 

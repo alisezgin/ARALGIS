@@ -162,7 +162,7 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 	WSANETWORKEVENTS	NetworkEvents;
 	int result;
 
-	TRACE("\n\n Odroid Communicator Thread Started\n");
+	TRACE("Odroid Communicator Thread Started\n");
 
 	struct addrinfo* resultAddr = NULL;
 	struct addrinfo hints;

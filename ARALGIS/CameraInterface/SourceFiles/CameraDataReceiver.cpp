@@ -5,6 +5,8 @@
 #include "stdafx.h"
 
 #include "..\\HeaderFiles\\CameraDataReceiver.h"
+//#include "ARALGIS.h"
+#include "MainFrm.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -25,12 +27,6 @@ static char THIS_FILE[] = __FILE__;
 CCameraDataReceiver::CCameraDataReceiver()
 {
 	m_bInit = FALSE;
-
-
-	///////////////////////////// CAMERA ///////////////////////////////////////
-
-	//m_MyCamera.
-	///////////////////////////// CAMERA ///////////////////////////////////////
 
 
 	///////////////////////////// TIMER ///////////////////////////////////////
@@ -91,76 +87,30 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 
 	for (;;)
 	{
-		DWORD EventCaused = WaitForMultipleObjects(14,
-			Handles,
-			FALSE,
-			INFINITE);
+		DWORD EventCaused = WaitForMultipleObjects( 14,
+													Handles,
+													FALSE,
+													INFINITE);
 
 		if (EventCaused == WAIT_FAILED)
 		{
 			DWORD errorCode = GetLastError();
-			TRACE("WaitForMultipleObjects failure at CameraDataReceiver",GetLastError());
+			TRACE("WaitForMultipleObjects failure at CameraDataReceiver\n",GetLastError());
 			break;
 		}
 
 		else if (EventCaused == WAIT_OBJECT_0)
 		{
-			TRACE("CameraDataReceiver is shutting Down...");
+			TRACE("CameraDataReceiver is shutting Down...\n");
 			break;
 		}
 
-		//if (EventCaused == WAIT_FAILED || EventCaused == WAIT_OBJECT_0)
-		//{
-		//	if (EventCaused == WAIT_FAILED)
-		//		TRACE("WaitForMultipleObjects failure at CameraDataReceiver",
-		//		GetLastError());
-		//	else
-		//		TRACE("CameraDataReceiver is shutting Down...");
-		//	break;
-		//}
-
 		else if (EventCaused == (WAIT_OBJECT_0 + 1)) // Start Data Reception From Camera
 		{
-			//ret_val = GetDiskFreeSpaceEx((LPCTSTR)LocalPrintFileDir,
-			//	(PULARGE_INTEGER)&i64FreeBytesToCaller,
-			//	(PULARGE_INTEGER)&i64TotalBytes,
-			//	(PULARGE_INTEGER)&i64FreeBytes);
-			//if (!ret_val)
-			//{
-			//	TRACE("\nCan not Get Disk Free Space\n\n");
-			//}
-
-			//ULONG diskFreeSpace;
-			//// 1048576 = 1024 * 1024 = 1 MByte
-			//diskFreeSpace = (ULONG)(i64FreeBytesToCaller.QuadPart / (ULONG)1048576);
-
-			//// debugBN begin 
-			//diskFreeSpace = CRITICAL_FREE_SPACE_AMOUNT - 2;
-			//// debugBN end
-
-			//// if critical amount of memory start purging 
-			//if (diskFreeSpace < CRITICAL_FREE_SPACE_AMOUNT)
-			//{
-			//	// trigger the event for the next timer tick
-			//	m_iSecCntExpiredFiles = (periodFilePurge*TimerNormalizer) - 1;
-
-			//	TRACE("\nFreeDiskSpaceController Size Alert!!!!!\n\n\n\n");
-
-			//	// do not set event here becaue of other controls at OnTimer
-			//	//SetEvent(DeleteExpiredFilesEvent);
-			//}
-
 			// reset the event for further processing
 			ResetEvent(g_CameraStartDataRecieveEvent);
 
 			pServer->m_MyCamera.StartDataReception();
-
-			EnterCriticalSection(&g_SomeHandlingCS);
-
-			// enable the other database handling actions
-			//isDatabaseHandlingInProgress = FALSE;
-
-			LeaveCriticalSection(&g_SomeHandlingCS);
 		}
 
 		else if (EventCaused == (WAIT_OBJECT_0 + 2)) // Stop Data Reception From Camera
@@ -170,15 +120,63 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 
 			pServer->m_MyCamera.StopDataReception();
 
-			EnterCriticalSection(&g_SomeHandlingCS);
+			//BOOL aRetVal = SetEvent(g_KillTimerEvent); //// bora temporary code for the time being
 
-			// enable the other database handling actions
-			//isDatabaseHandlingInProgress = FALSE;
+			//BOOL cc = aRetVal;
+		}
 
-			SetEvent(g_DisplayBitmapEvent); //// bora temporaru code for the time being
+		else if (EventCaused == (WAIT_OBJECT_0 + 10)) // set timer frame rate 
+		{
+			ResetEvent(g_SetTimerFrameRateEvent);
+			int tFrameTime = pServer->m_MyCamera.GetFrameTime();   /// boraN time iþine bak
+			/////// boraN tFrameTime iþini iyice öðren
+
+			__int64 qwDueTime;
+			LARGE_INTEGER   liDueTime;
+
+			qwDueTime = -10 * tFrameTime; // -10 is: negative since relative time
+			                              //       : multiplied by 10, since it is in 100 nanoseconds and  tFrameTime is in miliseconds
+
+			//qwDueTime = -10;
+
+			//Copy the relative time into a LARGE_INTEGER.
+			//liDueTime.LowPart = (DWORD)(qwDueTime & 0xFFFFFFFF);
+			//liDueTime.HighPart = (LONG)(qwDueTime >> 32);
+
+			liDueTime.QuadPart = (long long)qwDueTime;
 
 
-			LeaveCriticalSection(&g_SomeHandlingCS);
+
+			//Set a timer to wait for XX seconds.
+			if (!SetWaitableTimer(pServer->m_hTimer, &liDueTime, tFrameTime, NULL, NULL, 0))
+			{
+				printf("SetWaitableTimer failed (%d)\n", GetLastError());
+				return 2;
+			}
+
+			//g_iTimerPeriod = tFrameTime;
+			//pServer->m_pNotifyProc((LPVOID)pServer->m_pFrame, SET_TIMER_PERIOD_CAMERA);
+			SetEvent(g_CameraUpdateControlsEvent);
+		}
+
+		else if (EventCaused == (WAIT_OBJECT_0 + 11)) // kill timer 
+		{
+			ResetEvent(g_KillTimerEvent);
+
+			CancelWaitableTimer(pServer->m_hTimer);
+
+			//pServer->m_pNotifyProc((LPVOID)pServer->m_pFrame, KILL_TIMER_CAMERA);
+
+			// send image data to Doc class
+			pServer->m_MyCamera.GetCameraDataAsMat();
+			//SetEvent(g_CameraDataReadyEvent);
+
+		}
+
+		else if (EventCaused == (WAIT_OBJECT_0 + 12)) // reset timer 
+		{
+			ResetEvent(g_ResetTimerEvent);
+			//pServer->m_MyCamera.DisplayOpenCVWindow();
 		}
 
 		else if (EventCaused == (WAIT_OBJECT_0 + 13)) // Change Camera Sample Rate
@@ -187,13 +185,23 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 			ResetEvent(g_CameraChangeSampleRateEvent);
 
 			//pServer->m_MyCamera.StopDataReception();
+		}
 
-			EnterCriticalSection(&g_SomeHandlingCS);
 
-			// enable the other database handling actions
-			//isDatabaseHandlingInProgress = FALSE;
+		else if (EventCaused == (WAIT_OBJECT_0 + 7)) // timer event  
+		{
+			//pServer->m_MyCamera.OnTimerCamera();
+			pServer->m_MyCamera.OnWaitableTimer();
+		}
 
-			LeaveCriticalSection(&g_SomeHandlingCS);
+		else if (EventCaused == (WAIT_OBJECT_0 + 8)) // display bitmap window  
+		{
+			ResetEvent(g_DisplayBitmapEvent);
+		}
+
+		else if (EventCaused == (WAIT_OBJECT_0 + 9)) // display openCV window 
+		{
+			ResetEvent(g_DisplayOpenCVEvent);
 		}
 
 		else if (EventCaused == (WAIT_OBJECT_0 + 3)) // Pause Data Reception From Camera
@@ -204,14 +212,12 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 			pServer->m_MyCamera.PauseDataReception();
 		}
 
-		////////////////////////////////////////
 		else if (EventCaused == (WAIT_OBJECT_0 + 4)) // Load Camera Configuration File
 		{
 			// reset the event for further processing
 			ResetEvent(g_CameraConfigFileChangeEvent);
 
 			pServer->m_MyCamera.LoadConfiguationFile();
-
 		}
 
 		else if (EventCaused == (WAIT_OBJECT_0 + 5)) // Display Recording Selection Dialog
@@ -228,61 +234,6 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 			pServer->m_MyCamera.UpdateControls();
 		}
 
-		else if (EventCaused == (WAIT_OBJECT_0 + 7)) // timer event  
-		{
-			//::MessageBox(NULL, L("TIMER."), NULL, MB_OK);
-			pServer->m_MyCamera.OnWaitableTimer();
-		}
-
-		else if (EventCaused == (WAIT_OBJECT_0 + 8)) // display bitmap window  
-		{
-			ResetEvent(g_DisplayBitmapEvent);
-	}
-
-		else if (EventCaused == (WAIT_OBJECT_0 + 9)) // display openCV window 
-		{
-			ResetEvent(g_DisplayOpenCVEvent);
-		}
-
-		else if (EventCaused == (WAIT_OBJECT_0 + 10)) // set timer frame rate 
-		{
-			ResetEvent(g_SetTimerFrameRateEvent);
-			int tFrameTime = pServer->m_MyCamera.GetFrameTime();
-
-			__int64 qwDueTime;
-			LARGE_INTEGER   liDueTime;
-
-			qwDueTime = -10;
-
-			// Copy the relative time into a LARGE_INTEGER.
-			liDueTime.LowPart = (DWORD)(qwDueTime & 0xFFFFFFFF);
-			liDueTime.HighPart = (LONG)(qwDueTime >> 32);
-
-
-			// Set a timer to wait for XX seconds.
-			if (!SetWaitableTimer(pServer->m_hTimer, &liDueTime, tFrameTime, NULL, NULL, 0))
-			{
-				printf("SetWaitableTimer failed (%d)\n", GetLastError());
-				return 2;
-			}
-		}
-
-		else if (EventCaused == (WAIT_OBJECT_0 + 11)) // kill timer 
-		{
-			ResetEvent(g_KillTimerEvent);
-			CancelWaitableTimer(pServer->m_hTimer);
-			// send image data to Doc class
-			pServer->m_MyCamera.GetCameraDataAsMat();
-			//SetEvent(g_CameraDataReadyEvent);
-		}
-
-		else if (EventCaused == (WAIT_OBJECT_0 + 12)) // reset timer 
-		{
-			ResetEvent(g_ResetTimerEvent);
-			//pServer->m_MyCamera.DisplayOpenCVWindow();
-		}
-		
-
 	}
 	return 1;
 }
@@ -294,9 +245,12 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 // DESCRIPTION: starts the CameraDataReceiver thread
 // 
 ////////////////////////////////////////////////////////////////////////////////
-bool CCameraDataReceiver::Start()
+bool CCameraDataReceiver::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
 {
 	TRACE("CameraDataReceiver Starting ...\n");
+
+	m_pNotifyProc = pNotifyProc;
+	m_pFrame = pFrame;
 
 	ShutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 

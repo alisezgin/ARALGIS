@@ -52,6 +52,7 @@ public:
 #endif
 
 protected:
+	/*
 	/// captured image window management variables
 	/// captured image windows "map" key identifiers
 	typedef std::array<BOOL, MAX_BMP_WINDOW> MapKeyArray;
@@ -62,15 +63,6 @@ protected:
 
 	int FindEmptyIndex();
 
-	//bool m_selList[MAX_BUFFER];
-
-	//cv::Mat m_CVCroppedImage;
-
-	//cv::Mat m_BN;
-
-	//cv::Mat m_CVImage;
-	//cv::Mat m_CVDest;
-	//cv::Mat m_CVImageHistoCrop;
 
 	cv::Mat* m_InImage;
 	cv::Mat *m_InImageFlipped;
@@ -79,18 +71,12 @@ protected:
 	CShowpic *m_LoadedImage{ NULL };
 	//CShowpicCV *m_LoadedImage{ NULL };
 
+	*/
+
 	SapToGDI m_gdiPlus;
 	void convertMattoBmp();
 
 public:
-	void DisplayAreaSelectWindow();
-	void SetOriginalActiveWindow();
-	void SetHistoActiveWindow();
-	void SetAreaActiveWindow();
-	void Rotate90CWActiveWindow();
-	void Rotate90CCWActiveWindow();
-	void Rotate180ActiveWindow();
-
 	void DisplayBitmapWindow();
 
 	void GetImageMat(cv::Mat& mImg);

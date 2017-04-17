@@ -65,8 +65,14 @@ HANDLE g_ResetTimerEvent;
 // event used for resetting timer 
 //HANDLE g_CameraDataReadyEvent;
 
+// event used for updating camera data tith timer tick
+HANDLE g_mCameraTimerEvent;
+
+int g_iTimerPeriod;
+
+
 // global variable to hold CV image from Camera
-cv::Mat g_CVImage;
+cv::Mat g_CVImageTest;
 
 // Critical Section to protect isDatabaseHandlingInProgress
 CRITICAL_SECTION g_SomeHandlingCS;
@@ -148,8 +154,9 @@ CARALGISApp theApp;
 
 BOOL CARALGISApp::InitInstance()
 {
-	/// boraN
+	/// memory leak detection begins
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	/// memory leak detection ends
 
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable

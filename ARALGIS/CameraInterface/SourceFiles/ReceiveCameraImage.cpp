@@ -538,20 +538,20 @@ void CReceiveCameraImage::CheckForLastFrame(void)
 		{
 			m_bRecordOn = FALSE;
 			//KillTimer(1);
-			SetEvent(g_KillTimerEvent);
+			SetEvent(g_CameraStopDataRecieveEvent);  // g_KillTimerEvent
 			ComputeFrameRate();
 		}
 
 		if (m_bPlayOn)
 		{
-			m_bPlayOn = FALSE;
+			//m_bPlayOn = FALSE;
 			//KillTimer(1);
-			SetEvent(g_KillTimerEvent);
+			SetEvent(g_CameraStopDataRecieveEvent); // g_KillTimerEvent
 		} // End if.
 
 		SetEvent(g_CameraUpdateControlsEvent);
 
-	} // End if.
+	} // End if. 
 } // End of the CReceiveCameraImage::CheckForLastFrame method.
 
 //==============================================================================
@@ -567,6 +567,25 @@ void CReceiveCameraImage::OnWaitableTimer()
 
 	// Resfresh display
 	//m_View->Show();
+
+	// Check if last frame is reached
+	CheckForLastFrame();
+
+	// Refresh controls
+	SetEvent(g_CameraUpdateControlsEvent);
+
+} // End of the CReceiveCameraImage::OnTimer method.
+
+//==============================================================================
+// Name      : CReceiveCameraImage::OnTimer
+// Purpose   :
+// Parameters:
+//    nIDEvent
+//==============================================================================
+void CReceiveCameraImage::OnTimerCamera()
+{
+	// Increase buffer index
+	m_Buffers->Next();
 
 	// Check if last frame is reached
 	CheckForLastFrame();
@@ -602,8 +621,40 @@ void CReceiveCameraImage::UpdateControls()
 //==============================================================================
 void CReceiveCameraImage::StartDataReception(void)
 {
+	//////// boraN very important //////
+	/////////////////////// 
+	// ???????????????
+	// ??????????????
+	// ?????????
+
+	// these lines are for online operation
+	// starting from here
+	//m_nFramesLost = 0;
+
+	//// Acquire all frames
+	//m_Xfer->Init();
+
+	//if (m_Xfer->Snap(m_Buffers->GetCount()))
+	//{
+	//	m_bRecordOn = TRUE;
+	//}
+	// online operation upto here
+
+	///// delete these lines 
+	CLoadSaveDlg dlg(NULL, m_Buffers, TRUE, TRUE);
+	if (dlg.DoModal() == IDOK)
+	{
+
+	}
+	/////////////  delete these lines
+	
 	// Initialize buffer index
 	m_Buffers->SetIndex(0);
+
+	//m_Buffers->ResetIndex();
+
+	int AA = m_Buffers->GetIndex();
+	int BB = m_Buffers->GetCount();
 
 	// Start playback timer
 	//int frameTime = (int)(1000.0 / m_Buffers->GetFrameRate());
@@ -614,7 +665,7 @@ void CReceiveCameraImage::StartDataReception(void)
 
 	m_bPlayOn = TRUE;
 
-	SetEvent(g_CameraUpdateControlsEvent);
+	//SetEvent(g_CameraUpdateControlsEvent);
 } // End of the CReceiveCameraImage::OnPlay method.
 
 //==============================================================================
@@ -693,7 +744,7 @@ void CReceiveCameraImage::StopDataReception(void)
 		if (!m_Xfer->Freeze())
 			return;
 
-		if (CAbortDlg(AfxGetApp()->m_pMainWnd, m_Xfer).DoModal() != IDOK)
+		if (CAbortDlg(AfxGetApp()->m_pMainWnd, m_Xfer).DoModal() != IDOK) /// buraya SAP help'ten bak ve gerekli düzenlemeyi yap
 			m_Xfer->Abort();
 
 		m_bRecordOn = FALSE;
@@ -703,12 +754,13 @@ void CReceiveCameraImage::StopDataReception(void)
 		// Stop playback timer
 		//KillTimer(1);
 		SetEvent(g_KillTimerEvent);
+
 		m_bPlayOn = FALSE;
 	} // End if, else if.
 
 	m_bPauseOn = FALSE;
 
-	SetEvent(g_CameraUpdateControlsEvent);
+	//SetEvent(g_CameraUpdateControlsEvent);
 } // End of the CReceiveCameraImage::OnStop method.
 
 //*****************************************************************************************
@@ -918,12 +970,12 @@ void CReceiveCameraImage::GetCameraDataAsMat()
 		if (bytesPerPixel == 3)
 		{
 			cv::Mat src(iHeight*inumFrames, iWidth, CV_8UC3, pData);
-			src.copyTo(g_CVImage);
+			src.copyTo(g_CVImageTest);
 		}
 		else if (bytesPerPixel == 1)
 		{
 			cv::Mat src(iHeight*inumFrames, iWidth, CV_8UC1, pData);
-			src.copyTo(g_CVImage);
+			src.copyTo(g_CVImageTest);
 		}
 
 		delete[] pData;

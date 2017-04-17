@@ -26,37 +26,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 void InitializeGlobalVars()
 {
-	int i;
-
-	for (i = 0; i <= MAX_BORA; i++)
-	{
-		//ResponseReceivedFromTerminal[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
-		//PrintingThreadsTimerEvent[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
-		//CopyThreadsTimerEvent[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
-		//TerminalIsAliveAgain[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-		//TerminalFirmwareBlockReadyForDownloadEvent[i] =
-		//	CreateEvent(NULL, TRUE, FALSE, NULL);
-		//TerminalFirmwareEraseChipEvent[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
-		//TerminalFirmwareBlockDownloadedEvent[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
-		//TerminalFirmwareDownloadFinishedEvent[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-		//PrinterDeletedEvent[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
-		//DeleteTerminalEvent[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
-		//FirmwareDownloadTimeoutEvent[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-		//SendMailEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-		//ActiveJobInfo[i].userID = 0;
-	}
-
-
-
-
-
 
 	TimerNormalizer = (int)(1000 / TIMER_PERIOD_IN_MS);
 
+	// delete this for real system
+	g_iTimerPeriod = 0;
 
 
 	InitializeCriticalSection(&g_SomeHandlingCS);
@@ -74,6 +48,7 @@ void InitializeGlobalVars()
 	g_SetTimerFrameRateEvent =			CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_KillTimerEvent =					CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_ResetTimerEvent =					CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_mCameraTimerEvent =               CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_OdroidOpenBarrierEvent =			CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_OdroidCloseBarrierEvent =			CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_OdroidStartHeatingEvent =			CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -132,6 +107,7 @@ void DeleteGlobalVariables()
 	CloseHandle(g_SetTimerFrameRateEvent);
 	CloseHandle(g_KillTimerEvent);
 	CloseHandle(g_ResetTimerEvent);
+	CloseHandle(g_mCameraTimerEvent);
 	//CloseHandle(g_CameraDataReadyEvent);
 	CloseHandle(g_OdroidOpenBarrierEvent);
 	CloseHandle(g_OdroidCloseBarrierEvent);

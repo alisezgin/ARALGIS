@@ -198,7 +198,7 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 	WSANETWORKEVENTS	NetworkEvents;
 	int result;
 
-	TRACE("\n\n PTS Communicator Thread Started\n");
+	TRACE("PTS Communicator Thread Started\n");
 
 	struct addrinfo* resultAddr = NULL;
 	struct addrinfo hints;

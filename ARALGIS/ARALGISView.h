@@ -4,11 +4,14 @@
 
 #pragma once
 
+
 #include "WndResizer.h"
 #include "ColorFormView.h"
 
-#include "BitmapDisplay\HeaderFiles\Showpic.h"
-#include "BitmapDisplay\HeaderFiles\PictureCtrl.h"
+#include ".\\BitmapDisplay\\HeaderFiles\\Showpic.h"
+#include ".\\BitmapDisplay\\HeaderFiles\\PictureCtrl.h"
+#include ".\\BitmapDisplay\\HeaderFiles\\PkMattoGDI.h"
+#include ".\\BitmapDisplay\\HeaderFiles\\MatBitmapconvert.h"
 
 
 #include "opencv2/core/core.hpp"
@@ -59,24 +62,27 @@ public:
 
 	void DisplayPTSImage();
 	void DeletePTSImage();
+	void SetTimerPeriodCamera();
+	void KillTimerCamera();
 
 	void UpdatePTSStatus(bool aStatus);
 	void UpdatePeripheralStatus(bool aStatus);
 
 protected:
-	void Rotate90(cv::Mat &matImage, int rotflag);
+	void convertMattoBmpTest();
 
 protected:
-	bool m_selList[MAX_BUFFER];
+	//bool m_selList[MAX_BUFFER];
 
-	cv::Mat m_CVCroppedImage;
+	//cv::Mat m_CVCroppedImage;
 
-	cv::Mat m_BN;
+	//cv::Mat m_BN;
 
 	//cv::Mat m_CVImage;
-	cv::Mat m_CVDest;
-	cv::Mat m_CVImageHistoCrop;
+	//cv::Mat m_CVDest;
+	//cv::Mat m_CVImageHistoCrop;
 
+	CGdiPlus m_gdiPlus;
 	CShowpic *m_RefImgBMP;
 	CShowpic *m_TestImgBMP;
 	CPictureCtrl m_CarPlakaImageStatic;
@@ -109,28 +115,23 @@ public:
 	afx_msg void OnDisplaySelectedBitmap();
 	afx_msg void OnDisplayOpenCV();
 	afx_msg void OnCameraStartStop();
-	afx_msg void OnHistoEqualize();
-	afx_msg void OnSelectArea();
-	afx_msg void OnSelectOriginal();
-	afx_msg void OnSelectFiltered();
-	afx_msg void OnImageSelectArea();
-	afx_msg void OnRotate90CW();
-	afx_msg void OnRotate90CCW();
-	afx_msg void OnRotate180();
+
+
 	virtual void OnInitialUpdate();
 
 	afx_msg void OnBnClickedButtonBarrierOpen();
 	afx_msg void OnBnClickedButtonBarrierClose();
 	afx_msg void OnBnClickedButtonHeaterOn();
 	afx_msg void OnBnClickedButtonHeaterOff();
+	afx_msg void OnBnClickedButtonAlarmOn();
+	afx_msg void OnBnClickedButtonAlarmOff();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 
 protected:
 	CClrButton m_PTS_Status;
 	CClrButton m_PeripheralStatus;
 
-public:
-	afx_msg void OnBnClickedButtonAlarmOn();
-	afx_msg void OnBnClickedButtonAlarmOff();
+
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

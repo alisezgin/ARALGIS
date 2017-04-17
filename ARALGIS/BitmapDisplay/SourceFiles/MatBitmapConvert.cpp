@@ -261,3 +261,4 @@ CLSID CGdiPlus::GetEncoderClsid(const WCHAR* u16_File)
 
 	throw L"No image encoder found for file extension " + s_Ext;
 }
+

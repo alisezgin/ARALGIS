@@ -34,20 +34,17 @@ CARALGISDoc::CARALGISDoc()
 	// initialize the global variables
 	InitializeGlobalVars();
 
+	//m_InImage = NULL;
+	//m_InImage = new cv::Mat;
 
-
-
-	m_InImage = NULL;
-	m_InImage = new cv::Mat;
-
-	m_InImageFlipped = NULL;
-	m_InImageFlipped = new cv::Mat;
+	//m_InImageFlipped = NULL;
+	//m_InImageFlipped = new cv::Mat;
 }
 
 CARALGISDoc::~CARALGISDoc()
 {
-	delete m_InImage;
-	delete m_InImageFlipped;
+	//delete m_InImage;
+	//delete m_InImageFlipped;
 }
 
 BOOL CARALGISDoc::OnNewDocument()
@@ -245,29 +242,29 @@ void CARALGISDoc::DisplayBitmapWindow()
 //	return 1;
 //}
 
-int CARALGISDoc::FindEmptyIndex()
-{
-	int index = 0;
-
-
-	for (int i = 0; i < (int)m_iMapKeyIdentifier.size(); i++)
-	{
-		if (m_iMapKeyIdentifier[i] == FALSE)
-		{
-			index = i;
-			m_iMapKeyIdentifier[i] = TRUE;
-			return index;
-		}
-	}
-	::MessageBox(NULL, _T("Max Number of Windows Exceeded, Close Others To Continue"), NULL, MB_OK);
-	return-1;
-}
+//int CARALGISDoc::FindEmptyIndex()
+//{
+//	int index = 0;
+//
+//
+//	for (int i = 0; i < (int)m_iMapKeyIdentifier.size(); i++)
+//	{
+//		if (m_iMapKeyIdentifier[i] == FALSE)
+//		{
+//			index = i;
+//			m_iMapKeyIdentifier[i] = TRUE;
+//			return index;
+//		}
+//	}
+//	::MessageBox(NULL, _T("Max Number of Windows Exceeded, Close Others To Continue"), NULL, MB_OK);
+//	return-1;
+//}
 
 
 void CARALGISDoc::GetImageMat(cv::Mat& mImg)
 {
 	// boraN
-	m_InImageFlipped->copyTo(mImg);
+//	m_InImageFlipped->copyTo(mImg);
 }
 
 

@@ -252,6 +252,9 @@
     <ClInclude Include="UserTable.h">
       <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
+    <ClInclude Include="BitmapDisplay\HeaderFiles\ShowpicCV.h">
+      <Filter>BitmapDisplay\HeaderFiles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -424,6 +427,9 @@
     </ClCompile>
     <ClCompile Include="UserTable.cpp">
       <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapDisplay\SourceFiles\ShowpicCV.cpp">
+      <Filter>BitmapDisplay\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

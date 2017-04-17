@@ -205,6 +205,7 @@
     <ClInclude Include="BitmapDisplay\HeaderFiles\PkMattoGDI.h" />
     <ClInclude Include="BitmapDisplay\HeaderFiles\SapToGDI.h" />
     <ClInclude Include="BitmapDisplay\HeaderFiles\Showpic.h" />
+    <ClInclude Include="BitmapDisplay\HeaderFiles\ShowpicCV.h" />
     <ClInclude Include="BitmapDlg.h" />
     <ClInclude Include="CameraInterface\HeaderFiles\CameraDataReceiver.h" />
     <ClInclude Include="CameraInterface\HeaderFiles\ReceiveCameraImage.h" />
@@ -263,6 +264,7 @@
     <ClCompile Include="BitmapDisplay\SourceFiles\PkMattoGDI.cpp" />
     <ClCompile Include="BitmapDisplay\SourceFiles\SapToGDI.cpp" />
     <ClCompile Include="BitmapDisplay\SourceFiles\Showpic.cpp" />
+    <ClCompile Include="BitmapDisplay\SourceFiles\ShowpicCV.cpp" />
     <ClCompile Include="BitmapDlg.cpp" />
     <ClCompile Include="CameraInterface\SourceFiles\CameraDataReceiver.cpp" />
     <ClCompile Include="CameraInterface\SourceFiles\ReceiveCameraImage.cpp" />

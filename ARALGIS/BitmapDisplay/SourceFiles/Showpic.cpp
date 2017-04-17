@@ -46,6 +46,11 @@ void CShowpic::MakeBMPHeader()
 
 	DWORD  dwBitmapInfoSize;
 	dwBitmapInfoSize = sizeof(BITMAPINFO);
+	if (m_pBmp)
+	{
+		delete m_pBmp;
+		m_pBmp = NULL;
+	}
 	m_pBmp = (BITMAPINFO *)new BYTE[dwBitmapInfoSize];
 
 

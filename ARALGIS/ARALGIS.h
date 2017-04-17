@@ -65,6 +65,12 @@ extern HANDLE g_ResetTimerEvent;
 // event used for resetting timer 
 //extern HANDLE g_CameraDataReadyEvent;
 
+// event used for updating camera data tith timer tick
+extern HANDLE g_mCameraTimerEvent;
+
+extern int g_iTimerPeriod;
+
+
 
 // event used for sending open barrier message to odroid 
 extern HANDLE g_OdroidOpenBarrierEvent;
@@ -85,7 +91,7 @@ extern HANDLE g_OdroidStartAlarmEvent;
 extern HANDLE g_OdroidStopAlarmEvent;
 
 // global variable to hold CV image from Camera
-extern cv::Mat g_CVImage;
+extern cv::Mat g_CVImageTest;
 
 // event used for triggering PTS 
 extern HANDLE g_PTSTriggerEvent;

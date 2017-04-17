@@ -268,6 +268,6 @@ void CClrButton::DrawButtonText(CDC *dc,
 
 	previous_colour = dc->SetTextColor(text_colour);
 	dc->SetBkMode(TRANSPARENT);
-	dc->DrawText(Buf, strlen((const char*)Buf), r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+	dc->DrawText(Buf, (int)strlen((const char*)Buf), r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 	dc->SetTextColor(previous_colour);
 }
