@@ -89,13 +89,22 @@
 #define ID_KULLAN32807                  32807
 #define ID_KULLAN32808                  32808
 #define ID_KULLAN32809                  32809
+#define ID_USER_NEW                     32810
+#define ID_USER_REMOVE                  32811
+#define ID_KULLAN32812                  32812
+#define ID_USER_CHANGEPASSWD            32813
+#define ID_VEHICLE_NEW                  32814
+#define ID_VEHICLE_REMOVE               32815
+#define ID_VEHICLE_CHANGE               32816
+#define ID_BLACKLIST_ADD                32817
+#define ID_BLACKLIST_REMOVE             32818
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        313
-#define _APS_NEXT_COMMAND_VALUE         32810
+#define _APS_NEXT_COMMAND_VALUE         32819
 #define _APS_NEXT_CONTROL_VALUE         1029
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

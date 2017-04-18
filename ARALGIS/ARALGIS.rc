@@ -102,20 +102,20 @@ IDR_MAINFRAME MENU
 BEGIN
     POPUP "Kullanýcý"
     BEGIN
-        MENUITEM "Yeni",                        ID_KULLAN32805
-        MENUITEM "Sil",                         ID_KULLAN32806
-        MENUITEM "Þifre Deðiþtir",              ID_KULLAN32807
+        MENUITEM "Yeni",                        ID_USER_NEW
+        MENUITEM "Sil",                         ID_USER_REMOVE
+        MENUITEM "Þifre Deðiþtir",              ID_USER_CHANGEPASSWD
     END
     POPUP "Araçlar"
     BEGIN
-        MENUITEM "Yeni",                        ID_ARA32786
-        MENUITEM "Sil",                         ID_ARA32787
-        MENUITEM "Deðiþtir",                    ID_ARA32788
+        MENUITEM "Yeni",                        ID_VEHICLE_NEW
+        MENUITEM "Sil",                         ID_VEHICLE_REMOVE
+        MENUITEM "Deðiþtir",                    ID_VEHICLE_CHANGE
         MENUITEM SEPARATOR
         POPUP "Kara Liste"
         BEGIN
-            MENUITEM "Ekle",                        ID_KARALISTE_EKLE
-            MENUITEM "Çýkar",                       ID_KARALISTE_32791
+            MENUITEM "Ekle",                        ID_BLACKLIST_ADD
+            MENUITEM "Çýkar",                       ID_BLACKLIST_REMOVE
         END
     END
     POPUP "Ýþlemler"

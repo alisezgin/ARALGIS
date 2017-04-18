@@ -120,6 +120,8 @@
       <AdditionalIncludeDirectories>$(ProjectDir);$(OPENCV_DIR)\include;$(OPENCV_DIR)\include\opencv2;$(OPENCV_DIR)\include\opencv;C:\Program Files\Teledyne DALSA\Sapera\Include;C:\Program Files\Teledyne DALSA\Sapera\Classes\Basic;C:\Program Files\Teledyne DALSA\Sapera\Classes\Gui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
       <MinimalRebuild>true</MinimalRebuild>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
