@@ -45,6 +45,56 @@ BEGIN
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
 END
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_VEHICLE_DIALOG DIALOGEX 0, 0, 441, 296
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,300,258,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,354,258,50,14
+    EDITTEXT        IDC_VEHICLE_ID,60,18,40,14,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_VEHICLE_LP,204,18,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_VEHICLE_CBCI,132,96,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_VEHICLE_FVI,288,186,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_VEHICLE_LPI,132,186,40,14,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_VEHICLE_CBRI,288,96,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_VEHICLE_LASTVISITDATE,360,18,40,14,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Kayit No:",IDC_STATIC,24,18,30,8
+    LTEXT           "Plaka:",IDC_STATIC,180,18,20,8
+    LTEXT           "Son Ziyaret:",IDC_STATIC,318,18,40,8
+    LTEXT           "Plaka Goruntusu:",IDC_STATIC,72,186,56,8
+    LTEXT           "On Cephe Goruntusu:",IDC_STATIC,216,186,71,8
+    LTEXT           "Simdi:",IDC_STATIC,108,97,20,8
+    LTEXT           "Referans:",IDC_STATIC,252,97,33,8
+    GROUPBOX        "Diger Goruntuler",IDC_STATIC,36,174,372,42
+    GROUPBOX        "Alt Sasi Goruntuleri",IDC_STATIC,36,84,372,36
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_VEHICLE_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 434
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 289
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 

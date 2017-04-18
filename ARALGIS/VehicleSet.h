@@ -1,14 +1,14 @@
-// UserTable.h : Declaration of the CUserTable
+// VehicleSet.h : Declaration of the CVehicleSet
 
 #pragma once
 
-// code generated on Monday, April 10, 2017, 3:42 PM
+// code generated on Tuesday, April 18, 2017, 3:02 PM
 
-class CUserTable : public CRecordset
+class CVehicleSet : public CRecordset
 {
 public:
-	CUserTable(CDatabase* pDatabase = NULL);
-	DECLARE_DYNAMIC(CUserTable)
+	CVehicleSet(CDatabase* pDatabase = NULL);
+	DECLARE_DYNAMIC(CVehicleSet)
 
 // Field/Param Data
 
@@ -20,17 +20,13 @@ public:
 // (Note: You must use an ODBC driver version that is version 3.5 or greater
 // to support both Unicode and these conversions).
 
-	// database table variables
-	long		m_UserID;
-	CStringA	m_FirstName;
-	CStringA	m_LastName;
-	long		m_GroupID;
-	CStringA	m_UserName;
-	CTime		m_RegDate;
-	CTime		m_DelDate;
-	CStringA	m_Password;
-	CStringA	m_PasswordOld;
-	BOOL		m_Status;
+	LONGLONG	m_VehicleID;
+	CStringA	m_LicensePlate;
+	CStringA	m_LicensePlateImage;
+	CStringA	m_FrontViewImage;
+	CStringA	m_ChassisBottomeImageCurrent;
+	CStringA	m_ChassisBottomImageRef;
+	CTime		m_MostRecentVisitDate;
 
 // Overrides
 	// Wizard generated virtual function overrides
