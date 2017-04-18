@@ -54,6 +54,8 @@ void CShowpic::MakeBMPHeader()
 	m_pBmp = (BITMAPINFO *)new BYTE[dwBitmapInfoSize];
 
 
+
+
 	m_pBmp->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	m_pBmp->bmiHeader.biWidth = m_un32ImageWidth;
 	m_pBmp->bmiHeader.biHeight = m_un32ImageHeight*-1;

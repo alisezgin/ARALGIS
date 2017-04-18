@@ -19,7 +19,8 @@ CShowpicCV::CShowpicCV()
 
 CShowpicCV::~CShowpicCV()
 {
-	delete m_MatToGDI;
+	if (m_MatToGDI)
+		delete m_MatToGDI;
 }
 
 
@@ -40,5 +41,5 @@ void CShowpicCV::OnPaint()
 void CShowpicCV::GetcvImage(const cv::Mat &cvImg)
 {
 	cvImg.copyTo(m_cvImg);
-	m_MatToGDI = new PkMatToGDI(this, true);
+	m_MatToGDI = new PkMatToGDI(this, false);
 }

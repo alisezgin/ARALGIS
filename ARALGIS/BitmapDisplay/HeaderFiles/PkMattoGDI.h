@@ -39,7 +39,7 @@ public:
 
 
 	///Standard de-constructor
-	~PkMatToGDI() {};
+	~PkMatToGDI(); 
 
 	///Set the CStatic controls where the cv::Mat will be drawn
 	///a valid CStatic object
@@ -81,7 +81,7 @@ private:
 	bool m_autofit;
 
 	// image used internally to reduce memory allocation due to DWORD padding requirement
-	cv::Mat m_internalImg;
+	cv::Mat* m_internalImg;
 
 	// the CStatic control where to show the image
 	CWnd* m_WinCtrl;

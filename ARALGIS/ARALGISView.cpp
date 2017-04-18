@@ -30,6 +30,9 @@
 #include ".\ImageFiltering\HeaderFiles\cvt.hpp"
 
 
+//#include ".\\BitmapDisplay\\HeaderFiles\\PkMattoGDI.h"
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW 
 #endif
@@ -57,6 +60,7 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_BN_CLICKED(IDC_BUTTON_ALARM_ON, &CARALGISView::OnBnClickedButtonAlarmOn)
 	ON_BN_CLICKED(IDC_BUTTON_ALARM_OFF, &CARALGISView::OnBnClickedButtonAlarmOff)
 	ON_WM_TIMER()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -70,8 +74,12 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 	//	m_selList[i] = TRUE;
 	//}
 
-	m_RefImgBMP = new CShowpic;
-	m_TestImgBMP = new CShowpic;
+	m_RefImgBMP = new CStatic;
+	m_TestImgBMP = new CStatic;
+
+	m_MatToGDITest = NULL;
+	m_MatToGDIRef = NULL;
+
 
 	strcpy_s(m_FilenameRef, "C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp\0");
 	strcpy_s(m_FilenameTest, "C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1Diff4-handCropped.bmp\0");
@@ -84,6 +92,12 @@ CARALGISView::~CARALGISView()
 
 	if (m_TestImgBMP)
 		delete m_TestImgBMP;
+
+	if (m_MatToGDITest)
+		delete m_MatToGDITest;
+
+	if (m_MatToGDIRef)
+		delete m_MatToGDIRef;
 }
 
 void CARALGISView::DoDataExchange(CDataExchange* pDX)
@@ -281,82 +295,68 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 {
 	cv::Mat dMat1, dMat2;
 
-	g_CVImageTest = cv::imread("C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp", cv::IMREAD_COLOR);
+	//g_CVImageTest = cv::imread("C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp", cv::IMREAD_COLOR);
 
+	
 	transpose(g_CVImageTest, dMat1);
 	flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
 	dMat2.copyTo(g_CVImageTest);
 
-	convertMattoBmpTest();
+
+	if (m_MatToGDITest != NULL)
+	{
+		delete m_MatToGDITest;
+		m_MatToGDITest = NULL;
+	}
+
+	m_MatToGDITest = new PkMatToGDI(m_TestImgBMP, false);
+	m_MatToGDITest->CvMatToWinControl(g_CVImageTest, m_TestImgBMP);
+
 
 	//m_TestImgBMP->GetcvImage(g_CVImageTest);
 
+	//convertMattoBmpTest();
+
 	cv::namedWindow("GörüntüXX", cv::WINDOW_NORMAL);
 	cv::imshow("GörüntüXX", g_CVImageTest);
-	cv::waitKey(1500);
+	cv::waitKey(150);
 
 	// get Singleton ChangeDetectionController and start the change detection process
-	CChangeDetectController::getInstance()->process(m_FilenameRef, m_FilenameTest);
+	//CChangeDetectController::getInstance()->process(m_FilenameRef, m_FilenameTest);
 
 	return 0;
 }
 
 void CARALGISView::convertMattoBmpTest()
 {
-	m_TestImgBMP->m_un32ImageWidth = g_CVImageTest.cols;
-	m_TestImgBMP->m_un32ImageHeight = g_CVImageTest.rows;
-	m_TestImgBMP->m_un32ImageBits = CAM_BITS;
-	m_TestImgBMP->m_iSizeImage = (DWORD)g_CVImageTest.elemSize() * m_TestImgBMP->m_un32ImageWidth * m_TestImgBMP->m_un32ImageHeight;
+	//m_TestImgBMP->m_un32ImageWidth = g_CVImageTest.cols;
+	//m_TestImgBMP->m_un32ImageHeight = g_CVImageTest.rows;
+	//m_TestImgBMP->m_un32ImageBits = CAM_BITS;
+	////m_TestImgBMP->m_iSizeImage = (DWORD)g_CVImageTest.elemSize() * m_TestImgBMP->m_un32ImageWidth * m_TestImgBMP->m_un32ImageHeight;
+	//
+	//if (m_TestImgBMP->m_pImageBytes)
+	//{
+	//	delete m_TestImgBMP->m_pImageBytes;
+	//	m_TestImgBMP->m_pImageBytes = NULL;
+	//}
+	//
+	////cv::cvtColor(*m_InImage, *m_InImage, CV_BGRA2RGBA);
+	//int dByteSize = 0;
+	//BYTE* outData;
 
-	if (m_TestImgBMP->m_pImageBytes)
-	{
-		delete m_TestImgBMP->m_pImageBytes;
-		m_TestImgBMP->m_pImageBytes = NULL;
-	}
-	
-	m_TestImgBMP->m_pImageBytes = new BYTE[m_TestImgBMP->m_iSizeImage];
+	//m_gdiPlus.Init();
 
-	m_TestImgBMP->MakeBMPHeader();
+	//outData = m_gdiPlus.CopyMatToBmpBora(g_CVImageTest, &dByteSize);
 
-	//cv::cvtColor(*m_InImage, *m_InImage, CV_BGRA2RGBA);
-	m_gdiPlus.Init();
-	Gdiplus::Bitmap* pBitmap;
-	pBitmap = m_gdiPlus.CopyMatToBmp(g_CVImageTest);
+	//m_TestImgBMP->m_iSizeImage = (DWORD)dByteSize;
+	//m_TestImgBMP->m_pImageBytes = new BYTE[m_TestImgBMP->m_iSizeImage];
+	//m_TestImgBMP->MakeBMPHeader();
 
-	Gdiplus::BitmapData i_Data;
-	Gdiplus::Rect k_Rect(0, 0, pBitmap->GetWidth(), pBitmap->GetHeight());
 
-	Gdiplus::PixelFormat e_Format;
+	//m_TestImgBMP->ShowImage(outData);
+	//GetDocument()->UpdateAllViews(nullptr, 0, 0);
 
-	switch (g_CVImageTest.channels())
-	{
-		case 1: 
-			e_Format = PixelFormat8bppIndexed; 
-			break;
-
-		case 3: 
-			e_Format = PixelFormat24bppRGB;    
-			break;
-
-		case 4: 
-			e_Format = PixelFormat32bppARGB;   
-			break;
-
-		default: 
-			throw L"Image format not supported.";
-	}
-
-	if (Gdiplus::Ok != pBitmap->LockBits(&k_Rect, Gdiplus::ImageLockModeWrite, e_Format, &i_Data))
-	{
-		delete pBitmap;
-		throw L"Error locking Bitmap.";
-	}
-
-	m_TestImgBMP->ShowImage((BYTE*)i_Data.Scan0);
-	GetDocument()->UpdateAllViews(nullptr, 0, 0);
-	pBitmap->UnlockBits(&i_Data);
-
-	delete pBitmap;
+	//delete outData;
 }
 
 
@@ -508,3 +508,16 @@ void CARALGISView::OnTimer(UINT_PTR nIDEvent)
 	CColorFormView::OnTimer(nIDEvent);
 }
 
+
+
+void CARALGISView::OnPaint()
+{
+	CPaintDC dc(this); // device context for painting
+	// TODO: Add your message handler code here
+	// Do not call CColorFormView::OnPaint() for painting messages
+
+	if (g_CVImageTest.rows != 0)
+	{
+		m_MatToGDITest->DrawImg(g_CVImageTest);
+	}
+}

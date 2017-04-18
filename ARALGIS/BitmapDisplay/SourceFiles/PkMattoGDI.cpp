@@ -9,6 +9,11 @@ PkMatToGDI::PkMatToGDI(CWnd* ctrl, bool autofit)
 	Init(ctrl, autofit);
 }
 
+PkMatToGDI::~PkMatToGDI()
+{
+}
+
+
 
 ///Set the CStatic controls where the cv::Mat will be drawn
 ///a valid CStatic object
@@ -108,11 +113,20 @@ bool PkMatToGDI::DrawImg(const cv::Mat &img)
 	{
 		// Adding needed columns on the right (max 3 px)
 
+		m_internalImg = new cv::Mat;
+		*m_internalImg = cv::Mat::zeros(img.size(), CV_8U);
+
 		// we use internal image to reuse the memory. Avoid to alloc new memory at each call due to img size changes rarely
-		cv::copyMakeBorder(img, m_internalImg, 0, 0, 0, padding, cv::BORDER_CONSTANT, 0);
-		tempimg = m_internalImg;
+		cv::copyMakeBorder(img, *m_internalImg, 0, 0, 0, padding, cv::BORDER_CONSTANT, 0);
+		m_internalImg->copyTo(tempimg);
+		//tempimg = m_internalImg;
 		// ignore (do not shows) the just added border
 		//img_w = tempimg.cols;
+
+		if (m_internalImg != NULL)
+		{
+			delete m_internalImg;
+		}
 	}
 	else
 	{

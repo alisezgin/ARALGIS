@@ -8,10 +8,14 @@
 #include "WndResizer.h"
 #include "ColorFormView.h"
 
-#include ".\\BitmapDisplay\\HeaderFiles\\Showpic.h"
+//#include ".\\BitmapDisplay\\HeaderFiles\\ShowpicCV.h"
 #include ".\\BitmapDisplay\\HeaderFiles\\PictureCtrl.h"
+//#include ".\\BitmapDisplay\\HeaderFiles\\PkMattoGDI.h"
+//#include ".\\BitmapDisplay\\HeaderFiles\\MatBitmapconvert.h"
+
+
 #include ".\\BitmapDisplay\\HeaderFiles\\PkMattoGDI.h"
-#include ".\\BitmapDisplay\\HeaderFiles\\MatBitmapconvert.h"
+
 
 
 #include "opencv2/core/core.hpp"
@@ -82,10 +86,17 @@ protected:
 	//cv::Mat m_CVDest;
 	//cv::Mat m_CVImageHistoCrop;
 
-	CGdiPlus m_gdiPlus;
-	CShowpic *m_RefImgBMP;
-	CShowpic *m_TestImgBMP;
+	//CGdiPlus m_gdiPlus;
+	CStatic *m_RefImgBMP;
+	//CShowpicCV *m_TestImgBMP;
+	CStatic *m_TestImgBMP;
+
+	PkMatToGDI *m_MatToGDITest;
+	PkMatToGDI *m_MatToGDIRef;
+
+
 	CPictureCtrl m_CarPlakaImageStatic;
+
 
 
 private:
@@ -132,6 +143,8 @@ protected:
 	CClrButton m_PeripheralStatus;
 
 
+public:
+	afx_msg void OnPaint();
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

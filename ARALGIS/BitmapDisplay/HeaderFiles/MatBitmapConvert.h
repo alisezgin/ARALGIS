@@ -21,6 +21,8 @@ public:
 	static Mat  CopyBmpDataToMat(Gdiplus::BitmapData* pi_Data);
 	static Gdiplus::Bitmap* CopyMatToBmp(Mat& i_Mat);
 
+	static BYTE* CopyMatToBmpBora(Mat& i_Mat, int* aSize);
+
 
 
 private:

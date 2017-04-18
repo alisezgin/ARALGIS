@@ -262,3 +262,100 @@ CLSID CGdiPlus::GetEncoderClsid(const WCHAR* u16_File)
 	throw L"No image encoder found for file extension " + s_Ext;
 }
 
+
+BYTE* CGdiPlus::CopyMatToBmpBora(Mat& i_Mat, int* aSize)
+{
+	assert(mb_InitDone);
+
+	BYTE* outData;
+
+	*aSize = 0;
+
+	PixelFormat e_Format;
+	switch (i_Mat.channels())
+	{
+	case 1: e_Format = PixelFormat8bppIndexed; break;
+	case 3: e_Format = PixelFormat24bppRGB;    break;
+	case 4: e_Format = PixelFormat32bppARGB;   break;
+	default: throw L"Image format not supported.";
+	}
+
+	// Create Bitmap with own memory
+	Bitmap* pi_Bmp = new Bitmap(i_Mat.cols, i_Mat.rows, e_Format);
+
+	BitmapData i_Data;
+	Gdiplus::Rect k_Rect(0, 0, i_Mat.cols, i_Mat.rows);
+	if (Ok != pi_Bmp->LockBits(&k_Rect, ImageLockModeWrite, e_Format, &i_Data))
+	{
+		delete pi_Bmp;
+		throw L"Error locking Bitmap.";
+	}
+
+//	if (i_Mat.elemSize1() == 1) // 1 Byte per channel (8 bit gray scale palette)
+	{
+		BYTE* u8_Src = i_Mat.data;
+		
+		int s32_RowLen = i_Mat.cols * i_Mat.channels(); // != i_Mat.step !!
+
+
+		outData = new BYTE[i_Data.Stride*i_Mat.rows];
+
+
+		BYTE* u8_Dst = (BYTE*)outData;
+
+		// The Windows Bitmap format requires all rows to be DWORD aligned (always!)
+		// while OpenCV by default stores bitmap data sequentially.
+		for (int R = 0; R<i_Mat.rows; R++)
+		{
+			memcpy(u8_Dst, u8_Src, s32_RowLen);
+			u8_Src += i_Mat.step;    // step may be e.g 3729
+			u8_Dst += i_Data.Stride; // while Stride is 3732
+			*aSize = *aSize + i_Data.Stride;
+		}
+	}
+	//else // i_Mat may contain e.g. float data (CV_32F -> 4 Bytes per pixel grayscale)
+	//{
+	//	int s32_Type;
+	//	switch (i_Mat.channels())
+	//	{
+	//	case 1: s32_Type = CV_8UC1; break;
+	//	case 3: s32_Type = CV_8UC3; break;
+	//	default: throw L"Image format not supported.";
+	//	}
+
+	//	CvMat i_Dst;
+	//	cvInitMatHeader(&i_Dst, i_Mat.rows, i_Mat.cols, s32_Type, i_Data.Scan0, i_Data.Stride);
+
+	//	CvMat i_Img = i_Mat;
+	//	cvConvertImage(&i_Img, &i_Dst, 0);
+	//}
+
+	pi_Bmp->UnlockBits(&i_Data);
+
+	// Add the grayscale palette if required.
+	if (e_Format == PixelFormat8bppIndexed)
+	{
+		CByteArray i_Arr;
+		i_Arr.SetSize(sizeof(ColorPalette) + 256 * sizeof(ARGB));
+		ColorPalette* pk_Palette = (ColorPalette*)i_Arr.GetData();
+
+		pk_Palette->Count = 256;
+		pk_Palette->Flags = PaletteFlagsGrayScale;
+
+		ARGB* pk_Color = &pk_Palette->Entries[0];
+		for (int i = 0; i<256; i++)
+		{
+			pk_Color[i] = Color::MakeARGB(255, i, i, i);
+		}
+
+		if (Ok != pi_Bmp->SetPalette(pk_Palette))
+		{
+			delete pi_Bmp;
+			throw L"Error setting grayscale palette.";
+		}
+	}
+
+	delete pi_Bmp;
+
+	return outData;
+}
