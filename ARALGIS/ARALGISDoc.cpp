@@ -34,17 +34,12 @@ CARALGISDoc::CARALGISDoc()
 	// initialize the global variables
 	InitializeGlobalVars();
 
-	//m_InImage = NULL;
-	//m_InImage = new cv::Mat;
 
-	//m_InImageFlipped = NULL;
-	//m_InImageFlipped = new cv::Mat;
 }
 
 CARALGISDoc::~CARALGISDoc()
 {
-	//delete m_InImage;
-	//delete m_InImageFlipped;
+
 }
 
 BOOL CARALGISDoc::OnNewDocument()
@@ -128,146 +123,6 @@ void CARALGISDoc::SetSearchContent(const CString& value)
 }
 
 #endif // SHARED_HANDLERS
-
-void CARALGISDoc::DisplayBitmapWindow()
-{
-	//int iMapIndex;
-
-	//iMapIndex = FindEmptyIndex();
-	//if (iMapIndex != -1)
-	//{
-	//	CBitmapDlg* wBMPDlg;
-	//	wBMPDlg = new CBitmapDlg(AfxGetApp()->GetMainWnd()->GetDesktopWindow());
-	//	wBMPDlg->Create(CBitmapDlg::IDD, AfxGetApp()->GetMainWnd()->GetDesktopWindow());
-
-	//	m_BmpDlgMap[iMapIndex] = wBMPDlg;
-
-	//	int iWidth = m_Buffers->GetWidth();
-
-	//	int iHeight = m_Buffers->GetHeight();
-
-	//	int size = iWidth * iHeight;
-	//	int pixel_depth = m_Buffers->GetPixelDepth();
-	//	int bytesPerPixel = m_Buffers->GetBytesPerPixel();
-
-
-	//	int i = 0;
-	//	int j = 0;
-	//	int k = 0;
-	//	int inumFrames = 0;
-	//	int bufOffset = 0;
-
-	//	int nNumBuffers;
-	//	nNumBuffers = m_Buffers->GetCount();
-
-
-	//	SapBuffer::State bufState;
-
-	//	for (i = 0; i < MAX_BUFFER; i++)
-	//	{
-	//		if (m_selList[i] == TRUE)
-	//			inumFrames++;
-	//	}
-
-	//	if (inumFrames > nNumBuffers)
-	//	{
-	//		inumFrames = nNumBuffers;
-	//	}
-
-	//	BYTE *pData = new BYTE[size * bytesPerPixel  * inumFrames];
-	//	BOOL success = FALSE;
-
-	//	int iCount = m_Buffers->GetCount();
-	//	int iIndex = m_Buffers->GetIndex();
-
-	//	bufOffset = m_Buffers->GetCount() - 1 - m_Buffers->GetIndex();
-	//	for (i = 0; i < bufOffset; i++)
-	//		m_Buffers->Next();
-
-	//	for (i = 0; i < MAX_BUFFER; i++)  // MAX_BUFFER
-	//	{
-	//		//m_Buffers->GetState(&bufState);
-	//		if (m_selList[i] == TRUE)
-	//		{
-	//			j = k * size * bytesPerPixel;
-	//			success = m_Buffers->Read(0, size, (pData + j));
-	//			k++;
-	//		}
-	//		m_Buffers->Next();
-	//	}
-
-	//	wBMPDlg->m_ImageToDisplay->GetSapImage(pData, iWidth, iHeight*inumFrames, bytesPerPixel);
-
-	//	TCHAR str_winTitle[10];
-	//	_itot_s(iMapIndex, str_winTitle, 10);
-
-	//	wBMPDlg->SetWindowText(str_winTitle);
-	//	wBMPDlg->ShowWindow(SW_SHOW);
-	//}
-}
-
-
-
-//LRESULT  CARALGISDoc::OnCloseBMPDlg(WPARAM wParam, LPARAM lParam)
-//{
-//	int* nWindowNo = new int;
-//
-//	*nWindowNo = _ttoi((TCHAR*)lParam);
-//
-//	TCHAR *textToDisplay;
-//	textToDisplay = new TCHAR[100];
-//	//textToDisplay = (TCHAR *)_bstr_t(lParam);
-//
-//	//::MessageBox(NULL, reinterpret_cast<TCHAR*>(lParam), NULL, MB_OK);
-//
-//	delete[] textToDisplay;
-//
-//	CBitmapDlg* wBMPDlg;
-//
-//	wBMPDlg = m_BmpDlgMap[*nWindowNo];
-//
-//	m_iMapKeyIdentifier[*nWindowNo] = FALSE; // bunlarý destroyWindow sonrasýna mý koysan acaba
-//
-//	m_BmpDlgMap.erase(*nWindowNo); //bunlarý destroyWindow sonrasýna mý koysan acaba
-//
-//	delete nWindowNo; //bunlarý destroyWindow sonrasýna mý koysan acaba
-//
-//	wBMPDlg->DestroyWindow();
-//
-//	return 1;
-//}
-//
-//LRESULT  CARALGISDoc::OnDestroyBMPDlg(WPARAM wParam, LPARAM lParam)
-//{
-//	return 1;
-//}
-
-//int CARALGISDoc::FindEmptyIndex()
-//{
-//	int index = 0;
-//
-//
-//	for (int i = 0; i < (int)m_iMapKeyIdentifier.size(); i++)
-//	{
-//		if (m_iMapKeyIdentifier[i] == FALSE)
-//		{
-//			index = i;
-//			m_iMapKeyIdentifier[i] = TRUE;
-//			return index;
-//		}
-//	}
-//	::MessageBox(NULL, _T("Max Number of Windows Exceeded, Close Others To Continue"), NULL, MB_OK);
-//	return-1;
-//}
-
-
-void CARALGISDoc::GetImageMat(cv::Mat& mImg)
-{
-	// boraN
-//	m_InImageFlipped->copyTo(mImg);
-}
-
-
 
 
 

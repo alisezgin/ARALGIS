@@ -207,24 +207,12 @@ void CMainFrame::NotifyProcOdroidComm(LPVOID lpParam, UINT nCode)
 		case ODROID_CONNECTION_LOST:
 		{
 			pView->UpdatePeripheralStatus(false);
-
-			::MessageBox(NULL,
-				(LPCWSTR)L"Çevre Birimler ile Baðlantý Kayboldu",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
 		}
 			break;
 
 		case ODROID_CONNECTION_OK:
 		{
 			pView->UpdatePeripheralStatus(true);
-
-			::MessageBox(NULL,
-				(LPCWSTR)L"Çevre Birimler ile Baðlantý Kuruldu",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
 		}
 			break;			
 
@@ -262,11 +250,11 @@ void CMainFrame::NotifyProcCameraComm(LPVOID lpParam, UINT nCode)
 		switch (nCode)
 		{
 		case SET_TIMER_PERIOD_CAMERA:
-			pView->SetTimerPeriodCamera();
+			//pView->SetTimerPeriodCamera();
 			break;
 
 		case KILL_TIMER_CAMERA:
-			pView->KillTimerCamera();
+			//pView->KillTimerCamera();
 
 		default:
 			break;

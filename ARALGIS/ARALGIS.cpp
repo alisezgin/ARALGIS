@@ -74,6 +74,15 @@ int g_iTimerPeriod;
 // global variable to hold CV image from Camera
 cv::Mat g_CVImageTest;
 
+// global variable to hold CV image from Camera
+cv::Mat g_CVImageTestFilter1;
+
+// global variable to hold CV image from Camera
+cv::Mat g_CVImageTestFilter2;
+
+// global variable to hold CV image from Camera
+cv::Mat g_CVImageTestFilter3;
+
 // Critical Section to protect isDatabaseHandlingInProgress
 CRITICAL_SECTION g_SomeHandlingCS;
 

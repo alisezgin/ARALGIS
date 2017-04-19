@@ -41,6 +41,7 @@ CReceiveCameraImage::CReceiveCameraImage()
 
 CReceiveCameraImage::~CReceiveCameraImage()
 {
+	OnDestroySAPERA();
 }
 
 
@@ -924,15 +925,18 @@ void CReceiveCameraImage::GetCameraDataAsMat()
 
 	int nNumBuffers = m_Buffers->GetCount();
 
-	for (i = 0; i < MAX_BUFFER; i++)
-	{
-		inumFrames++;
-	}
+	//for (i = 0; i < MAX_BUFFER; i++)
+	//{
+	//	inumFrames++;
+	//}
 
-	if (inumFrames > nNumBuffers)
-	{
-		inumFrames = nNumBuffers;
-	}
+	//if (inumFrames > nNumBuffers)
+	//{
+	//	inumFrames = nNumBuffers;
+	//}
+
+	inumFrames = m_Buffers->GetIndex();
+
 
 	if (inumFrames > 0)
 	{

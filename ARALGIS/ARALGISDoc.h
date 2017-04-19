@@ -52,34 +52,11 @@ public:
 #endif
 
 protected:
-	/*
-	/// captured image window management variables
-	/// captured image windows "map" key identifiers
-	typedef std::array<BOOL, MAX_BMP_WINDOW> MapKeyArray;
-	MapKeyArray m_iMapKeyIdentifier;
-	/// captured image window "map" key-modelessWindow association 
-	typedef std::map<int, CBitmapDlg*> ModelessWindowMap;
-	ModelessWindowMap m_BmpDlgMap;
-
-	int FindEmptyIndex();
-
-
-	cv::Mat* m_InImage;
-	cv::Mat *m_InImageFlipped;
-
-
-	CShowpic *m_LoadedImage{ NULL };
-	//CShowpicCV *m_LoadedImage{ NULL };
-
-	*/
-
-	SapToGDI m_gdiPlus;
-	void convertMattoBmp();
 
 public:
-	void DisplayBitmapWindow();
 
-	void GetImageMat(cv::Mat& mImg);
+
+
 
 	// Generated message map functions
 protected:

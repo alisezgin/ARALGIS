@@ -93,6 +93,16 @@ extern HANDLE g_OdroidStopAlarmEvent;
 // global variable to hold CV image from Camera
 extern cv::Mat g_CVImageTest;
 
+// global variable to hold CV image from Camera
+extern cv::Mat g_CVImageTestFilter1;
+
+// global variable to hold CV image from Camera
+extern cv::Mat g_CVImageTestFilter2;
+
+// global variable to hold CV image from Camera
+extern cv::Mat g_CVImageTestFilter3;
+
+
 // event used for triggering PTS 
 extern HANDLE g_PTSTriggerEvent;
 

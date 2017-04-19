@@ -120,6 +120,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);$(OPENCV_DIR)\include;$(OPENCV_DIR)\include\opencv2;$(OPENCV_DIR)\include\opencv;C:\Program Files\Teledyne DALSA\Sapera\Include;C:\Program Files\Teledyne DALSA\Sapera\Classes\Basic;C:\Program Files\Teledyne DALSA\Sapera\Classes\Gui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
       <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -209,7 +210,6 @@
     <ClInclude Include="BitmapDlg.h" />
     <ClInclude Include="CameraInterface\HeaderFiles\CameraDataReceiver.h" />
     <ClInclude Include="CameraInterface\HeaderFiles\ReceiveCameraImage.h" />
-    <ClInclude Include="CameraStartStop.h" />
     <ClInclude Include="ColourButton.h" />
     <ClInclude Include="ChangeDetection\HeaderFiles\ChangeDetectController.h" />
     <ClInclude Include="ChangeDetection\HeaderFiles\ChangeDetector.h" />
@@ -268,7 +268,6 @@
     <ClCompile Include="BitmapDlg.cpp" />
     <ClCompile Include="CameraInterface\SourceFiles\CameraDataReceiver.cpp" />
     <ClCompile Include="CameraInterface\SourceFiles\ReceiveCameraImage.cpp" />
-    <ClCompile Include="CameraStartStop.cpp" />
     <ClCompile Include="ChangeDetection\SourceFiles\ChangeDetectController.cpp" />
     <ClCompile Include="ChangeDetection\SourceFiles\ChangeDetector.cpp" />
     <ClCompile Include="ColorFormView.cpp" />

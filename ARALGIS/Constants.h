@@ -11,9 +11,12 @@
 #define MAX_STRINGTABLE_STR_SIZE (256)
 
 
-// timer period = 250 miliseconds
-#define TIMER_PERIOD_IN_MS  (250)
+// timer period = 1000 miliseconds - 1second
+#define TIMER_PERIOD_IN_MS  (1000)
 #define CAMERA_TIMER_ID (111)
+
+// plaka info will stay 5 seconds on the screen
+#define PLAKA_TIME_ON_SCREEN (5)
 
 #define MAX_BUFFER            (90)
 #define IMAGE_HEIGHT (480) // 960 or 480
@@ -47,8 +50,6 @@
 
 #define PTS_IP_ADDRESS ("127.0.0.1")
 
-// timer period = 250 miliseconds
-#define TIMER_PERIOD_IN_MS  (250)
 
 // timer interrupt generated for threads every 5 second
 #define THREADS_TIMER_INTERRUPT_PERIOD  (5)

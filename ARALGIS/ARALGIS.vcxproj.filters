@@ -192,9 +192,6 @@
     <ClInclude Include="BitmapDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CameraStartStop.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BitmapDisplay\HeaderFiles\MatBitmapConvert.h">
       <Filter>BitmapDisplay\HeaderFiles</Filter>
     </ClInclude>
@@ -291,9 +288,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BitmapDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraStartStop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BitmapDisplay\SourceFiles\MatBitmapConvert.cpp">
