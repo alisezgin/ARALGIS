@@ -250,7 +250,7 @@ void CMainFrame::NotifyProcCameraComm(LPVOID lpParam, UINT nCode)
 		switch (nCode)
 		{
 		case SET_TIMER_PERIOD_CAMERA:
-			//pView->SetTimerPeriodCamera();
+			//pView->SetTimerDisplay();
 			break;
 
 		case KILL_TIMER_CAMERA:

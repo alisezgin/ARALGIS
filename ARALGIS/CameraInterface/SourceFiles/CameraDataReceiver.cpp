@@ -154,7 +154,6 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 				return 2;
 			}
 
-			//g_iTimerPeriod = tFrameTime;
 			SetEvent(g_CameraUpdateControlsEvent);
 		}
 

@@ -66,24 +66,16 @@ public:
 
 	void DisplayPTSImage();
 	void DeletePTSImage();
-	void SetTimerPeriodCamera();
+	void SetTimerDisplay();
 
 	void UpdatePTSStatus(bool aStatus);
 	void UpdatePeripheralStatus(bool aStatus);
 
 protected:
-	//bool m_selList[MAX_BUFFER];
-
-	//cv::Mat m_CVCroppedImage;
-
-	//cv::Mat m_BN;
-
-	//cv::Mat m_CVImage;
-	//cv::Mat m_CVDest;
-	//cv::Mat m_CVImageHistoCrop;
 
 	CStatic *m_RefImgBMP;
 	CStatic *m_TestImgBMP;
+
 	PkMatToGDI *m_MatToGDITest;
 	PkMatToGDI *m_MatToGDIRef;
 
@@ -117,6 +109,7 @@ protected:
 
 protected:
 	afx_msg LRESULT OnCameraDataReady(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnDBaseCarInfoReady(WPARAM wParam, LPARAM lParam); 
 
 public:
 	afx_msg void OnCameraConfig();

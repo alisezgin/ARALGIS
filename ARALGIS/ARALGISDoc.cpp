@@ -39,7 +39,16 @@ CARALGISDoc::CARALGISDoc()
 
 CARALGISDoc::~CARALGISDoc()
 {
+	DeleteGlobalVariables();
 
+	//if (isProgramStarted)
+	//{
+	//	// UnInitiliaze COM at the end of the thread
+	//	m_pConn->Close();
+	//	m_pConnAccount->Close();
+	//	m_pConnSmartCard->Close();
+	//	CoUninitialize();
+	//}
 }
 
 BOOL CARALGISDoc::OnNewDocument()

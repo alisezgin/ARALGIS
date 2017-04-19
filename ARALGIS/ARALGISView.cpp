@@ -48,6 +48,7 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 	ON_MESSAGE(WM_CAMERA_DATA_READY, &CARALGISView::OnCameraDataReady)
+	ON_MESSAGE(WM_DBASE_CAR_INFO_READY, &CARALGISView::OnDBaseCarInfoReady)
 	ON_COMMAND(ID_KAMERA_KONFIG32771, &CARALGISView::OnCameraConfig)
 	ON_COMMAND(ID_KAMERA_KAY32772, &CARALGISView::OnSelectRecording)
 	ON_COMMAND(ID_RESIMG32774, &CARALGISView::OnDisplaySelectedBitmap)
@@ -72,10 +73,6 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 , m_PlakaStr(_T(""))
 {
 	// TODO: add construction code here
-	//for (int i = 0; i < MAX_BUFFER; i++)
-	//{
-	//	m_selList[i] = TRUE;
-	//}
 
 	m_RefImgBMP = new CStatic;
 	m_TestImgBMP = new CStatic;
@@ -306,16 +303,12 @@ CARALGISDoc* CARALGISView::GetDocument() const // non-debug version is inline
 
 // CARALGISView message handlers
 
-
-
-
 afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 {
 	cv::Mat dMat1, dMat2;
 
 	//g_CVImageTest = cv::imread("C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp", cv::IMREAD_COLOR);
-
-	
+		
 	transpose(g_CVImageTest, dMat1);
 	flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
 	dMat2.copyTo(g_CVImageTest);
@@ -330,19 +323,58 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 	m_iDisplayTestImageType = 0;
 
 	m_MatToGDITest = new PkMatToGDI(m_TestImgBMP, false);
-	//m_MatToGDITest->CvMatToWinControl(g_CVImageTest, m_TestImgBMP);
 	m_MatToGDITest->DrawImg(g_CVImageTest);
 
-	//m_TestImgBMP->GetcvImage(g_CVImageTest);
-
-	//convertMattoBmpTest();
-
+    // code to be deleted when test image
+	// display is stabilized.........
+	// code deletion starts here
 	cv::namedWindow("GörüntüXX", cv::WINDOW_NORMAL);
 	cv::imshow("GörüntüXX", g_CVImageTest);
 	cv::waitKey(150);
+	// code deletion ends here
+
+	// code to be deleted when dbase handler
+	// thread is added 
+	// code deletion starts here
+	LPARAM pLparam;
+	pLparam = reinterpret_cast<LPARAM>("ARALGIS");
+	SendMessage(WM_DBASE_CAR_INFO_READY, 0, pLparam);
+	// code deletion ends here
 
 	// get Singleton ChangeDetectionController and start the change detection process
 	CChangeDetectController::getInstance()->process(m_FilenameRef, m_FilenameTest);
+
+	return 0;
+}
+
+
+afx_msg LRESULT CARALGISView::OnDBaseCarInfoReady(WPARAM wParam, LPARAM lParam)
+{
+	//g_CVImageRef = cv::imread(g_RefImageFileName, cv::IMREAD_COLOR);
+
+	g_CVImageRef = cv::imread("C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp", cv::IMREAD_COLOR);
+
+	// no need to transpose+flip
+	// since image files are written landscape!!!
+	// for the time being for testing purposes
+	// these operations are needed.
+	// delete below code for real system
+	// code deletion starts here
+	cv::Mat dMat1, dMat2;
+	transpose(g_CVImageRef, dMat1);
+	flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
+	dMat2.copyTo(g_CVImageRef);
+	// code deletion ends here
+
+
+	if (m_MatToGDIRef != NULL)
+	{
+		delete m_MatToGDIRef;
+		m_MatToGDIRef = NULL;
+	}
+
+	m_MatToGDIRef = new PkMatToGDI(m_RefImgBMP, false);
+	m_MatToGDIRef->DrawImg(g_CVImageRef);
 
 	return 0;
 }
@@ -376,7 +408,7 @@ void CARALGISView::OnDisplayOpenCV()
 void CARALGISView::DisplayPTSImage()
 {
 	// TODO: Add your command handler code here
-	m_CarPlakaImageStatic.Load(g_CarPlakaImage, (size_t)m_CarPlakaImageLenght);
+	m_CarPlakaImageStatic.Load(g_CarPlakaImage, (size_t)g_CarPlakaImageLenght);
 
 	CString aCString; 
 	CString bCString = CString(_T("         "));
@@ -419,7 +451,7 @@ void CARALGISView::DisplayPTSImage()
 
 	font.DeleteObject();
 
-	SetTimerPeriodCamera();
+	SetTimerDisplay();
 }
 
 void CARALGISView::DeletePTSImage()
@@ -520,17 +552,17 @@ void CARALGISView::OnBnClickedButtonAlarmOff()
 }
 
 
-void CARALGISView::SetTimerPeriodCamera()
+void CARALGISView::SetTimerDisplay()
 {
 	// added by bora, start 1 second interval timer
 	m_TimerSecondCounter = 0;
-	KillTimer(CAMERA_TIMER_ID);
-	SetTimer(CAMERA_TIMER_ID, TIMER_PERIOD_IN_MS, NULL);
+	KillTimer(DISPLAY_TIMER_ID);
+	SetTimer(DISPLAY_TIMER_ID, TIMER_PERIOD_IN_MS, NULL);
 }
 
 void CARALGISView::OnTimer(UINT_PTR nIDEvent)
 {
-	if (nIDEvent == CAMERA_TIMER_ID)
+	if (nIDEvent == DISPLAY_TIMER_ID)
 	{
 		m_TimerSecondCounter++;
 
@@ -538,7 +570,7 @@ void CARALGISView::OnTimer(UINT_PTR nIDEvent)
 		{
 			// do something
 			DeletePTSImage();
-			KillTimer(CAMERA_TIMER_ID);
+			KillTimer(DISPLAY_TIMER_ID);
 		}
 	} // End if.
 	CColorFormView::OnTimer(nIDEvent);
@@ -557,27 +589,43 @@ void CARALGISView::OnPaint()
 		delete m_MatToGDITest;
 		m_MatToGDITest = NULL;
 		m_MatToGDITest = new PkMatToGDI(m_TestImgBMP, false);
+
+		if (g_CVImageTest.rows != 0)
+		{
+			if (m_iDisplayTestImageType == 0)
+			{
+				m_MatToGDITest->DrawImg(g_CVImageTest);
+			}
+			else if (m_iDisplayTestImageType == 1)
+			{
+				m_MatToGDITest->DrawImg(g_CVImageTestFilter1);
+			}
+			else if (m_iDisplayTestImageType == 2)
+			{
+				m_MatToGDITest->DrawImg(g_CVImageTestFilter2);
+			}
+			else if (m_iDisplayTestImageType == 3)
+			{
+				m_MatToGDITest->DrawImg(g_CVImageTestFilter3);
+			}
+		}
 	}
 
-	if (g_CVImageTest.rows != 0)
+
+
+	if (m_MatToGDIRef != NULL)
 	{
-		if (m_iDisplayTestImageType == 0)
+		delete m_MatToGDIRef;
+		m_MatToGDIRef = NULL;
+
+		m_MatToGDIRef = new PkMatToGDI(m_RefImgBMP, false);
+
+		if (g_CVImageRef.rows != 0)
 		{
-			m_MatToGDITest->DrawImg(g_CVImageTest);
-		}
-		else if (m_iDisplayTestImageType == 1)
-		{
-			m_MatToGDITest->DrawImg(g_CVImageTestFilter1);
-		}
-		else if (m_iDisplayTestImageType == 2)
-		{
-			m_MatToGDITest->DrawImg(g_CVImageTestFilter2);
-		}
-		else if (m_iDisplayTestImageType == 3)
-		{
-			m_MatToGDITest->DrawImg(g_CVImageTestFilter3);
+			m_MatToGDIRef->DrawImg(g_CVImageRef);
 		}
 	}
+
 }
 
 
@@ -591,33 +639,39 @@ BOOL CARALGISView::OnEraseBkgnd(CDC* pDC)
 
 void CARALGISView::OnBnClickedButtonFilter1()
 {
-	// TODO: Add your control notification handler code here
-	m_iDisplayTestImageType = 1;
-	pixkit::enhancement_local::MSRCP2014(g_CVImageTest, g_CVImageTestFilter1, 15, 127, 255, 0.1, 0.1);
-	m_MatToGDITest->DrawImg(g_CVImageTestFilter1);
+	if (g_CVImageTest.cols > 0)
+	{
+		m_iDisplayTestImageType = 1;
+		pixkit::enhancement_local::MSRCP2014(g_CVImageTest, g_CVImageTestFilter1, 15, 127, 255, (float)0.1, (float)0.1);
+		m_MatToGDITest->DrawImg(g_CVImageTestFilter1);
+	}
 }
 
 
 void CARALGISView::OnBnClickedButtonFilter2()
 {
-	// TODO: Add your control notification handler code here
-	m_iDisplayTestImageType = 2;
+	if (g_CVImageTest.cols > 0)
+	{
+		m_iDisplayTestImageType = 2;
 
-	cv::Mat inGray;
-	cv::cvtColor(g_CVImageTest, inGray, CV_RGB2GRAY);
+		cv::Mat inGray;
+		cv::cvtColor(g_CVImageTest, inGray, CV_RGB2GRAY);
 
-	pixkit::enhancement_global::GlobalHistogramEqualization1992(inGray, g_CVImageTestFilter2);
-	m_MatToGDITest->DrawImg(g_CVImageTestFilter2);
+		pixkit::enhancement_global::GlobalHistogramEqualization1992(inGray, g_CVImageTestFilter2);
+		m_MatToGDITest->DrawImg(g_CVImageTestFilter2);
+	}
 }
 
 
 void CARALGISView::OnBnClickedButtonFilter3()
 {
-	// TODO: Add your control notification handler code here
-	m_iDisplayTestImageType = 3;
-	cv::Mat inGray;
-	cv::cvtColor(g_CVImageTest, inGray, CV_RGB2GRAY);
+	if (g_CVImageTest.cols > 0)
+	{
+		m_iDisplayTestImageType = 3;
+		cv::Mat inGray;
+		cv::cvtColor(g_CVImageTest, inGray, CV_RGB2GRAY);
 
-	pixkit::enhancement_local::CLAHEnon1987(inGray, g_CVImageTestFilter3, cv::Size(8, 8));
-	m_MatToGDITest->DrawImg(g_CVImageTestFilter3);
+		pixkit::enhancement_local::CLAHEnon1987(inGray, g_CVImageTestFilter3, cv::Size(8, 8));
+		m_MatToGDITest->DrawImg(g_CVImageTestFilter3);
+	}
 }
