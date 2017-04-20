@@ -645,6 +645,8 @@ void CARALGISView::OnBnClickedButtonFilter1()
 		pixkit::enhancement_local::MSRCP2014(g_CVImageTest, g_CVImageTestFilter1, 15, 127, 255, (float)0.1, (float)0.1);
 		m_MatToGDITest->DrawImg(g_CVImageTestFilter1);
 	}
+
+	SetEvent(g_ProcessFilter1Event);
 }
 
 
@@ -660,6 +662,7 @@ void CARALGISView::OnBnClickedButtonFilter2()
 		pixkit::enhancement_global::GlobalHistogramEqualization1992(inGray, g_CVImageTestFilter2);
 		m_MatToGDITest->DrawImg(g_CVImageTestFilter2);
 	}
+	SetEvent(g_ProcessFilter2Event);
 }
 
 
@@ -674,4 +677,5 @@ void CARALGISView::OnBnClickedButtonFilter3()
 		pixkit::enhancement_local::CLAHEnon1987(inGray, g_CVImageTestFilter3, cv::Size(8, 8));
 		m_MatToGDITest->DrawImg(g_CVImageTestFilter3);
 	}
+	SetEvent(g_ProcessFilter3Event);
 }

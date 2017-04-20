@@ -78,6 +78,18 @@ extern HANDLE g_OdroidStartAlarmEvent;
 // event used for sending stop alarm message to odroid 
 extern HANDLE g_OdroidStopAlarmEvent;
 
+// event used for triggering CameraDBServer
+extern HANDLE g_CameraDBServerPlakaDataReadyEvent;
+
+// event used for triggering Filter-1 processing of test image
+extern HANDLE g_ProcessFilter1Event;
+
+// event used for triggering Filter-2 processing of test image
+extern HANDLE g_ProcessFilter2Event;
+
+// event used for triggering Filter-3 processing of test image
+extern HANDLE g_ProcessFilter3Event;
+
 // event used for resetting timer 
 //HANDLE g_CameraDataReadyEvent;
 

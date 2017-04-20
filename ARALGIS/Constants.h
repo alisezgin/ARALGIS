@@ -1,6 +1,7 @@
 #pragma once
 
-
+// maximum number of ARALGIS programs run on machine
+#define MAX_PROG_INSTANCE (1)
 
 #define WM_UPDATE_CONTROLS      (WM_USER + 1)  // User message for updating controls
 #define WM_BIMPDLG_CLOSED       (WM_USER + 2)

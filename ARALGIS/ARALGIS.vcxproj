@@ -236,6 +236,8 @@
     <ClInclude Include="ChangeDetection\ProcessingAlgorithms\TransformImage.h" />
     <ClInclude Include="ColorFormView.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="Database\HeaderFiles\CameraDBServer.h" />
+    <ClInclude Include="Database\HeaderFiles\UserTable.h" />
     <ClInclude Include="ImageFiltering\HeaderFiles\cvt.hpp" />
     <ClInclude Include="ImageFiltering\HeaderFiles\Includes.h" />
     <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-cv.hpp" />
@@ -243,6 +245,7 @@
     <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-image.hpp" />
     <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-ml.hpp" />
     <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-timer.hpp" />
+    <ClInclude Include="ImageFiltering\ImageFilterProcessing\HeaderFiles\ImageFilterProcessing.h" />
     <ClInclude Include="InitGlobalVars.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="OdroidCommunicator\HeaderFiles\OdroidCommunicator.h" />
@@ -252,7 +255,6 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="UserTable.h" />
     <ClInclude Include="WndResizer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -272,6 +274,9 @@
     <ClCompile Include="ChangeDetection\SourceFiles\ChangeDetector.cpp" />
     <ClCompile Include="ColorFormView.cpp" />
     <ClCompile Include="ColourButton.cpp" />
+    <ClCompile Include="Database\SourceFiles\CameraDBServer.cpp" />
+    <ClCompile Include="Database\SourceFiles\UserTable.cpp" />
+    <ClCompile Include="ImageFiltering\ImageFilterProcessing\SourceFiles\ImageFilterProcessing.cpp" />
     <ClCompile Include="ImageFiltering\SourceFiles\attack.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -384,7 +389,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="UserTable.cpp" />
     <ClCompile Include="WndResizer.cpp" />
   </ItemGroup>
   <ItemGroup>
