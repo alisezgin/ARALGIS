@@ -22,7 +22,6 @@
 #define ID_VIEW_APPLOOK_WINDOWS_7       219
 #define IDD_BITMAP_DLG                  310
 #define IDD_CAMERASTR_DLG               311
-#define IDD_DIALOG1                     314
 #define IDD_VEHICLE_DIALOG              314
 #define IDC_BITMAP                      1000
 #define IDC_START_BUTTON                1001
@@ -53,12 +52,12 @@
 #define IDC_BUTTON_PERIPHERAL_STATUS    1020
 #define IDC_VEHICLE_CBRI                1020
 #define IDC_BUTTON_HEATER_STATUS        1021
-#define IDC_VEHICLE_LASTVISITDATE       1021
 #define IDC_BUTTON_PTS_STATUS           1022
 #define IDC_STATIC_PTS                  1023
 #define IDC_STATIC_BARRIER              1024
 #define IDC_BUTTON_ALARM_ON             1027
 #define IDC_BUTTON_ALARM_OFF            1028
+#define IDC_VEHICLE_LASTVISIT           1032
 #define ID_KAMERA_KONFIG32771           32771
 #define ID_KAMERA_KAY32772              32772
 #define ID_KAMERA_RESIMG32773           32773
@@ -114,7 +113,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        315
 #define _APS_NEXT_COMMAND_VALUE         32819
-#define _APS_NEXT_CONTROL_VALUE         1029
+#define _APS_NEXT_CONTROL_VALUE         1035
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

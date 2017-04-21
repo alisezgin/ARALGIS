@@ -21,6 +21,7 @@
 #include "afxwin.h"
 
 #include "ColourButton.h"
+#include "afxdtctl.h"
 
 
 class CARALGISDoc;
@@ -130,8 +131,6 @@ public:
 protected:
 	CClrButton m_PTS_Status;
 	CClrButton m_PeripheralStatus;
-
-
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

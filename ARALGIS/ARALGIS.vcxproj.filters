@@ -258,8 +258,8 @@
     <ClInclude Include="VehicleSet.h">
       <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
-    <ClInclude Include="VehicleDlg.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="VehicleView.h">
+      <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -440,11 +440,8 @@
     <ClCompile Include="VehicleSet.cpp">
       <Filter>Database\SourceFiles</Filter>
     </ClCompile>
-    <ClCompile Include="VehicleDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VehicleView.h">
-      <Filter>Database\HeaderFiles</Filter>
+    <ClCompile Include="VehicleView.cpp">
+      <Filter>Database\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

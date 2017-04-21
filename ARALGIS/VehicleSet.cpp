@@ -44,7 +44,7 @@ void CVehicleSet::DoFieldExchange(CFieldExchange* pFX)
 // Macros such as RFX_Text() and RFX_Int() are dependent on the
 // type of the member variable, not the type of the field in the database.
 // ODBC will try to automatically convert the column value to the requested type
-	RFX_BigInt(pFX, _T("[VehicleID]"), m_VehicleID);
+	RFX_Long(pFX, _T("[VehicleID]"), m_VehicleID);
 	RFX_Text(pFX, _T("[LicensePlate]"), m_LicensePlate);
 	RFX_Text(pFX, _T("[LicensePlateImage]"), m_LicensePlateImage);
 	RFX_Text(pFX, _T("[FrontViewImage]"), m_FrontViewImage);

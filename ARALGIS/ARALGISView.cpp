@@ -63,6 +63,7 @@ END_MESSAGE_MAP()
 
 CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 , m_PlakaStr(_T(""))
+
 {
 	// TODO: add construction code here
 	//for (int i = 0; i < MAX_BUFFER; i++)
@@ -86,6 +87,7 @@ CARALGISView::~CARALGISView()
 		delete m_TestImgBMP;
 }
 
+
 void CARALGISView::DoDataExchange(CDataExchange* pDX)
 {
 	CFormView::DoDataExchange(pDX);
@@ -96,6 +98,7 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_PLAKA, m_PlakaStr);
 	DDX_Control(pDX, IDC_EDIT_PLAKA, m_PlakaCtrl);
 	DDX_Control(pDX, IDC_STATIC_PLAKA, m_CarPlakaImageStatic);
+
 }
 
 BOOL CARALGISView::PreCreateWindow(CREATESTRUCT& cs)

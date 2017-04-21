@@ -20,12 +20,12 @@ public:
 // (Note: You must use an ODBC driver version that is version 3.5 or greater
 // to support both Unicode and these conversions).
 
-	LONGLONG	m_VehicleID;
-	CStringA	m_LicensePlate;
-	CStringA	m_LicensePlateImage;
-	CStringA	m_FrontViewImage;
-	CStringA	m_ChassisBottomeImageCurrent;
-	CStringA	m_ChassisBottomImageRef;
+	LONG		m_VehicleID;
+	CString		m_LicensePlate;
+	CString		m_LicensePlateImage;
+	CString		m_FrontViewImage;
+	CString		m_ChassisBottomeImageCurrent;
+	CString		m_ChassisBottomImageRef;
 	CTime		m_MostRecentVisitDate;
 
 // Overrides
