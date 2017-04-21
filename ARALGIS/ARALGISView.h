@@ -67,38 +67,28 @@ public:
 
 	void DisplayPTSImage();
 	void DeletePTSImage();
-	void SetTimerPeriodCamera();
-	void KillTimerCamera();
+	void SetTimerDisplay();
 
 	void UpdatePTSStatus(bool aStatus);
 	void UpdatePeripheralStatus(bool aStatus);
 
 protected:
-	void convertMattoBmpTest();
 
-protected:
-	//bool m_selList[MAX_BUFFER];
-
-	//cv::Mat m_CVCroppedImage;
-
-	//cv::Mat m_BN;
-
-	//cv::Mat m_CVImage;
-	//cv::Mat m_CVDest;
-	//cv::Mat m_CVImageHistoCrop;
-
-	//CGdiPlus m_gdiPlus;
 	CStatic *m_RefImgBMP;
-	//CShowpicCV *m_TestImgBMP;
 	CStatic *m_TestImgBMP;
 
 	PkMatToGDI *m_MatToGDITest;
 	PkMatToGDI *m_MatToGDIRef;
 
-
 	CPictureCtrl m_CarPlakaImageStatic;
 
+	int m_TimerSecondCounter;
 
+	// 0: Original Test Image
+	// 1: Filter-1 applied Test Image
+	// 2: Filter-1 applied Test Image
+	// 3: Filter-3 applied Test Image
+	int m_iDisplayTestImageType;
 
 private:
 	CWndResizer m_resizer;
@@ -120,13 +110,13 @@ protected:
 
 protected:
 	afx_msg LRESULT OnCameraDataReady(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnDBaseCarInfoReady(WPARAM wParam, LPARAM lParam); 
 
 public:
 	afx_msg void OnCameraConfig();
 	afx_msg void OnSelectRecording();
 	afx_msg void OnDisplaySelectedBitmap();
 	afx_msg void OnDisplayOpenCV();
-	afx_msg void OnCameraStartStop();
 
 
 	virtual void OnInitialUpdate();
@@ -144,6 +134,16 @@ protected:
 	CClrButton m_PeripheralStatus;
 public:
 	afx_msg void OnPaint();
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	CButton m_BarrierOpenBtn;
+	CButton m_BarrierCloseBtn;
+	CButton m_HeaterStartBtn;
+	CButton m_HeterStopBtn;
+	CButton m_AlarmStartBtn;
+	CButton m_AlarmStop;
+	afx_msg void OnBnClickedButtonFilter1();
+	afx_msg void OnBnClickedButtonFilter2();
+	afx_msg void OnBnClickedButtonFilter3();
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

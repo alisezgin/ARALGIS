@@ -8,6 +8,8 @@
 #include ".\\CameraInterface\\HeaderFiles\\CameraDataReceiver.h"
 #include ".\\PTSCommunicator\\HeaderFiles\\PTSCommunicator.h"
 #include ".\\OdroidCommunicator\\HeaderFiles\\OdroidCommunicator.h"
+#include ".\\Database\\HeaderFiles\\CameraDBServer.h"
+#include ".\\ImageFiltering\\ImageFilterProcessing\\HeaderFiles\\ImageFilterProcessing.h"
 
 
 
@@ -21,9 +23,11 @@ protected: // create from serialization only
 	// Attributes
 public:
 
-	CCameraDataReceiver *m_CameraDataReceiver;
-	CPTSCommunicator     *m_PTSCommunicator;
-	COdroidCommunicator *m_OdroidCommunicator;
+	CCameraDataReceiver    *m_CameraDataReceiver;
+	CPTSCommunicator       *m_PTSCommunicator;
+	COdroidCommunicator    *m_OdroidCommunicator;
+	CCameraDBServer        *m_CameraDatabaseServer;
+	CImageFilterProcessing *m_ImageFilterProcessing;
 
 protected:
 	bool m_IsFirstTime;
@@ -33,11 +37,9 @@ public:
 	static void CALLBACK NotifyProcPTSComm(LPVOID lpParam, UINT nCode);
 	static void CALLBACK NotifyProcOdroidComm(LPVOID lpParam, UINT nCode);
 	static void CALLBACK NotifyProcCameraComm(LPVOID lpParam, UINT nCode);
-
+	static void CALLBACK NotifyProcImageFiltering(LPVOID lpParam, UINT nCode);
 
 	void Activate();
-
-
 	HANDLE  CreateOneAppMutex(LPCTSTR lpName);
 	ATOM    MyRegisterClass(HINSTANCE hInstance);
 
@@ -58,7 +60,7 @@ protected:  // control bar embedded members
 	CToolBar          m_wndToolBar;
 	CStatusBar        m_wndStatusBar;
 
-	HANDLE			m_hMutex;
+	HANDLE			m_hSemaphore;
 
 	// Generated message map functions
 protected:
@@ -67,8 +69,6 @@ protected:
 
 public:
 	afx_msg void OnMoving(UINT fwSide, LPRECT pRect);
-	//afx_msg void OnNcLButtonDblClk(UINT nHitTest, CPoint point);
-
 };
 
 

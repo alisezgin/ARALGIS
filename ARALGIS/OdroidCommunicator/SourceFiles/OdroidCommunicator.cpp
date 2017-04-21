@@ -62,13 +62,13 @@ BOOL COdroidCommunicator::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
 	ShutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	// Launch OdroidCommunicator Thread
-	ThreadOdroidCommunicator = (HANDLE)_beginthreadex(NULL,
-		0,
-		OdroidCommunicatorThread,
-		this,
-		0,
-		&ThreadID
-		);
+	ThreadOdroidCommunicator = (HANDLE)_beginthreadex  (NULL,
+														0,
+														OdroidCommunicatorThread,
+														this,
+														0,
+														&ThreadID
+														);
 	if (!ThreadOdroidCommunicator)
 	{
 		TRACE("_beginthreadex(...) failure, ThreadOdroidCommunicator::Start\n");
@@ -80,11 +80,11 @@ BOOL COdroidCommunicator::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
 
 	// Launch Comm Thread
 	ThreadComm = (HANDLE)_beginthreadex(NULL,
-		0,
-		CommThread,
-		this,
-		0,
-		&ThreadID);
+										0,
+										CommThread,
+										this,
+										0,
+										&ThreadID);
 	if (!ThreadComm)
 	{
 		TRACE("_beginthreadex(...) failure, ThreadOdroidCommunicator::Start OdroidCommThread\n");

@@ -79,6 +79,15 @@
     <Filter Include="Database\SourceFiles">
       <UniqueIdentifier>{c4cc699d-9978-4dc7-82bf-a4ae66ef86bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ImageFiltering\ImageFilterProcesing">
+      <UniqueIdentifier>{6b3141bb-aaa0-4667-93f5-391793af3089}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageFiltering\ImageFilterProcesing\HeaderFiles">
+      <UniqueIdentifier>{90bd310b-8ecb-433b-a777-d33c26421d4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageFiltering\ImageFilterProcesing\SourceFiles">
+      <UniqueIdentifier>{9a524954-c7c3-4d3c-9c7e-327939ee4b38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -192,9 +201,6 @@
     <ClInclude Include="BitmapDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CameraStartStop.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BitmapDisplay\HeaderFiles\MatBitmapConvert.h">
       <Filter>BitmapDisplay\HeaderFiles</Filter>
     </ClInclude>
@@ -252,14 +258,19 @@
     <ClInclude Include="BitmapDisplay\HeaderFiles\ShowpicCV.h">
       <Filter>BitmapDisplay\HeaderFiles</Filter>
     </ClInclude>
-    <ClInclude Include="UserTableSet.h">
+    <ClInclude Include="Database\HeaderFiles\UserTableSet.h">
       <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
-    <ClInclude Include="VehicleSet.h">
+    <ClInclude Include="Database\HeaderFiles\VehicleSet.h">
       <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
-    <ClInclude Include="VehicleView.h">
+    <ClInclude Include="Database\HeaderFiles\VehicleView.h">
       <Filter>Database\HeaderFiles</Filter>
+    <ClInclude Include="Database\HeaderFiles\CameraDBServer.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFiltering\ImageFilterProcessing\HeaderFiles\ImageFilterProcessing.h">
+      <Filter>ImageFiltering\ImageFilterProcesing\HeaderFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -297,9 +308,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BitmapDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraStartStop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BitmapDisplay\SourceFiles\MatBitmapConvert.cpp">
@@ -434,14 +442,19 @@
     <ClCompile Include="BitmapDisplay\SourceFiles\ShowpicCV.cpp">
       <Filter>BitmapDisplay\SourceFiles</Filter>
     </ClCompile>
-    <ClCompile Include="UserTableSet.cpp">
+    <ClCompile Include="Database\SourceFiles\UserTableSet.cpp">
       <Filter>Database\SourceFiles</Filter>
     </ClCompile>
-    <ClCompile Include="VehicleSet.cpp">
+    <ClCompile Include="Database\SourceFiles\VehicleSet.cpp">
       <Filter>Database\SourceFiles</Filter>
     </ClCompile>
-    <ClCompile Include="VehicleView.cpp">
+    <ClCompile Include="Database\SourceFiles\VehicleView.cpp">
       <Filter>Database\SourceFiles</Filter>
+    <ClCompile Include="Database\SourceFiles\CameraDBServer.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\ImageFilterProcessing\SourceFiles\ImageFilterProcessing.cpp">
+      <Filter>ImageFiltering\ImageFilterProcesing\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

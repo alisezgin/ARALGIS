@@ -41,6 +41,9 @@ CMainFrame::CMainFrame()
 
 	m_CameraDataReceiver = NULL;
 	m_PTSCommunicator = NULL;
+	m_OdroidCommunicator = NULL;
+	m_CameraDatabaseServer = NULL;
+	m_ImageFilterProcessing = NULL;
 }
 
 CMainFrame::~CMainFrame()
@@ -54,8 +57,14 @@ CMainFrame::~CMainFrame()
 	if (m_OdroidCommunicator)
 		delete m_OdroidCommunicator;
 
+	if (m_CameraDatabaseServer)
+		delete m_CameraDatabaseServer;
+
+	if (m_ImageFilterProcessing)
+		delete m_ImageFilterProcessing;
+
 	// Don't forget to release the semaphore
-	if (!ReleaseSemaphore(m_hMutex,  // handle to semaphore
+	if (!ReleaseSemaphore(m_hSemaphore,  // handle to semaphore
 						  1,           // increase count by one
 						  NULL))      // not interested in previous count
 	{
@@ -207,24 +216,12 @@ void CMainFrame::NotifyProcOdroidComm(LPVOID lpParam, UINT nCode)
 		case ODROID_CONNECTION_LOST:
 		{
 			pView->UpdatePeripheralStatus(false);
-
-			::MessageBox(NULL,
-				(LPCWSTR)L"Çevre Birimler ile Baðlantý Kayboldu",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
 		}
 			break;
 
 		case ODROID_CONNECTION_OK:
 		{
 			pView->UpdatePeripheralStatus(true);
-
-			::MessageBox(NULL,
-				(LPCWSTR)L"Çevre Birimler ile Baðlantý Kuruldu",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
 		}
 			break;			
 
@@ -262,11 +259,72 @@ void CMainFrame::NotifyProcCameraComm(LPVOID lpParam, UINT nCode)
 		switch (nCode)
 		{
 		case SET_TIMER_PERIOD_CAMERA:
-			pView->SetTimerPeriodCamera();
+			//pView->SetTimerDisplay();
 			break;
 
 		case KILL_TIMER_CAMERA:
-			pView->KillTimerCamera();
+			//pView->KillTimerCamera();
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// 
+// FUNCTION:	CMainFrame::NotifyProcImageFiltering
+// 
+// DESCRIPTION:	Handles the notification messages sent by ImageFilterProcessing.
+//              Updates the GUI according to the received message 
+//
+// INPUTS:		
+// 
+// NOTES:	
+// 
+// MODIFICATIONS:
+// 
+// Name				Date		Version		Comments
+// BN              28032017	    1.0			Origin
+// 
+//////////////////////////////////////////////////////////////////////////////// 
+void CMainFrame::NotifyProcImageFiltering(LPVOID lpParam, UINT nCode)
+{
+	CMainFrame* pFrame = (CMainFrame*)lpParam;
+
+	CARALGISView* pView = static_cast<CARALGISView*>(pFrame->GetActiveView());
+
+	if (pView)
+	{
+		switch (nCode)
+		{
+		case FILTER_PROCESS_FILTER1_READY:
+			//pView->SetTimerDisplay();
+			::MessageBox(NULL,
+				(LPCWSTR)L"Filter-1",
+				(LPCWSTR)WARNINGWINDOW_TITLE,
+				MB_OK | MB_ICONERROR
+				);
+			break;
+
+		case FILTER_PROCESS_FILTER2_READY:
+			//pView->KillTimerCamera();
+			::MessageBox(NULL,
+				(LPCWSTR)L"Filter-2",
+				(LPCWSTR)WARNINGWINDOW_TITLE,
+				MB_OK | MB_ICONERROR
+				);
+			break;
+
+		case FILTER_PROCESS_FILTER3_READY:
+			//pView->KillTimerCamera();
+			::MessageBox(NULL,
+				(LPCWSTR)L"Filter-3",
+				(LPCWSTR)WARNINGWINDOW_TITLE,
+				MB_OK | MB_ICONERROR
+				);
+			break;
 
 		default:
 			break;
@@ -292,15 +350,14 @@ void CMainFrame::Activate()
 	//
 	// Detect whether another instance of our application already exists.
 	// 
-	m_hMutex = CreateOneAppMutex(szMutexName);
+	m_hSemaphore = CreateOneAppMutex(szMutexName);
 
-	if (!m_hMutex)
+	if (!m_hSemaphore)
 	{
-		//CGetStringResource dStrRes;
+		// Another instance of our application already exists!
 
-		//// Another instance of our application already exists!
-		//::MessageBox(NULL, dStrRes.GetStringFromStringTable(IDS_ERROR101), //"ARALGIS Program Already Running.\nThis instance will shutdown",
-		//	szTitle, MB_ICONSTOP);
+		::MessageBox(NULL, (LPCWSTR)L"ARALGIS Program Already Running.\nThis instance will shutdown",
+			WARNINGWINDOW_TITLE, MB_ICONSTOP);
 
 		// Get that instance window handle
 		hPrevWnd = ::FindWindow(szWindowClass, szTitle);
@@ -332,11 +389,11 @@ void CMainFrame::Activate()
 			delete m_CameraDataReceiver;
 			m_CameraDataReceiver = NULL;
 
-			::MessageBox(NULL,
-				(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Kamera",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
+			::MessageBox( NULL,
+						 (LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Kamera",
+						 (LPCWSTR)WARNINGWINDOW_TITLE,
+						 MB_OK | MB_ICONERROR
+						);
 		}
 
 		// start the thread for PTS communication
@@ -346,11 +403,11 @@ void CMainFrame::Activate()
 			delete m_PTSCommunicator;
 			m_PTSCommunicator = NULL;
 
-			::MessageBox(NULL,
-				(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Plaka Tanýma Sistemi",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
+			::MessageBox( NULL,
+						 (LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Plaka Tanýma Sistemi",
+						 (LPCWSTR)WARNINGWINDOW_TITLE,
+						 MB_OK | MB_ICONERROR
+						);
 		}
 
 		// start the thread for Odroid communication
@@ -360,12 +417,43 @@ void CMainFrame::Activate()
 			delete m_OdroidCommunicator;
 			m_OdroidCommunicator = NULL;
 
+			::MessageBox( NULL,
+						 (LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Çevre Birimler",
+						 (LPCWSTR)WARNINGWINDOW_TITLE,
+						 MB_OK | MB_ICONERROR
+						);
+		}
+
+		// start the thread for Car Image - Database processing
+		m_CameraDatabaseServer = new CCameraDBServer;
+		if (!m_CameraDatabaseServer->Start(this))
+		{
+			delete m_CameraDatabaseServer;
+			m_CameraDatabaseServer = NULL;
+
+			::MessageBox( NULL,
+						  (LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: VeriTabaný",
+						  (LPCWSTR)WARNINGWINDOW_TITLE,
+						  MB_OK | MB_ICONERROR
+				        );
+		}
+
+
+		
+		// start the thread for Imahe Giltering
+		m_ImageFilterProcessing = new CImageFilterProcessing;
+		if (!m_ImageFilterProcessing->Start(NotifyProcImageFiltering, this))
+		{
+			delete m_ImageFilterProcessing;
+			m_ImageFilterProcessing = NULL;
+
 			::MessageBox(NULL,
-				(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Çevre Birimler",
+				(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Filtreleme",
 				(LPCWSTR)WARNINGWINDOW_TITLE,
 				MB_OK | MB_ICONERROR
 				);
 		}
+
 	}
 }
 
@@ -388,9 +476,10 @@ void CMainFrame::Activate()
 ////////////////////////////////////////////////////////////////////////////////
 HANDLE CMainFrame::CreateOneAppMutex(LPCTSTR lpName)
 {
-	HANDLE hMutex;
+	HANDLE hSemaphore;
 
-	hMutex = CreateMutex(NULL, TRUE, lpName);   // Create mutex
+	// Create semaphore
+	hSemaphore = CreateSemaphore(NULL, MAX_PROG_INSTANCE, MAX_PROG_INSTANCE, lpName);
 
 	switch (GetLastError())
 	{
@@ -404,7 +493,8 @@ HANDLE CMainFrame::CreateOneAppMutex(LPCTSTR lpName)
 		//
 		// Mutex already exists so there is a running instance of our app.
 		//
-		hMutex = NULL;
+		hSemaphore = OpenSemaphore(SEMAPHORE_ALL_ACCESS, TRUE, lpName);
+
 		break;
 
 	default:
@@ -414,7 +504,32 @@ HANDLE CMainFrame::CreateOneAppMutex(LPCTSTR lpName)
 		break;
 	}
 
-	return hMutex;
+	if (hSemaphore)
+	{
+		DWORD dwWaitResult;
+
+		// Try to enter the semaphore gate.
+
+		dwWaitResult = WaitForSingleObject(hSemaphore,   // handle to semaphore
+			0L);      // zero-second time-out interval
+
+		switch (dwWaitResult)
+		{
+			// The semaphore object was signaled.
+		case WAIT_OBJECT_0:
+			// OK to start another application.
+			return hSemaphore;
+			break;
+
+			// Semaphore was nonsignaled, so a time-out occurred.
+		case WAIT_TIMEOUT:
+			// Cannot start another application.
+			return NULL;
+			break;
+		}
+	}
+
+	return hSemaphore;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

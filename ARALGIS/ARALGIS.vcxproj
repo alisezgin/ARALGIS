@@ -120,8 +120,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);$(OPENCV_DIR)\include;$(OPENCV_DIR)\include\opencv2;$(OPENCV_DIR)\include\opencv;C:\Program Files\Teledyne DALSA\Sapera\Include;C:\Program Files\Teledyne DALSA\Sapera\Classes\Basic;C:\Program Files\Teledyne DALSA\Sapera\Classes\Gui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
       <MinimalRebuild>true</MinimalRebuild>
-      <ForcedIncludeFiles>
-      </ForcedIncludeFiles>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -211,7 +210,6 @@
     <ClInclude Include="BitmapDlg.h" />
     <ClInclude Include="CameraInterface\HeaderFiles\CameraDataReceiver.h" />
     <ClInclude Include="CameraInterface\HeaderFiles\ReceiveCameraImage.h" />
-    <ClInclude Include="CameraStartStop.h" />
     <ClInclude Include="ColourButton.h" />
     <ClInclude Include="ChangeDetection\HeaderFiles\ChangeDetectController.h" />
     <ClInclude Include="ChangeDetection\HeaderFiles\ChangeDetector.h" />
@@ -238,6 +236,8 @@
     <ClInclude Include="ChangeDetection\ProcessingAlgorithms\TransformImage.h" />
     <ClInclude Include="ColorFormView.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="Database\HeaderFiles\CameraDBServer.h" />
+    <ClInclude Include="Database\HeaderFiles\UserTable.h" />
     <ClInclude Include="ImageFiltering\HeaderFiles\cvt.hpp" />
     <ClInclude Include="ImageFiltering\HeaderFiles\Includes.h" />
     <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-cv.hpp" />
@@ -245,6 +245,7 @@
     <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-image.hpp" />
     <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-ml.hpp" />
     <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-timer.hpp" />
+    <ClInclude Include="ImageFiltering\ImageFilterProcessing\HeaderFiles\ImageFilterProcessing.h" />
     <ClInclude Include="InitGlobalVars.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="OdroidCommunicator\HeaderFiles\OdroidCommunicator.h" />
@@ -272,11 +273,13 @@
     <ClCompile Include="BitmapDlg.cpp" />
     <ClCompile Include="CameraInterface\SourceFiles\CameraDataReceiver.cpp" />
     <ClCompile Include="CameraInterface\SourceFiles\ReceiveCameraImage.cpp" />
-    <ClCompile Include="CameraStartStop.cpp" />
     <ClCompile Include="ChangeDetection\SourceFiles\ChangeDetectController.cpp" />
     <ClCompile Include="ChangeDetection\SourceFiles\ChangeDetector.cpp" />
     <ClCompile Include="ColorFormView.cpp" />
     <ClCompile Include="ColourButton.cpp" />
+    <ClCompile Include="Database\SourceFiles\CameraDBServer.cpp" />
+    <ClCompile Include="Database\SourceFiles\UserTable.cpp" />
+    <ClCompile Include="ImageFiltering\ImageFilterProcessing\SourceFiles\ImageFilterProcessing.cpp" />
     <ClCompile Include="ImageFiltering\SourceFiles\attack.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>

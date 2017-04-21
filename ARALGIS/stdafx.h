@@ -16,7 +16,7 @@
 // turns off MFC's hiding of some common and often safely ignored warning messages
 #define _AFX_ALL_WARNINGS
 
-// #include <vld.h> 
+#include <vld.h> 
 
 
 #include <afxwin.h>         // MFC core and standard components
@@ -28,7 +28,7 @@
 ////////////////////////////////////
 //// memory leak detection begins
 #define _CRTDBG_MAP_ALLOC  
-#include <stdlib.h>  
+#include <stdlib.h>   
 #include <crtdbg.h> 
 
 #ifdef _DEBUG

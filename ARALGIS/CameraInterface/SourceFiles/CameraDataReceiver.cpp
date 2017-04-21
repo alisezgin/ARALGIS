@@ -154,8 +154,6 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 				return 2;
 			}
 
-			//g_iTimerPeriod = tFrameTime;
-			//pServer->m_pNotifyProc((LPVOID)pServer->m_pFrame, SET_TIMER_PERIOD_CAMERA);
 			SetEvent(g_CameraUpdateControlsEvent);
 		}
 
@@ -164,8 +162,6 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 			ResetEvent(g_KillTimerEvent);
 
 			CancelWaitableTimer(pServer->m_hTimer);
-
-			//pServer->m_pNotifyProc((LPVOID)pServer->m_pFrame, KILL_TIMER_CAMERA);
 
 			// send image data to Doc class
 			pServer->m_MyCamera.GetCameraDataAsMat();

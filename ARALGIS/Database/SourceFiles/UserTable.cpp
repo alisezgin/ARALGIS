@@ -7,11 +7,10 @@
 // code generated on Monday, April 10, 2017, 3:42 PM
 
 #include "stdafx.h"
-#include "UserTableSet.h"
+#include "..\HeaderFiles\UserTable.h"
+IMPLEMENT_DYNAMIC(CUserTable, CRecordset)
 
-IMPLEMENT_DYNAMIC(CUserTableSet, CRecordset)
-
-CUserTableSet::CUserTableSet(CDatabase* pdb)
+CUserTable::CUserTable(CDatabase* pdb)
 	: CRecordset(pdb)
 {
 	m_UserID = 0;
@@ -25,24 +24,24 @@ CUserTableSet::CUserTableSet(CDatabase* pdb)
 	m_PasswordOld = "";
 	m_Status = FALSE;
 	m_nFields = 10;
-	m_nDefaultType = dynaset;
+	m_nDefaultType = snapshot;
 }
 //#error Security Issue: The connection string may contain a password
 // The connection string below may contain plain text passwords and/or
 // other sensitive information. Please remove the #error after reviewing
 // the connection string for any security related issues. You may want to
 // store the password in some other form or use a different user authentication.
-CString CUserTableSet::GetDefaultConnect()
+CString CUserTable::GetDefaultConnect()
 {
 	return _T("DSN=AralgisDB;Description=Working DB for ARALGIS project;Trusted_Connection=Yes;APP=Microsoft\x00ae Visual Studio\x00ae 2013;WSID=FUZYON-SW;DATABASE=AliDummy;");
 }
 
-CString CUserTableSet::GetDefaultSQL()
+CString CUserTable::GetDefaultSQL()
 {
 	return _T("[dbo].[UserTable]");
 }
 
-void CUserTableSet::DoFieldExchange(CFieldExchange* pFX)
+void CUserTable::DoFieldExchange(CFieldExchange* pFX)
 {
 	pFX->SetFieldType(CFieldExchange::outputColumn);
 // Macros such as RFX_Text() and RFX_Int() are dependent on the
@@ -64,12 +63,12 @@ void CUserTableSet::DoFieldExchange(CFieldExchange* pFX)
 // CUserTable diagnostics
 
 #ifdef _DEBUG
-void CUserTableSet::AssertValid() const
+void CUserTable::AssertValid() const
 {
 	CRecordset::AssertValid();
 }
 
-void CUserTableSet::Dump(CDumpContext& dc) const
+void CUserTable::Dump(CDumpContext& dc) const
 {
 	CRecordset::Dump(dc);
 }

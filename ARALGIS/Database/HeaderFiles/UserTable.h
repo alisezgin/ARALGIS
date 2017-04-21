@@ -4,11 +4,11 @@
 
 // code generated on Monday, April 10, 2017, 3:42 PM
 
-class CUserTableSet : public CRecordset
+class CUserTable : public CRecordset
 {
 public:
-	CUserTableSet(CDatabase* pDatabase = NULL);
-	DECLARE_DYNAMIC(CUserTableSet)
+	CUserTable(CDatabase* pDatabase = NULL);
+	DECLARE_DYNAMIC(CUserTable)
 
 // Field/Param Data
 
@@ -21,16 +21,16 @@ public:
 // to support both Unicode and these conversions).
 
 	// database table variables
-	long		m_UserID;
+	long	m_UserID;
 	CStringA	m_FirstName;
 	CStringA	m_LastName;
-	long		m_GroupID;
+	long	m_GroupID;
 	CStringA	m_UserName;
-	CTime		m_RegDate;
-	CTime		m_DelDate;
+	CTime	m_RegDate;
+	CTime	m_DelDate;
 	CStringA	m_Password;
 	CStringA	m_PasswordOld;
-	BOOL		m_Status;
+	BOOL	m_Status;
 
 // Overrides
 	// Wizard generated virtual function overrides

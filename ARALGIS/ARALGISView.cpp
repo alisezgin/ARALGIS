@@ -19,7 +19,6 @@
 
 #include "ARALGISDoc.h"
 #include "ARALGISView.h"
-#include "CameraStartStop.h"
 #include ".\\ChangeDetection\\HeaderFiles\\ChangeDetectController.h"
 
 #include ".\ImageFiltering\HeaderFiles\pixkit-timer.hpp"
@@ -30,11 +29,12 @@
 #include ".\ImageFiltering\HeaderFiles\cvt.hpp"
 
 
+
 //#include ".\\BitmapDisplay\\HeaderFiles\\PkMattoGDI.h"
 
 
 #ifdef _DEBUG
-#define new DEBUG_NEW 
+#define new DEBUG_NEW
 #endif
 
 
@@ -48,11 +48,11 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 	ON_MESSAGE(WM_CAMERA_DATA_READY, &CARALGISView::OnCameraDataReady)
+	ON_MESSAGE(WM_DBASE_CAR_INFO_READY, &CARALGISView::OnDBaseCarInfoReady)
 	ON_COMMAND(ID_KAMERA_KONFIG32771, &CARALGISView::OnCameraConfig)
 	ON_COMMAND(ID_KAMERA_KAY32772, &CARALGISView::OnSelectRecording)
 	ON_COMMAND(ID_RESIMG32774, &CARALGISView::OnDisplaySelectedBitmap)
 	ON_COMMAND(ID_RESIMG32775, &CARALGISView::OnDisplayOpenCV)
-	ON_COMMAND(ID_KAMERA_DURUDU, &CARALGISView::OnCameraStartStop)
 	ON_BN_CLICKED(IDC_BUTTON_BARRIER_OPEN, &CARALGISView::OnBnClickedButtonBarrierOpen)
 	ON_BN_CLICKED(IDC_BUTTON_BARRIER_CLOSE, &CARALGISView::OnBnClickedButtonBarrierClose)
 	ON_BN_CLICKED(IDC_BUTTON_HEATER_ON, &CARALGISView::OnBnClickedButtonHeaterOn)
@@ -61,6 +61,10 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_BN_CLICKED(IDC_BUTTON_ALARM_OFF, &CARALGISView::OnBnClickedButtonAlarmOff)
 	ON_WM_TIMER()
 	ON_WM_PAINT()
+	ON_WM_ERASEBKGND()
+	ON_BN_CLICKED(IDC_BUTTON_FILTER1, &CARALGISView::OnBnClickedButtonFilter1)
+	ON_BN_CLICKED(IDC_BUTTON_FILTER2, &CARALGISView::OnBnClickedButtonFilter2)
+	ON_BN_CLICKED(IDC_BUTTON_FILTER3, &CARALGISView::OnBnClickedButtonFilter3)
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -70,16 +74,14 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 
 {
 	// TODO: add construction code here
-	//for (int i = 0; i < MAX_BUFFER; i++)
-	//{
-	//	m_selList[i] = TRUE;
-	//}
 
 	m_RefImgBMP = new CStatic;
 	m_TestImgBMP = new CStatic;
 
 	m_MatToGDITest = NULL;
 	m_MatToGDIRef = NULL;
+
+	m_iDisplayTestImageType = 0;
 
 
 	strcpy_s(m_FilenameRef, "C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp\0");
@@ -99,6 +101,9 @@ CARALGISView::~CARALGISView()
 
 	if (m_MatToGDIRef)
 		delete m_MatToGDIRef;
+
+	if (g_CarPlakaImage)
+		delete g_CarPlakaImage;
 }
 
 
@@ -108,11 +113,15 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Control(pDX, IDC_BMP_REFERENCE, *m_RefImgBMP);
 	DDX_Control(pDX, IDC_BMP_TEST, *m_TestImgBMP);
-
 	DDX_Text(pDX, IDC_EDIT_PLAKA, m_PlakaStr);
 	DDX_Control(pDX, IDC_EDIT_PLAKA, m_PlakaCtrl);
 	DDX_Control(pDX, IDC_STATIC_PLAKA, m_CarPlakaImageStatic);
-
+	DDX_Control(pDX, IDC_BUTTON_BARRIER_OPEN, m_BarrierOpenBtn);
+	DDX_Control(pDX, IDC_BUTTON_BARRIER_CLOSE, m_BarrierCloseBtn);
+	DDX_Control(pDX, IDC_BUTTON_HEATER_ON, m_HeaterStartBtn);
+	DDX_Control(pDX, IDC_BUTTON_HEATER_OFF, m_HeterStopBtn);
+	DDX_Control(pDX, IDC_BUTTON_ALARM_ON, m_AlarmStartBtn);
+	DDX_Control(pDX, IDC_BUTTON_ALARM_OFF, m_AlarmStop);
 }
 
 BOOL CARALGISView::PreCreateWindow(CREATESTRUCT& cs)
@@ -140,12 +149,10 @@ void CARALGISView::OnInitialUpdate()
 {
 	CColorFormView::OnInitialUpdate();
 
-	SetBackgroundColor(RGB(0, 128, 128));
+	SetBackgroundColor(RGB(242, 221, 255));
 
 	GetParentFrame()->RecalcLayout();
 	ResizeParentToFit();
-
-	///// LOAD openCV --> bitmap picture
 
 	// TODO: Add extra initialization here
 	BOOL bOk = FALSE;
@@ -246,6 +253,13 @@ void CARALGISView::OnInitialUpdate()
 
 	m_PeripheralStatus.SetColour(WHITE, RED);
 	m_PTS_Status.SetColour(WHITE, RED);
+
+	m_BarrierOpenBtn.EnableWindow(FALSE);
+	m_BarrierCloseBtn.EnableWindow(FALSE);
+	m_HeaterStartBtn.EnableWindow(FALSE);
+	m_HeterStopBtn.EnableWindow(FALSE);
+	m_AlarmStartBtn.EnableWindow(FALSE);
+	m_AlarmStop.EnableWindow(FALSE);
 }
 
 
@@ -291,16 +305,12 @@ CARALGISDoc* CARALGISView::GetDocument() const // non-debug version is inline
 
 // CARALGISView message handlers
 
-
-
-
 afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 {
 	cv::Mat dMat1, dMat2;
 
 	//g_CVImageTest = cv::imread("C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp", cv::IMREAD_COLOR);
 
-	
 	transpose(g_CVImageTest, dMat1);
 	flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
 	dMat2.copyTo(g_CVImageTest);
@@ -312,57 +322,64 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 		m_MatToGDITest = NULL;
 	}
 
+	m_iDisplayTestImageType = 0;
+
 	m_MatToGDITest = new PkMatToGDI(m_TestImgBMP, false);
-	m_MatToGDITest->CvMatToWinControl(g_CVImageTest, m_TestImgBMP);
+	m_MatToGDITest->DrawImg(g_CVImageTest);
 
-
-	//m_TestImgBMP->GetcvImage(g_CVImageTest);
-
-	//convertMattoBmpTest();
-
-	cv::namedWindow("GörüntüXX", cv::WINDOW_NORMAL);
-	cv::imshow("GörüntüXX", g_CVImageTest);
+    // code to be deleted when test image
+	// display is stabilized.........
+	// code deletion starts here
+	cv::namedWindow("Gï¿½rï¿½ntï¿½XX", cv::WINDOW_NORMAL);
+	cv::imshow("Gï¿½rï¿½ntï¿½XX", g_CVImageTest);
 	cv::waitKey(150);
+	// code deletion ends here
+
+	// code to be deleted when dbase handler
+	// thread is added
+	// code deletion starts here
+	LPARAM pLparam;
+	pLparam = reinterpret_cast<LPARAM>("ARALGIS");
+	SendMessage(WM_DBASE_CAR_INFO_READY, 0, pLparam);
+	// code deletion ends here
 
 	// get Singleton ChangeDetectionController and start the change detection process
-	//CChangeDetectController::getInstance()->process(m_FilenameRef, m_FilenameTest);
+	CChangeDetectController::getInstance()->process(m_FilenameRef, m_FilenameTest);
 
 	return 0;
 }
 
-void CARALGISView::convertMattoBmpTest()
+
+afx_msg LRESULT CARALGISView::OnDBaseCarInfoReady(WPARAM wParam, LPARAM lParam)
 {
-	//m_TestImgBMP->m_un32ImageWidth = g_CVImageTest.cols;
-	//m_TestImgBMP->m_un32ImageHeight = g_CVImageTest.rows;
-	//m_TestImgBMP->m_un32ImageBits = CAM_BITS;
-	////m_TestImgBMP->m_iSizeImage = (DWORD)g_CVImageTest.elemSize() * m_TestImgBMP->m_un32ImageWidth * m_TestImgBMP->m_un32ImageHeight;
-	//
-	//if (m_TestImgBMP->m_pImageBytes)
-	//{
-	//	delete m_TestImgBMP->m_pImageBytes;
-	//	m_TestImgBMP->m_pImageBytes = NULL;
-	//}
-	//
-	////cv::cvtColor(*m_InImage, *m_InImage, CV_BGRA2RGBA);
-	//int dByteSize = 0;
-	//BYTE* outData;
+	//g_CVImageRef = cv::imread(g_RefImageFileName, cv::IMREAD_COLOR);
 
-	//m_gdiPlus.Init();
+	g_CVImageRef = cv::imread("C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp", cv::IMREAD_COLOR);
 
-	//outData = m_gdiPlus.CopyMatToBmpBora(g_CVImageTest, &dByteSize);
-
-	//m_TestImgBMP->m_iSizeImage = (DWORD)dByteSize;
-	//m_TestImgBMP->m_pImageBytes = new BYTE[m_TestImgBMP->m_iSizeImage];
-	//m_TestImgBMP->MakeBMPHeader();
+	// no need to transpose+flip
+	// since image files are written landscape!!!
+	// for the time being for testing purposes
+	// these operations are needed.
+	// delete below code for real system
+	// code deletion starts here
+	cv::Mat dMat1, dMat2;
+	transpose(g_CVImageRef, dMat1);
+	flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
+	dMat2.copyTo(g_CVImageRef);
+	// code deletion ends here
 
 
-	//m_TestImgBMP->ShowImage(outData);
-	//GetDocument()->UpdateAllViews(nullptr, 0, 0);
+	if (m_MatToGDIRef != NULL)
+	{
+		delete m_MatToGDIRef;
+		m_MatToGDIRef = NULL;
+	}
 
-	//delete outData;
+	m_MatToGDIRef = new PkMatToGDI(m_RefImgBMP, false);
+	m_MatToGDIRef->DrawImg(g_CVImageRef);
+
+	return 0;
 }
-
-
 
 void CARALGISView::OnCameraConfig()
 {
@@ -388,38 +405,61 @@ void CARALGISView::OnDisplayOpenCV()
 }
 
 
-void CARALGISView::OnCameraStartStop()
-{
-	CCameraStartStop dDlg;
-
-	dDlg.DoModal();
-}
-
 
 
 void CARALGISView::DisplayPTSImage()
 {
 	// TODO: Add your command handler code here
-	m_CarPlakaImageStatic.Load(g_CarPlakaImage, (size_t)m_CarPlakaImageLenght);
+	m_CarPlakaImageStatic.Load(g_CarPlakaImage, (size_t)g_CarPlakaImageLenght);
 
-	//CString aCString = CString(_T("A string"));
-
-
-	CString aCString = CString(_T("A string"));
+	CString aCString;
+	CString bCString = CString(_T("         "));
 
 	aCString = g_PlakaNoChars;
-	CFont myFont;
-	myFont.CreateFont(-80, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _T("Verdana"));
-	
-	m_PlakaCtrl.SetFont(&myFont);
 
-	m_PlakaCtrl.SetWindowTextW(aCString);
+	CFont font;
+	VERIFY(font.CreateFont(
+		40,                        // nHeight
+		20,                         // nWidth
+		0,                         // nEscapement
+		0,                         // nOrientation
+		FW_NORMAL,                 // nWeight
+		FALSE,                     // bItalic
+		FALSE,                     // bUnderline
+		0,                         // cStrikeOut
+		ANSI_CHARSET,              // nCharSet
+		OUT_DEFAULT_PRECIS,        // nOutPrecision
+		CLIP_DEFAULT_PRECIS,       // nClipPrecision
+		DEFAULT_QUALITY,           // nQuality
+		DEFAULT_PITCH | FF_SWISS,  // nPitchAndFamily
+		_T("Arial")));                 // lpszFacename
+
+
+
+	// Done with the font.  Delete the font object.
+
+	RECT r;
+	CWnd* h = GetDlgItem(IDC_EDIT_PLAKA);
+	h->GetWindowRect(&r); //get window rect of control relative to screen
+	POINT pt = { r.left, r.top }; //new point object using rect x, y
+	ScreenToClient(&pt); //convert screen co-ords to client based points
+
+	// Do something with the font just created...
+	CClientDC dc(this);
+	CFont* def_font = dc.SelectObject(&font);
+	dc.TextOut(pt.x, pt.y, bCString, 9);
+	dc.TextOut(pt.x, pt.y, aCString, 8);
+	dc.SelectObject(def_font);
+
+	font.DeleteObject();
+
+	SetTimerDisplay();
 }
 
 void CARALGISView::DeletePTSImage()
 {
 	// TODO: Add your command handler code here
-
+	//m_CarPlakaImageStatic.FreeData();
 }
 
 void CARALGISView::UpdatePTSStatus(bool aStatus)
@@ -439,10 +479,22 @@ void CARALGISView::UpdatePeripheralStatus(bool aStatus)
 	if (aStatus == true)
 	{
 		m_PeripheralStatus.SetColour(WHITE, GREEN);
+		m_BarrierOpenBtn.EnableWindow(TRUE);
+		m_BarrierCloseBtn.EnableWindow(TRUE);
+		m_HeaterStartBtn.EnableWindow(TRUE);
+		m_HeterStopBtn.EnableWindow(TRUE);
+		m_AlarmStartBtn.EnableWindow(TRUE);
+		m_AlarmStop.EnableWindow(TRUE);
 	}
 	else
 	{
 		m_PeripheralStatus.SetColour(WHITE, RED);
+		m_BarrierOpenBtn.EnableWindow(FALSE);
+		m_BarrierCloseBtn.EnableWindow(FALSE);
+		m_HeaterStartBtn.EnableWindow(FALSE);
+		m_HeterStopBtn.EnableWindow(FALSE);
+		m_AlarmStartBtn.EnableWindow(FALSE);
+		m_AlarmStop.EnableWindow(FALSE);
 	}
 }
 
@@ -486,27 +538,42 @@ void CARALGISView::OnBnClickedButtonAlarmOff()
 	// TODO: Add your control notification handler code here
 	SetEvent(g_OdroidStopAlarmEvent);
 
-	SetEvent(g_KillTimerEvent);
+	//CColorDialog dlg;
+
+	//INT_PTR nRet = dlg.DoModal();
+
+	//if (IDOK == nRet)
+	//{
+	//	COLORREF crBackground = dlg.GetColor();
+	//	// set dialog background color
+	//	SetBackgroundColor(crBackground);
+
+	//	// see action
+	//	RedrawWindow();
+	//}
 }
 
 
-void CARALGISView::SetTimerPeriodCamera()
+void CARALGISView::SetTimerDisplay()
 {
 	// added by bora, start 1 second interval timer
-	SetTimer(CAMERA_TIMER_ID, g_iTimerPeriod, NULL);
+	m_TimerSecondCounter = 0;
+	KillTimer(DISPLAY_TIMER_ID);
+	SetTimer(DISPLAY_TIMER_ID, TIMER_PERIOD_IN_MS, NULL);
 }
-
-void CARALGISView::KillTimerCamera()
-{
-	KillTimer(CAMERA_TIMER_ID);
-}
-
 
 void CARALGISView::OnTimer(UINT_PTR nIDEvent)
 {
-	if (nIDEvent == CAMERA_TIMER_ID)
+	if (nIDEvent == DISPLAY_TIMER_ID)
 	{
-		SetEvent(g_mCameraTimerEvent);
+		m_TimerSecondCounter++;
+
+		if (m_TimerSecondCounter == PLAKA_TIME_ON_SCREEN)
+		{
+			// do something
+			DeletePTSImage();
+			KillTimer(DISPLAY_TIMER_ID);
+		}
 	} // End if.
 	CColorFormView::OnTimer(nIDEvent);
 }
@@ -519,8 +586,98 @@ void CARALGISView::OnPaint()
 	// TODO: Add your message handler code here
 	// Do not call CColorFormView::OnPaint() for painting messages
 
-	if (g_CVImageTest.rows != 0)
+	if (m_MatToGDITest != NULL)
 	{
-		m_MatToGDITest->DrawImg(g_CVImageTest);
+		delete m_MatToGDITest;
+		m_MatToGDITest = NULL;
+		m_MatToGDITest = new PkMatToGDI(m_TestImgBMP, false);
+
+		if (g_CVImageTest.rows != 0)
+		{
+			if (m_iDisplayTestImageType == 0)
+			{
+				m_MatToGDITest->DrawImg(g_CVImageTest);
+			}
+			else if (m_iDisplayTestImageType == 1)
+			{
+				m_MatToGDITest->DrawImg(g_CVImageTestFilter1);
+			}
+			else if (m_iDisplayTestImageType == 2)
+			{
+				m_MatToGDITest->DrawImg(g_CVImageTestFilter2);
+			}
+			else if (m_iDisplayTestImageType == 3)
+			{
+				m_MatToGDITest->DrawImg(g_CVImageTestFilter3);
+			}
+		}
 	}
+
+
+
+	if (m_MatToGDIRef != NULL)
+	{
+		delete m_MatToGDIRef;
+		m_MatToGDIRef = NULL;
+
+		m_MatToGDIRef = new PkMatToGDI(m_RefImgBMP, false);
+
+		if (g_CVImageRef.rows != 0)
+		{
+			m_MatToGDIRef->DrawImg(g_CVImageRef);
+		}
+	}
+
+}
+
+
+BOOL CARALGISView::OnEraseBkgnd(CDC* pDC)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	return CColorFormView::OnEraseBkgnd(pDC);
+}
+
+
+void CARALGISView::OnBnClickedButtonFilter1()
+{
+	if (g_CVImageTest.cols > 0)
+	{
+		m_iDisplayTestImageType = 1;
+		pixkit::enhancement_local::MSRCP2014(g_CVImageTest, g_CVImageTestFilter1, 15, 127, 255, (float)0.1, (float)0.1);
+		m_MatToGDITest->DrawImg(g_CVImageTestFilter1);
+	}
+
+	SetEvent(g_ProcessFilter1Event);
+}
+
+
+void CARALGISView::OnBnClickedButtonFilter2()
+{
+	if (g_CVImageTest.cols > 0)
+	{
+		m_iDisplayTestImageType = 2;
+
+		cv::Mat inGray;
+		cv::cvtColor(g_CVImageTest, inGray, CV_RGB2GRAY);
+
+		pixkit::enhancement_global::GlobalHistogramEqualization1992(inGray, g_CVImageTestFilter2);
+		m_MatToGDITest->DrawImg(g_CVImageTestFilter2);
+	}
+	SetEvent(g_ProcessFilter2Event);
+}
+
+
+void CARALGISView::OnBnClickedButtonFilter3()
+{
+	if (g_CVImageTest.cols > 0)
+	{
+		m_iDisplayTestImageType = 3;
+		cv::Mat inGray;
+		cv::cvtColor(g_CVImageTest, inGray, CV_RGB2GRAY);
+
+		pixkit::enhancement_local::CLAHEnon1987(inGray, g_CVImageTestFilter3, cv::Size(8, 8));
+		m_MatToGDITest->DrawImg(g_CVImageTestFilter3);
+	}
+	SetEvent(g_ProcessFilter3Event);
 }

@@ -716,7 +716,7 @@ void CPTSCommunicator::GetImageData(BYTE* imgDataIn, int dataLenIn)
 	g_CarPlakaImage = new BYTE[dataLenIn];
 
 	memcpy_s(g_CarPlakaImage, dataLenIn, imgDataIn, dataLenIn);
-	m_CarPlakaImageLenght = dataLenIn;
+	g_CarPlakaImageLenght = dataLenIn;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
