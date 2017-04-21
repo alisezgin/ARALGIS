@@ -249,11 +249,17 @@
     <ClInclude Include="ColourButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UserTable.h">
-      <Filter>Database\HeaderFiles</Filter>
-    </ClInclude>
     <ClInclude Include="BitmapDisplay\HeaderFiles\ShowpicCV.h">
       <Filter>BitmapDisplay\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="UserTableSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="VehicleSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="VehicleView.h">
+      <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -425,11 +431,17 @@
     <ClCompile Include="ColourButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UserTable.cpp">
-      <Filter>Database\SourceFiles</Filter>
-    </ClCompile>
     <ClCompile Include="BitmapDisplay\SourceFiles\ShowpicCV.cpp">
       <Filter>BitmapDisplay\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="UserTableSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="VehicleSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="VehicleView.cpp">
+      <Filter>Database\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
