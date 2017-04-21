@@ -258,6 +258,12 @@
     <ClInclude Include="BitmapDisplay\HeaderFiles\ShowpicCV.h">
       <Filter>BitmapDisplay\HeaderFiles</Filter>
     </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\CameraDBServer.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFiltering\ImageFilterProcessing\HeaderFiles\ImageFilterProcessing.h">
+      <Filter>ImageFiltering\ImageFilterProcesing\HeaderFiles</Filter>
+    </ClInclude>
     <ClInclude Include="Database\HeaderFiles\UserTableSet.h">
       <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
@@ -266,11 +272,6 @@
     </ClInclude>
     <ClInclude Include="Database\HeaderFiles\VehicleView.h">
       <Filter>Database\HeaderFiles</Filter>
-    <ClInclude Include="Database\HeaderFiles\CameraDBServer.h">
-      <Filter>Database\HeaderFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageFiltering\ImageFilterProcessing\HeaderFiles\ImageFilterProcessing.h">
-      <Filter>ImageFiltering\ImageFilterProcesing\HeaderFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -442,6 +443,12 @@
     <ClCompile Include="BitmapDisplay\SourceFiles\ShowpicCV.cpp">
       <Filter>BitmapDisplay\SourceFiles</Filter>
     </ClCompile>
+    <ClCompile Include="Database\SourceFiles\CameraDBServer.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\ImageFilterProcessing\SourceFiles\ImageFilterProcessing.cpp">
+      <Filter>ImageFiltering\ImageFilterProcesing\SourceFiles</Filter>
+    </ClCompile>
     <ClCompile Include="Database\SourceFiles\UserTableSet.cpp">
       <Filter>Database\SourceFiles</Filter>
     </ClCompile>
@@ -450,11 +457,6 @@
     </ClCompile>
     <ClCompile Include="Database\SourceFiles\VehicleView.cpp">
       <Filter>Database\SourceFiles</Filter>
-    <ClCompile Include="Database\SourceFiles\CameraDBServer.cpp">
-      <Filter>Database\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\ImageFilterProcessing\SourceFiles\ImageFilterProcessing.cpp">
-      <Filter>ImageFiltering\ImageFilterProcesing\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

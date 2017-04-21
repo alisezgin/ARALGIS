@@ -65,6 +65,9 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_BN_CLICKED(IDC_BUTTON_FILTER1, &CARALGISView::OnBnClickedButtonFilter1)
 	ON_BN_CLICKED(IDC_BUTTON_FILTER2, &CARALGISView::OnBnClickedButtonFilter2)
 	ON_BN_CLICKED(IDC_BUTTON_FILTER3, &CARALGISView::OnBnClickedButtonFilter3)
+	ON_LBN_SELCHANGE(IDC_FORM_LISTBOX, &CARALGISView::OnLbnSelchangeList2)
+	ON_BN_CLICKED(IDC_FORM_ADDCOMMAND, &CARALGISView::OnAdd)
+	ON_BN_CLICKED(IDC_FORM_BMODIFY, &CARALGISView::OnGuncelle)
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -72,6 +75,11 @@ END_MESSAGE_MAP()
 CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 , m_PlakaStr(_T(""))
 
+, m_FormLPEntry(_T(""))
+, m_FormELPI(_T(""))
+, m_FormEFVI(_T(""))
+, m_FormECBCI(_T(""))
+, m_FormECBRI(_T(""))
 {
 	// TODO: add construction code here
 
@@ -122,6 +130,13 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_HEATER_OFF, m_HeterStopBtn);
 	DDX_Control(pDX, IDC_BUTTON_ALARM_ON, m_AlarmStartBtn);
 	DDX_Control(pDX, IDC_BUTTON_ALARM_OFF, m_AlarmStop);
+	DDX_Control(pDX, IDC_FORM_LISTBOX, m_FormListBox);
+	DDX_Text(pDX, IDC_FORM_LPENTRY, m_FormLPEntry);
+	DDX_Text(pDX, IDC_FORM_ELP, m_FormELP);
+	DDX_Text(pDX, IDC_FORM_ELPI, m_FormELPI);
+	DDX_Text(pDX, IDC_FORM_EFVI, m_FormEFVI);
+	DDX_Text(pDX, IDC_FORM_ECBCI, m_FormECBCI);
+	DDX_Text(pDX, IDC_FORM_ECBRI, m_FormECBRI);
 }
 
 BOOL CARALGISView::PreCreateWindow(CREATESTRUCT& cs)
@@ -149,7 +164,7 @@ void CARALGISView::OnInitialUpdate()
 {
 	CColorFormView::OnInitialUpdate();
 
-	SetBackgroundColor(RGB(242, 221, 255));
+	SetBackgroundColor(RGB(240, 240, 240));
 
 	GetParentFrame()->RecalcLayout();
 	ResizeParentToFit();
@@ -680,4 +695,35 @@ void CARALGISView::OnBnClickedButtonFilter3()
 		m_MatToGDITest->DrawImg(g_CVImageTestFilter3);
 	}
 	SetEvent(g_ProcessFilter3Event);
+}
+
+
+void CARALGISView::OnLbnSelchangeList2()
+{
+	// TODO: Add your control notification handler code here
+	CString strLP;
+	int index = m_FormListBox.GetCurSel();
+	m_FormListBox.GetText(index, strLP);
+
+	MessageBox(strLP);
+}
+
+
+void CARALGISView::OnAdd()
+{
+	// TODO: Add your control notification handler code here
+	CString strNewLP;
+
+	UpdateData();
+
+	strNewLP = m_FormLPEntry;
+	UpdateData(FALSE);
+	m_FormListBox.AddString(strNewLP);
+}
+
+
+void CARALGISView::OnGuncelle()
+{
+	// TODO: Add your control notification handler code here
+	// it should open a dialog for row entry into the Vehicle database
 }

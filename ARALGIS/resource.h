@@ -31,10 +31,12 @@
 #define IDC_EDIT_PLAKA_NO               1011
 #define IDC_BMP_CAR_PLAKA               1012
 #define IDC_EDIT_PLAKA                  1013
+#define IDC_FORM_LPENTRY                1013
 #define IDC_STATIC_PLAKA                1014
 #define IDC_EDIT1                       1015
 #define IDC_EDIT_KAMERA_NO              1015
 #define IDC_VEHICLE_ID                  1015
+#define IDC_FORM_ELP                    1015
 #define IDC_BUTTON_BARRIER_OPEN         1016
 #define IDC_VEHICLE_LP                  1016
 #define IDC_BUTTON_BARRIER_CLOSE        1017
@@ -47,17 +49,24 @@
 #define IDC_BUTTON_PERIPHERAL_STATUS    1020
 #define IDC_VEHICLE_CBRI                1020
 #define IDC_BUTTON_HEATER_STATUS        1021
+#define IDC_FORM_ELPI                   1021
 #define IDC_BUTTON_PTS_STATUS           1022
 #define IDC_STATIC_PTS                  1023
 #define IDC_STATIC_BARRIER              1024
+#define IDC_FORM_EFVI                   1025
+#define IDC_FORM_ECBCI                  1026
 #define IDC_BUTTON_ALARM_ON             1027
 #define IDC_BUTTON_ALARM_OFF            1028
-#define IDC_VEHICLE_LASTVISIT           1040
 #define IDC_LIST1                       1029
+#define IDC_FORM_ECBRI                  1029
 #define IDC_BUTTON_FILTER1              1030
 #define IDC_BUTTON_FILTER2              1031
 #define IDC_BUTTON_FILTER3              1032
 #define IDC_STATIC_FILTERS              1033
+#define IDC_FORM_LISTBOX                1034
+#define IDC_FORM_ADDCOMMAND             1035
+#define IDC_FORM_BMODIFY                1036
+#define IDC_VEHICLE_LASTVISIT           1040
 #define ID_KAMERA_KONFIG32771           32771
 #define ID_KAMERA_KAY32772              32772
 #define ID_KAMERA_RESIMG32773           32773
@@ -113,7 +122,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        313
 #define _APS_NEXT_COMMAND_VALUE         32810
-#define _APS_NEXT_CONTROL_VALUE         1034
+#define _APS_NEXT_CONTROL_VALUE         1037
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

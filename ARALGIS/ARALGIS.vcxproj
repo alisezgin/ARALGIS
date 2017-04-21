@@ -77,7 +77,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>.\ARALGIS\ImageFiltering\HeaderFiles;$(IncludePath)</IncludePath>
+    <IncludePath>$(MSBuildProjectDirectory)\Database\HeaderFiles;.\ARALGIS\ImageFiltering\HeaderFiles;$(IncludePath)</IncludePath>
+    <SourcePath>.\ARALGIS\Database\SourceFiles;$(VC_SourcePath);$(MSBuildProjectDirectory)\Database\SourceFiles</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -237,7 +238,9 @@
     <ClInclude Include="ColorFormView.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Database\HeaderFiles\CameraDBServer.h" />
-    <ClInclude Include="Database\HeaderFiles\UserTable.h" />
+    <ClInclude Include="Database\HeaderFiles\UserTableSet.h" />
+    <ClInclude Include="Database\HeaderFiles\VehicleSet.h" />
+    <ClInclude Include="Database\HeaderFiles\VehicleView.h" />
     <ClInclude Include="ImageFiltering\HeaderFiles\cvt.hpp" />
     <ClInclude Include="ImageFiltering\HeaderFiles\Includes.h" />
     <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-cv.hpp" />
@@ -255,9 +258,6 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="UserTableSet.h" />
-    <ClInclude Include="VehicleSet.h" />
-    <ClInclude Include="VehicleView.h" />
     <ClInclude Include="WndResizer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -278,7 +278,9 @@
     <ClCompile Include="ColorFormView.cpp" />
     <ClCompile Include="ColourButton.cpp" />
     <ClCompile Include="Database\SourceFiles\CameraDBServer.cpp" />
-    <ClCompile Include="Database\SourceFiles\UserTable.cpp" />
+    <ClCompile Include="Database\SourceFiles\UserTableSet.cpp" />
+    <ClCompile Include="Database\SourceFiles\VehicleSet.cpp" />
+    <ClCompile Include="Database\SourceFiles\VehicleView.cpp" />
     <ClCompile Include="ImageFiltering\ImageFilterProcessing\SourceFiles\ImageFilterProcessing.cpp" />
     <ClCompile Include="ImageFiltering\SourceFiles\attack.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -392,9 +394,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="UserTableSet.cpp" />
-    <ClCompile Include="VehicleSet.cpp" />
-    <ClCompile Include="VehicleView.cpp" />
     <ClCompile Include="WndResizer.cpp" />
   </ItemGroup>
   <ItemGroup>

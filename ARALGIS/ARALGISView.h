@@ -144,6 +144,22 @@ public:
 	afx_msg void OnBnClickedButtonFilter1();
 	afx_msg void OnBnClickedButtonFilter2();
 	afx_msg void OnBnClickedButtonFilter3();
+	afx_msg void OnLbnSelchangeList2();
+	CListBox m_FormListBox;
+	// to be removed: enter licenseplates manually
+	CString m_FormLPEntry;
+	afx_msg void OnAdd();
+	// ARALGISForm'da arac plaka numarasi kutusu icin
+	CString m_FormELP;
+	// controls the edit box for License Plate Image; eventually will be of type MyPic
+	CString m_FormELPI;
+	// controls the edit box of frontal view image in ARALGISForm; eventually will be of type MyPic
+	CString m_FormEFVI;
+	// controls the edit box of car chassis bottom image (current) in ARALGISForm; eventually will be of type MyPic
+	CString m_FormECBCI;
+	// controls the edit box for chassis bottom reference image in ARALGISForm; eventually will be of type MyPic
+	CString m_FormECBRI;
+	afx_msg void OnGuncelle();
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

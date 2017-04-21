@@ -2,7 +2,7 @@
 
 
 #include "ARALGIS.h"
-#include "..\HeaderFiles\CameraDBServer.h"
+#include "CameraDBServer.h"
 
 #include "MainFrm.h"
 #include "ARALGISView.h"
