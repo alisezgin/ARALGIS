@@ -20,7 +20,7 @@
 
 
 #ifdef _DEBUG
-#define new DEBUG_NEW 
+#define new DEBUG_NEW
 #endif
 
 
@@ -58,6 +58,7 @@ END_MESSAGE_MAP()
 
 CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 , m_PlakaStr(_T(""))
+
 {
 	// TODO: add construction code here
 
@@ -91,6 +92,7 @@ CARALGISView::~CARALGISView()
 	if (g_CarPlakaImage)
 		delete g_CarPlakaImage;
 }
+
 
 void CARALGISView::DoDataExchange(CDataExchange* pDX)
 {
@@ -365,7 +367,7 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 	cv::Mat dMat1, dMat2;
 
 	//g_CVImageTest = cv::imread("C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp", cv::IMREAD_COLOR);
-		
+
 	transpose(g_CVImageTest, dMat1);
 	flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
 	dMat2.copyTo(g_CVImageTest);
@@ -385,13 +387,13 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
     // code to be deleted when test image
 	// display is stabilized.........
 	// code deletion starts here
-	cv::namedWindow("GörüntüXX", cv::WINDOW_NORMAL);
-	cv::imshow("GörüntüXX", g_CVImageTest);
+	cv::namedWindow("Gï¿½rï¿½ntï¿½XX", cv::WINDOW_NORMAL);
+	cv::imshow("Gï¿½rï¿½ntï¿½XX", g_CVImageTest);
 	cv::waitKey(150);
 	// code deletion ends here
 
 	// code to be deleted when dbase handler
-	// thread is added 
+	// thread is added
 	// code deletion starts here
 	LPARAM pLparam;
 	pLparam = reinterpret_cast<LPARAM>("ARALGIS");
@@ -482,7 +484,7 @@ void CARALGISView::DisplayPTSImage()
 	// TODO: Add your command handler code here
 	m_CarPlakaImageStatic.Load(g_CarPlakaImage, (size_t)g_CarPlakaImageLenght);
 
-	CString aCString; 
+	CString aCString;
 	CString bCString = CString(_T("         "));
 
 	aCString = g_PlakaNoChars;

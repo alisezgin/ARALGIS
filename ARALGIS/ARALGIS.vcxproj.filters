@@ -258,10 +258,15 @@
     <ClInclude Include="BitmapDisplay\HeaderFiles\ShowpicCV.h">
       <Filter>BitmapDisplay\HeaderFiles</Filter>
     </ClInclude>
-    <ClInclude Include="Database\HeaderFiles\CameraDBServer.h">
+    <ClInclude Include="Database\HeaderFiles\UserTableSet.h">
       <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
-    <ClInclude Include="Database\HeaderFiles\UserTable.h">
+    <ClInclude Include="Database\HeaderFiles\VehicleSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\VehicleView.h">
+      <Filter>Database\HeaderFiles</Filter>
+    <ClInclude Include="Database\HeaderFiles\CameraDBServer.h">
       <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
     <ClInclude Include="ImageFiltering\ImageFilterProcessing\HeaderFiles\ImageFilterProcessing.h">
@@ -437,10 +442,15 @@
     <ClCompile Include="BitmapDisplay\SourceFiles\ShowpicCV.cpp">
       <Filter>BitmapDisplay\SourceFiles</Filter>
     </ClCompile>
-    <ClCompile Include="Database\SourceFiles\CameraDBServer.cpp">
+    <ClCompile Include="Database\SourceFiles\UserTableSet.cpp">
       <Filter>Database\SourceFiles</Filter>
     </ClCompile>
-    <ClCompile Include="Database\SourceFiles\UserTable.cpp">
+    <ClCompile Include="Database\SourceFiles\VehicleSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\VehicleView.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    <ClCompile Include="Database\SourceFiles\CameraDBServer.cpp">
       <Filter>Database\SourceFiles</Filter>
     </ClCompile>
     <ClCompile Include="ImageFiltering\ImageFilterProcessing\SourceFiles\ImageFilterProcessing.cpp">

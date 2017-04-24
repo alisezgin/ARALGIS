@@ -17,6 +17,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include "afxwin.h"
 
+#include "ColourButton.h"
+#include "afxdtctl.h"
 
 class CARALGISDoc;
 
@@ -124,8 +126,6 @@ public:
 protected:
 	CClrButton m_PTS_Status;
 	CClrButton m_PeripheralStatus;
-
-
 public:
 	afx_msg void OnPaint();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
@@ -151,4 +151,3 @@ inline CARALGISDoc* CARALGISView::GetDocument() const
 	return reinterpret_cast<CARALGISDoc*>(m_pDocument);
 }
 #endif
-

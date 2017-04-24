@@ -21,6 +21,8 @@
 #define ID_VIEW_APPLOOK_OFF_2007_AQUA   218
 #define ID_VIEW_APPLOOK_WINDOWS_7       219
 #define IDD_BITMAP_DLG                  310
+#define IDD_CAMERASTR_DLG               311
+#define IDD_VEHICLE_DIALOG              314
 #define IDC_BITMAP                      1000
 #define IDC_GRP_TEST                    1006
 #define IDC_GRP_REF                     1007
@@ -32,18 +34,25 @@
 #define IDC_STATIC_PLAKA                1014
 #define IDC_EDIT1                       1015
 #define IDC_EDIT_KAMERA_NO              1015
+#define IDC_VEHICLE_ID                  1015
 #define IDC_BUTTON_BARRIER_OPEN         1016
+#define IDC_VEHICLE_LP                  1016
 #define IDC_BUTTON_BARRIER_CLOSE        1017
+#define IDC_VEHICLE_CBCI                1017
 #define IDC_BUTTON_HEATER_ON            1018
+#define IDC_VEHICLE_FVI                 1018
 #define IDC_BUTTON_HEATER_OFF           1019
+#define IDC_VEHICLE_LPI                 1019
 #define IDC_BUTTON_BARRIER_STATUS       1020
 #define IDC_BUTTON_PERIPHERAL_STATUS    1020
+#define IDC_VEHICLE_CBRI                1020
 #define IDC_BUTTON_HEATER_STATUS        1021
 #define IDC_BUTTON_PTS_STATUS           1022
 #define IDC_STATIC_PTS                  1023
 #define IDC_STATIC_BARRIER              1024
 #define IDC_BUTTON_ALARM_ON             1027
 #define IDC_BUTTON_ALARM_OFF            1028
+#define IDC_VEHICLE_LASTVISIT           1040
 #define IDC_LIST1                       1029
 #define IDC_BUTTON_FILTER1              1030
 #define IDC_BUTTON_FILTER2              1031
@@ -90,6 +99,15 @@
 #define ID_KULLAN32807                  32807
 #define ID_KULLAN32808                  32808
 #define ID_KULLAN32809                  32809
+#define ID_USER_NEW                     32810
+#define ID_USER_REMOVE                  32811
+#define ID_KULLAN32812                  32812
+#define ID_USER_CHANGEPASSWD            32813
+#define ID_VEHICLE_NEW                  32814
+#define ID_VEHICLE_REMOVE               32815
+#define ID_VEHICLE_CHANGE               32816
+#define ID_BLACKLIST_ADD                32817
+#define ID_BLACKLIST_REMOVE             32818
 
 // Next default values for new objects
 // 
