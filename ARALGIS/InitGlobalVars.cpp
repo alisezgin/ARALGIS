@@ -57,9 +57,7 @@ void InitializeGlobalVars()
 	g_ProcessFilter2Event =					CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_ProcessFilter3Event =					CreateEvent(NULL, TRUE, FALSE, NULL);
 
-	
-	strncpy_s(g_PtsIP, PTS_IP_ADDRESS, IP_ADDRESS_LEN);
-	strncpy_s(g_PlakaNoChars, "          ", PLAKA_CHAR_LENGTH);
+		strncpy_s(g_PlakaNoChars, "          ", PLAKA_CHAR_LENGTH);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -38,13 +38,13 @@ public:
 			hist[value] = hist[value] + 1;
 		}
 
-		printf("Total # of pixels: %ld\n", N);
+		TRACE("Total # of pixels: %ld\n", N);
 
-		// printf("Printing normalized histogram\n");
+		// TRACE("Printing normalized histogram\n");
 		// for (int i = 0; i <= 255; i++){
-		//   // printf("%d\t%d\n", i, (int)(hist[i]*N));
+		//   // TRACE("%d\t%d\n", i, (int)(hist[i]*N));
 		//   // Normalized histogram
-		//   printf("%d\t%f\n", i, hist[i]);
+		//   TRACE("%d\t%f\n", i, hist[i]);
 		// }
 	}
 
@@ -89,7 +89,7 @@ public:
 		}
 
 
-		printf("OTSU Threshold is: %d\n", threshold);
+		TRACE("OTSU Threshold is: %d\n", threshold);
 
 		// Modify output image
 

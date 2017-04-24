@@ -124,9 +124,6 @@ cv::Mat g_CVImageTestFilter3;
 // global variable to hold openCV reference image from Camera
 cv::Mat g_CVImageRef;
 
-// global variable to hold Plaka Tanýma Sistemi (PTS) Client IP
-char g_PtsIP[IP_ADDRESS_LEN + 1];
-
 // global variable to hold car PLAKA NUMBER
 char g_PlakaNoChars[PLAKA_CHAR_LENGTH+1];
 

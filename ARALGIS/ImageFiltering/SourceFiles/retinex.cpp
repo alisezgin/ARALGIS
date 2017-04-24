@@ -265,7 +265,7 @@ void MSRCR_Main( unsigned char * src, int width, int height, int bytes)
   dst = (float *)malloc (size * sizeof (float));   
   if (dst == NULL)   
   {   
-      printf( "Failed to allocate memory" );   
+	  printf("Failed to allocate memory");
       return;   
   }   
   memset( dst, 0, size * sizeof (float) );   
@@ -275,7 +275,7 @@ void MSRCR_Main( unsigned char * src, int width, int height, int bytes)
   if (in == NULL)   
   {   
       free (dst);   
-      printf( "Failed to allocate memory" );   
+	  printf("Failed to allocate memory");
       return; /* do some clever stuff */   
   }   
    
@@ -284,7 +284,7 @@ void MSRCR_Main( unsigned char * src, int width, int height, int bytes)
   {   
       free (in);   
       free (dst);   
-      printf( "Failed to allocate memory" );   
+	  printf("Failed to allocate memory");
       return; /* do some clever stuff */   
   }   
    
@@ -391,11 +391,11 @@ void MSRCR_Main( unsigned char * src, int width, int height, int bytes)
   range = maxi - mini;   
    
 /*  
-  printf( "variance: \t\t%7.4f\n", var * rvals.cvar );  
-  printf( "mean: \t\t%7.4f\n", mean );  
-  printf( "min: \t\t%7.4f\n", mini );  
-  printf( "max: \t\t%7.4f\n", maxi );  
-  printf( "range: \t\t%7.4f\n", range );  
+  TRACE( "variance: \t\t%7.4f\n", var * rvals.cvar );  
+  TRACE( "mean: \t\t%7.4f\n", mean );  
+  TRACE( "min: \t\t%7.4f\n", mini );  
+  TRACE( "max: \t\t%7.4f\n", maxi );  
+  TRACE( "range: \t\t%7.4f\n", range );  
 */   
    
   if ( !range ) range = 1.0;   
@@ -432,7 +432,7 @@ bool pixkit::enhancement_local::MSRCR1997(const cv::Mat &src,cv::Mat &dst,int Ns
 	int nWidth, nHeight, step;  
 
 	if ( orig == NULL )	{   
-		printf( "Could not get image. Program exits!\n" );  
+		printf("Could not get image. Program exits!\n");
 		CV_Assert(false);
 	}   
 	nWidth = orig->width;   

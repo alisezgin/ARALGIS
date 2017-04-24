@@ -1377,7 +1377,7 @@ bool pixkit::halftoning::iterative::ElectrostaticHalftoning2010(const cv::Mat &s
 	for(int i=0; i<src.rows; i++)
 		for(int j=0; j<src.cols; j++)
 			CountParticle=CountParticle+(1-image_in[i][j]);
-	printf("The number of black pixel(charge) = %d\n",(int)CountParticle);
+	printf("The number of black pixel(charge) = %d\n", (int)CountParticle);
 
 	//////////////////////////////////////////////////////////////////////////
 	///// Initialize the Particle's position
@@ -1454,7 +1454,7 @@ bool pixkit::halftoning::iterative::ElectrostaticHalftoning2010(const cv::Mat &s
 	double instead_y,instead_x;
 	Particle=CountParticle;
 	for(int iterations=1; iterations<=Iterations; iterations++){
-		printf("Iterations %d\n",iterations);
+		printf("Iterations %d\n", iterations);
 
 		for(int NowCharge=0; NowCharge<Particle; NowCharge++){
 			double NewPosition_Y=0,NewPosition_X=0;

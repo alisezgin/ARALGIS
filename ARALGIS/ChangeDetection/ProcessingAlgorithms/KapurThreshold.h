@@ -143,7 +143,7 @@ public:
 		free(P2);
 		//free(data); /// new memory leak
 
-		printf("Kapur Threshold is: %d\n", threshold);
+		TRACE("Kapur Threshold is: %d\n", threshold);
 
 		computeKapursSegmentation(img, thresholdedImg, threshold);
 

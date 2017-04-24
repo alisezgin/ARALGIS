@@ -87,18 +87,18 @@ public:
 		imgReference.copyTo(m_imgRef);
 		imgTest.copyTo(m_imgTest);
 
-		printf("\nPartitionImage begins\n");
-		printf("Ref  Width %d Height %d\n", m_imgRef.cols, m_imgRef.rows);
-		printf("Test Width %d Height %d\n", m_imgTest.cols, m_imgTest.rows);
+		TRACE("\nPartitionImage begins\n");
+		TRACE("Ref  Width %d Height %d\n", m_imgRef.cols, m_imgRef.rows);
+		TRACE("Test Width %d Height %d\n", m_imgTest.cols, m_imgTest.rows);
 
 
 		//PreprocessImage preImgClr;
 		//preImgClr.PreprocessStageColour(&m_imgRef, &m_imgTest);
 
 
-		printf("\nPartitionImage continues\n");
-		printf("Ref  Width %d Height %d\n", m_imgRef.cols, m_imgRef.rows);
-		printf("Test Width %d Height %d\n", m_imgTest.cols, m_imgTest.rows);
+		TRACE("\nPartitionImage continues\n");
+		TRACE("Ref  Width %d Height %d\n", m_imgRef.cols, m_imgRef.rows);
+		TRACE("Test Width %d Height %d\n", m_imgTest.cols, m_imgTest.rows);
 
 		sizeRef = 0;
 		sizeTest = 0;
@@ -225,12 +225,12 @@ public:
 		cv::imshow("CLUSTER KEYPOINT REF", resMatches);
 		cv::waitKey(0);
 
-	printf("Clusters for REF Points\n");
+		TRACE("Clusters for REF Points\n");
 	for (int kkk = 0; kkk <MAX_CLUSTERS; kkk++)
 	{
-		printf("\n  CLS_ID %d CLS_CNT %d", kkk, clsCntr[kkk]);
+		TRACE("\n  CLS_ID %d CLS_CNT %d", kkk, clsCntr[kkk]);
 	}
-	printf("\n");
+	TRACE("\n");
 #endif
 
 	}
@@ -268,16 +268,16 @@ public:
 		std::sort(m_lastPointRefPairVect.begin(), m_lastPointRefPairVect.end(), sort_pred());
 
 #ifdef DISPLAY_DEBUG_PARTITION
-		printf("\nm_firstPointRefPairVect\n");
+		TRACE("\nm_firstPointRefPairVect\n");
 		for (int i = 0; i < MAX_CLUSTERS; i++)
 		{
-			printf("m_firstPointRefPairVect %d %d %f\n", i, m_firstPointRefPairVect[i].first, m_firstPointRefPairVect[i].second);
+			TRACE("m_firstPointRefPairVect %d %d %f\n", i, m_firstPointRefPairVect[i].first, m_firstPointRefPairVect[i].second);
 		}
 
-		printf("\nm_lastPointRefPairVect\n");
+		TRACE("\nm_lastPointRefPairVect\n");
 		for (int i = 0; i < MAX_CLUSTERS; i++)
 		{
-			printf("m_lastPointRefPairVect %d %d %f\n", i, m_lastPointRefPairVect[i].first, m_lastPointRefPairVect[i].second);
+			TRACE("m_lastPointRefPairVect %d %d %f\n", i, m_lastPointRefPairVect[i].first, m_lastPointRefPairVect[i].second);
 		}
 #endif
 
@@ -291,7 +291,7 @@ public:
 		tmpPair = m_firstPointRefPairVect[0];
 
 #ifdef DISPLAY_DEBUG_PARTITION
-		printf("\n\nBORAAAAAAA 1 %d %f %f \n\n", m_firstPointRefPairVect[0].first, m_firstPointRefPairVect[0].second, m_keypointsRefPartition[2*tmpPair.first].pt.y);
+		TRACE("\n\nBORAAAAAAA 1 %d %f %f \n\n", m_firstPointRefPairVect[0].first, m_firstPointRefPairVect[0].second, m_keypointsRefPartition[2*tmpPair.first].pt.y);
 #endif
 		// add first point
 		A_keypointsRefPartition.push_back(m_keypointsRefPartition[2*tmpPair.first]);
@@ -302,7 +302,7 @@ public:
 		tmpPair = m_lastPointRefPairVect[0];
 
 #ifdef DISPLAY_DEBUG_PARTITION
-		printf("\n\nBORAAAAAAA 2 %d %f %f\n\n", m_lastPointRefPairVect[0].first, m_lastPointRefPairVect[0].second, m_keypointsRefPartition[2*tmpPair.first+1].pt.y);
+		TRACE("\n\nBORAAAAAAA 2 %d %f %f\n\n", m_lastPointRefPairVect[0].first, m_lastPointRefPairVect[0].second, m_keypointsRefPartition[2*tmpPair.first+1].pt.y);
 #endif
 		// add first point
 		A_keypointsRefPartition.push_back(m_keypointsRefPartition[2*tmpPair.first+1]);
@@ -366,9 +366,9 @@ public:
 
 		///
 #ifdef DISPLAY_DEBUG_PARTITION
-		printf("\ndetermineClusterFirstLastPointsRef CLS_ID %d \n", clsID);
-		printf("CLS REF First Point %f\n", matchIterator->refKP.pt.y);
-		printf("CLS Test First Point %f\n", matchIterator->testKP.pt.y);
+		TRACE("\ndetermineClusterFirstLastPointsRef CLS_ID %d \n", clsID);
+		TRACE("CLS REF First Point %f\n", matchIterator->refKP.pt.y);
+		TRACE("CLS Test First Point %f\n", matchIterator->testKP.pt.y);
 #endif
 		///
 
@@ -400,16 +400,16 @@ public:
 		kpCnt++;
 
 #ifdef DISPLAY_DEBUG_PARTITION
-		printf("\ndetermineClusterFirstLastPointsRef CLS_ID %d NUM_POINTS %d\n", clsID, kpCnt);
-		printf("CLS REF First Point %f\n", m_ClsRefFirstPoints[clsID]);
-		printf("CLS Test First Point %f\n", m_ClsTestFirstPoints[clsID]);
-		printf("CLS REF Last Point %f\n", m_ClsRefLastPoints[clsID]);
-		printf("CLS Test Last Point %f\n", m_ClsTestLastPoints[clsID]);
+		TRACE("\ndetermineClusterFirstLastPointsRef CLS_ID %d NUM_POINTS %d\n", clsID, kpCnt);
+		TRACE("CLS REF First Point %f\n", m_ClsRefFirstPoints[clsID]);
+		TRACE("CLS Test First Point %f\n", m_ClsTestFirstPoints[clsID]);
+		TRACE("CLS REF Last Point %f\n", m_ClsRefLastPoints[clsID]);
+		TRACE("CLS Test Last Point %f\n", m_ClsTestLastPoints[clsID]);
 
 		///
-		printf("\ndetermineClusterFirstLastPointsRef CLS_ID %d \n", clsID);
-		printf("CLS REF Last Point %f\n", matchIterator->refKP.pt.y);
-		printf("CLS Test Last Point %f\n", matchIterator->testKP.pt.y);
+		TRACE("\ndetermineClusterFirstLastPointsRef CLS_ID %d \n", clsID);
+		TRACE("CLS REF Last Point %f\n", matchIterator->refKP.pt.y);
+		TRACE("CLS Test Last Point %f\n", matchIterator->testKP.pt.y);
 #endif
 		///
 	}
@@ -500,10 +500,10 @@ public:
 		std::sort(keyPointRefPairVect.begin(), keyPointRefPairVect.end(), sort_pred());
 
 #ifdef DISPLAY_DEBUG_PARTITION
-		printf("\nfindClusterExtremumPointsRef CLS_ID %d\n", clsID);
+		TRACE("\nfindClusterExtremumPointsRef CLS_ID %d\n", clsID);
 		for (int k = 0; k < keyPointRefPairVect.size(); k++)
 		{
-			printf("INDEX %d point %f\n", keyPointRefPairVect[k].first, keyPointRefPairVect[k].second);
+			TRACE("INDEX %d point %f\n", keyPointRefPairVect[k].first, keyPointRefPairVect[k].second);
 		}
 #endif
 
@@ -537,20 +537,20 @@ public:
 		}
 
 #ifdef DISPLAY_DEBUG_PARTITION
-		printf("\nTEST MATTTT\n");
-		printf("\nTEST IMAGE width %d height %d\n", m_imgTest.cols, m_imgTest.rows);
-		printf("TEST m_firstPointRefPairVect SIZE %d\n", m_firstPointTestPairVect.size());
-		printf("TEST m_lastPointRefPairVect SIZE %d\n", m_lastPointTestPairVect.size());
+		TRACE("\nTEST MATTTT\n");
+		TRACE("\nTEST IMAGE width %d height %d\n", m_imgTest.cols, m_imgTest.rows);
+		TRACE("TEST m_firstPointRefPairVect SIZE %d\n", m_firstPointTestPairVect.size());
+		TRACE("TEST m_lastPointRefPairVect SIZE %d\n", m_lastPointTestPairVect.size());
 #endif
 
 #ifdef DISPLAY_DEBUG_PARTITION_LESS
-		printf("\n\n");
-		printf("\nTEST highest m_lastPointTestPairVect[MAX_CLUSTERS - 2] %d", (int)(m_lastPointTestPairVect[MAX_CLUSTERS - 2].second + 0.0));
-		printf("\nTEST highest m_firstPointTestPairVect[MAX_CLUSTERS - 1] %d", (int)(m_firstPointTestPairVect[MAX_CLUSTERS - 1].second + 0.0));		
-		printf("\nTEST highest DIFF %d", diff);
-		printf("\nTEST highest offsef %d", offSet);
-		printf("\nTEST heighest begin %d", 0);
-		printf("\nTEST highest WIDTH %d\n", (int)m_firstPointTestPairVect[MAX_CLUSTERS - 1].second + offSet + 1);
+		TRACE("\n\n");
+		TRACE("\nTEST highest m_lastPointTestPairVect[MAX_CLUSTERS - 2] %d", (int)(m_lastPointTestPairVect[MAX_CLUSTERS - 2].second + 0.0));
+		TRACE("\nTEST highest m_firstPointTestPairVect[MAX_CLUSTERS - 1] %d", (int)(m_firstPointTestPairVect[MAX_CLUSTERS - 1].second + 0.0));		
+		TRACE("\nTEST highest DIFF %d", diff);
+		TRACE("\nTEST highest offsef %d", offSet);
+		TRACE("\nTEST heighest begin %d", 0);
+		TRACE("\nTEST highest WIDTH %d\n", (int)m_firstPointTestPairVect[MAX_CLUSTERS - 1].second + offSet + 1);
 #endif
 		// matrix --> submatrix
 		m_partitonedTestImage[MAX_CLUSTERS - 1] = m_imgTest(cv::Rect(0,  // x
@@ -564,7 +564,7 @@ public:
 		sizeTest += m_partitonedTestImage[MAX_CLUSTERS - 1].rows;
 
 #ifdef DISPLAY_DEBUG_PARTITION_LESS
-		printf("\n findTestHighestPartition W %d H %d", m_partitonedTestImage[MAX_CLUSTERS - 1].cols, m_partitonedTestImage[MAX_CLUSTERS - 1].rows);
+		TRACE("\n findTestHighestPartition W %d H %d", m_partitonedTestImage[MAX_CLUSTERS - 1].cols, m_partitonedTestImage[MAX_CLUSTERS - 1].rows);
 #endif
 
 #ifdef DISPLAY_PARTITION
@@ -588,13 +588,13 @@ public:
 		offSet = (int)(diff / 2);
 
 #ifdef DISPLAY_DEBUG_PARTITION_LESS
-		printf("\n\n");
-		printf("\nTEST lowest m_lastPointTestPairVect[0] %d", (int)(m_lastPointTestPairVect[0].second + 0.0));
-		printf("\nTEST lowest m_firstPointTestPairVect[1] %d", (int)(m_firstPointTestPairVect[1].second + 0.0));
-		printf("\nTEST lowest DIFF %d", diff);
-		printf("\nTEST lowest offsef %d", offSet);
-		printf("\nTEST lowest begin %d\n", (int)m_lastPointTestPairVect[0].second - offSet + 1);
-		printf("\nTEST lowest WIDTH %d\n", m_imgTest.rows - (int)(m_lastPointTestPairVect[0].second) + offSet - 1);
+		TRACE("\n\n");
+		TRACE("\nTEST lowest m_lastPointTestPairVect[0] %d", (int)(m_lastPointTestPairVect[0].second + 0.0));
+		TRACE("\nTEST lowest m_firstPointTestPairVect[1] %d", (int)(m_firstPointTestPairVect[1].second + 0.0));
+		TRACE("\nTEST lowest DIFF %d", diff);
+		TRACE("\nTEST lowest offsef %d", offSet);
+		TRACE("\nTEST lowest begin %d\n", (int)m_lastPointTestPairVect[0].second - offSet + 1);
+		TRACE("\nTEST lowest WIDTH %d\n", m_imgTest.rows - (int)(m_lastPointTestPairVect[0].second) + offSet - 1);
 #endif
 
 		m_partitonedTestImage[0] = m_imgTest(cv::Rect(0,  // x
@@ -608,7 +608,7 @@ public:
 		sizeTest += m_partitonedTestImage[0].rows;
 
 #ifdef DISPLAY_DEBUG_PARTITION_LESS
-		printf("\n findTestLowestPartition W %d H %d", m_partitonedTestImage[0].cols, m_partitonedTestImage[0].rows);
+		TRACE("\n findTestLowestPartition W %d H %d", m_partitonedTestImage[0].cols, m_partitonedTestImage[0].rows);
 #endif
 
 
@@ -671,16 +671,16 @@ public:
 				dWidth)).clone();  // height
 
 #ifdef DISPLAY_DEBUG_PARTITION_LESS
-			printf("\n");
-			printf("TEST offSetLower %d\n", offSetLower);
-			printf("TEST offSetHigher %d\n", offSetHigher);
-			printf("TEST ptYBegin %d\n", ptYBegin);
-			printf("TEST ptYEnd %d\n", ptYEnd);
-			printf("TEST dWidth %d\n", dWidth);
-			printf("TEST m_lastPointTestPairVect[i - 1].second %f\n", m_lastPointTestPairVect[i - 1].second);
-			printf("TEST m_firstPointTestPairVect[i].second %f\n", m_firstPointTestPairVect[i].second);
-			printf("TEST m_lastPointTestPairVect[i].second %f\n", m_lastPointTestPairVect[i].second);
-			printf("TEST m_firstPointTestPairVect[i+1].second %f\n", m_firstPointTestPairVect[i+1].second);
+			TRACE("\n");
+			TRACE("TEST offSetLower %d\n", offSetLower);
+			TRACE("TEST offSetHigher %d\n", offSetHigher);
+			TRACE("TEST ptYBegin %d\n", ptYBegin);
+			TRACE("TEST ptYEnd %d\n", ptYEnd);
+			TRACE("TEST dWidth %d\n", dWidth);
+			TRACE("TEST m_lastPointTestPairVect[i - 1].second %f\n", m_lastPointTestPairVect[i - 1].second);
+			TRACE("TEST m_firstPointTestPairVect[i].second %f\n", m_firstPointTestPairVect[i].second);
+			TRACE("TEST m_lastPointTestPairVect[i].second %f\n", m_lastPointTestPairVect[i].second);
+			TRACE("TEST m_firstPointTestPairVect[i+1].second %f\n", m_firstPointTestPairVect[i+1].second);
 #endif
 
 			m_offsetKPTest[i].x = (float)0;
@@ -689,7 +689,7 @@ public:
 			sizeTest += m_partitonedTestImage[i].rows;
 
 #ifdef DISPLAY_DEBUG_PARTITION_LESS
-			printf("\n findTestOtherPartitions %d  W %d H %d", i, m_partitonedTestImage[i].cols, m_partitonedTestImage[i].rows);
+			TRACE("\n findTestOtherPartitions %d  W %d H %d", i, m_partitonedTestImage[i].cols, m_partitonedTestImage[i].rows);
 #endif
 
 #ifdef DISPLAY_PARTITION
@@ -749,13 +749,13 @@ public:
 
 
 #ifdef DISPLAY_DEBUG_PARTITION_LESS
-		printf("\n\n");
-		printf("\nREF highest m_lastPointRefPairVect[MAX_CLUSTERS - 2] %d", (int)m_lastPointRefPairVect[MAX_CLUSTERS - 2].second);
-		printf("\nREF highest m_firstPointRefPairVect[MAX_CLUSTERS - 1] %d", (int)m_firstPointRefPairVect[MAX_CLUSTERS - 1].second);
-		printf("\nREf highest DIFF %d", diff);
-		printf("\nREF highest offsef %d", offSet);
-		printf("\nREF heighest begin %d", 0);
-		printf("\nREF highest WIDTH %d", (int)m_firstPointRefPairVect[MAX_CLUSTERS - 1].second + offSet + 1);
+		TRACE("\n\n");
+		TRACE("\nREF highest m_lastPointRefPairVect[MAX_CLUSTERS - 2] %d", (int)m_lastPointRefPairVect[MAX_CLUSTERS - 2].second);
+		TRACE("\nREF highest m_firstPointRefPairVect[MAX_CLUSTERS - 1] %d", (int)m_firstPointRefPairVect[MAX_CLUSTERS - 1].second);
+		TRACE("\nREf highest DIFF %d", diff);
+		TRACE("\nREF highest offsef %d", offSet);
+		TRACE("\nREF heighest begin %d", 0);
+		TRACE("\nREF highest WIDTH %d", (int)m_firstPointRefPairVect[MAX_CLUSTERS - 1].second + offSet + 1);
 #endif
 
 
@@ -771,7 +771,7 @@ public:
 		sizeRef += m_partitonedRefImage[MAX_CLUSTERS - 1].rows;
 
 #ifdef DISPLAY_DEBUG_PARTITION_LESS
-		printf("\nfindRefHighestPartition  W %d H %d\n", m_partitonedRefImage[MAX_CLUSTERS - 1].cols, m_partitonedRefImage[MAX_CLUSTERS - 1].rows);
+		TRACE("\nfindRefHighestPartition  W %d H %d\n", m_partitonedRefImage[MAX_CLUSTERS - 1].cols, m_partitonedRefImage[MAX_CLUSTERS - 1].rows);
 #endif
 
 #ifdef DISPLAY_PARTITION
@@ -796,13 +796,13 @@ public:
 		offSet = (int)(diff / 2);
 
 #ifdef DISPLAY_DEBUG_PARTITION_LESS
-		printf("\n\n");
-		printf("\nREF lowest m_lastPointRefPairVect[0] %d", (int)m_lastPointRefPairVect[0].second);
-		printf("\nREF lowest m_firstPointRefPairVect[1] %d", (int)m_firstPointRefPairVect[1].second);
-		printf("\nREF lowest DIFF %d", diff);
-		printf("\nREF lowest offsef %d", offSet);
-		printf("\nREF lowest begin %d", (int)m_lastPointRefPairVect[0].second - offSet + 1);
-		printf("\nref lowest WIDTH %d\n", m_imgRef.rows - (int)(m_lastPointRefPairVect[0].second) + offSet - 1);
+		TRACE("\n\n");
+		TRACE("\nREF lowest m_lastPointRefPairVect[0] %d", (int)m_lastPointRefPairVect[0].second);
+		TRACE("\nREF lowest m_firstPointRefPairVect[1] %d", (int)m_firstPointRefPairVect[1].second);
+		TRACE("\nREF lowest DIFF %d", diff);
+		TRACE("\nREF lowest offsef %d", offSet);
+		TRACE("\nREF lowest begin %d", (int)m_lastPointRefPairVect[0].second - offSet + 1);
+		TRACE("\nref lowest WIDTH %d\n", m_imgRef.rows - (int)(m_lastPointRefPairVect[0].second) + offSet - 1);
 #endif
 
 		m_partitonedRefImage[0] = m_imgRef(cv::Rect(0,  // x
@@ -816,7 +816,7 @@ public:
 		sizeRef += m_partitonedRefImage[0].rows;
 
 #ifdef DISPLAY_DEBUG_PARTITION_LESS
-		printf("findRefLowestPartition W %d H %d\n", m_partitonedRefImage[0].cols, m_partitonedRefImage[0].rows);
+		TRACE("findRefLowestPartition W %d H %d\n", m_partitonedRefImage[0].cols, m_partitonedRefImage[0].rows);
 #endif
 
 #ifdef DISPLAY_PARTITION
@@ -884,17 +884,17 @@ public:
 			sizeRef += m_partitonedRefImage[i].rows;
 
 #ifdef DISPLAY_DEBUG_PARTITION_LESS
-			printf("\n");
-			printf("REF offSetLower %d\n", offSetLower);
-			printf("REF offSetHigher %d\n", offSetHigher);
-			printf("REF ptYBegin %d\n", ptYBegin);
-			printf("REF ptYEnd %d\n", ptYEnd);
-			printf("REF dWidth %d\n", dWidth);
-			printf("REF m_lastPointRefPairVect[i - 1].second %f\n", m_lastPointRefPairVect[i - 1].second);
-			printf("REF m_firstPointRefPairVect[i].second %f\n", m_firstPointRefPairVect[i].second);
-			printf("REF m_lastPointRefPairVect[i].second %f\n", m_lastPointRefPairVect[i].second);
-			printf("REF m_firstPointRefPairVect[i+1].second %f\n", m_firstPointRefPairVect[i + 1].second);
-			printf("REF findRefOtherPartitions %d  W %d H %d\n", i, m_partitonedRefImage[i].cols, m_partitonedRefImage[i].rows);
+			TRACE("\n");
+			TRACE("REF offSetLower %d\n", offSetLower);
+			TRACE("REF offSetHigher %d\n", offSetHigher);
+			TRACE("REF ptYBegin %d\n", ptYBegin);
+			TRACE("REF ptYEnd %d\n", ptYEnd);
+			TRACE("REF dWidth %d\n", dWidth);
+			TRACE("REF m_lastPointRefPairVect[i - 1].second %f\n", m_lastPointRefPairVect[i - 1].second);
+			TRACE("REF m_firstPointRefPairVect[i].second %f\n", m_firstPointRefPairVect[i].second);
+			TRACE("REF m_lastPointRefPairVect[i].second %f\n", m_lastPointRefPairVect[i].second);
+			TRACE("REF m_firstPointRefPairVect[i+1].second %f\n", m_firstPointRefPairVect[i + 1].second);
+			TRACE("REF findRefOtherPartitions %d  W %d H %d\n", i, m_partitonedRefImage[i].cols, m_partitonedRefImage[i].rows);
 #endif
 
 #ifdef DISPLAY_PARTITION
@@ -1032,12 +1032,12 @@ public:
 		cv::imshow("CLUSTER KEYPOINT TEST", resMatches);
 		cv::waitKey(0);
 
-		printf("Clusters for Test Points\n");
+		TRACE("Clusters for Test Points\n");
 		for (int k = 0; k <MAX_CLUSTERS; k++)
 		{
-			printf("\n  CLS_ID %d CLS_CNT %d", k, clsCntr[k]);
+			TRACE("\n  CLS_ID %d CLS_CNT %d", k, clsCntr[k]);
 		}
-		printf("\n");
+		TRACE("\n");
 #endif
 
 	}
@@ -1055,7 +1055,7 @@ public:
 
 		int clsIDKP = m_firstPointRefPairVect[clsID].first;
 #ifdef DISPLAY_DEBUG_PARTITION_LESS
-		printf("\nREALCLS_ID %d CLS_ID %d\n", clsIDKP, clsID);
+		TRACE("\nREALCLS_ID %d CLS_ID %d\n", clsIDKP, clsID);
 #endif
 
 		int k = 0;
@@ -1067,11 +1067,11 @@ public:
 
 			kp1 = matchIterator->refKP;
 			kp1.pt = matchIterator->refKP.pt - m_offsetKPRef[clsID];
-			//printf("\n REF ORG X %f ORG Y %f OFF X %f OFF Y %f X %f Y %f", matchIterator->refKP.pt.x, matchIterator->refKP.pt.y, kp1.pt.x, kp1.pt.y, offsetKPRef[clsID].x, offsetKPRef[clsID].y);
+			//TRACE("\n REF ORG X %f ORG Y %f OFF X %f OFF Y %f X %f Y %f", matchIterator->refKP.pt.x, matchIterator->refKP.pt.y, kp1.pt.x, kp1.pt.y, offsetKPRef[clsID].x, offsetKPRef[clsID].y);
 
 			kp2 = matchIterator->testKP;
 			kp2.pt = matchIterator->testKP.pt - m_offsetKPTest[clsID];
-			//printf("\n TEST ORG X %f ORG Y %f OFF X %f OFF Y %f X %f Y %f", matchIterator->testKP.pt.x, matchIterator->testKP.pt.y, kp2.pt.x, kp2.pt.y, offsetKPTest[clsID].x, offsetKPTest[clsID].y);
+			//TRACE("\n TEST ORG X %f ORG Y %f OFF X %f OFF Y %f X %f Y %f", matchIterator->testKP.pt.x, matchIterator->testKP.pt.y, kp2.pt.x, kp2.pt.y, offsetKPTest[clsID].x, offsetKPTest[clsID].y);
 
 
 			keypointsRef.push_back(kp1);
@@ -1079,7 +1079,7 @@ public:
 			k++;
 		}
 
-		printf("\n Size before homography %d\n\n", matchesKP.size());
+		TRACE("\n Size before homography %d\n\n", matchesKP.size());
 
 		if (matchesKP.size() >= 4)
 		{
@@ -1094,13 +1094,13 @@ public:
 
 			if (ishomogCalculated == false)
 			{
-				printf("\n\n\n HOMOGRAPHY can not be calculated in ImagePartition!!!! Exiting..................");
+				TRACE("\n\n\n HOMOGRAPHY can not be calculated in ImagePartition!!!! Exiting..................");
 				//getchar();
 				//exit(0);
 			}
 			else
 			{
-				printf("\n Size after homography %d\n\n", matchesKP.size());
+				TRACE("\n Size after homography %d\n\n", matchesKP.size());
 			}
 		}
 
@@ -1116,9 +1116,9 @@ public:
 
 		sizeTestTrans += m_partitonedTestImageTransformed[clsID].rows;
 
-		printf("\n Inside performHomographyAndTransform\n");
-		printf("Input  image size width %d height %d\n", m_partitonedTestImage[clsID].cols, m_partitonedTestImage[clsID].rows);
-		printf("Output image size width %d height %d\n", m_partitonedTestImageTransformed[clsID].cols, m_partitonedTestImageTransformed[clsID].rows);
+		TRACE("\n Inside performHomographyAndTransform\n");
+		TRACE("Input  image size width %d height %d\n", m_partitonedTestImage[clsID].cols, m_partitonedTestImage[clsID].rows);
+		TRACE("Output image size width %d height %d\n", m_partitonedTestImageTransformed[clsID].cols, m_partitonedTestImageTransformed[clsID].rows);
 
 	}
 
@@ -1132,7 +1132,7 @@ public:
 		{
 			cv::vconcat(dTmp[i + 2], m_partitonedRefImage[i], dTmp[i + 1]);
 		}
-		printf("\nCONCAN-REF SIZE W %d H %d", dTmp[1].cols, dTmp[1].rows);
+		TRACE("\nCONCAN-REF SIZE W %d H %d", dTmp[1].cols, dTmp[1].rows);
 
 
 		cv::Mat tmp1 = dTmp[1].clone();
@@ -1175,7 +1175,7 @@ public:
 			cv::vconcat(dTmp[i + 2], m_partitonedTestImage[i], dTmp[i + 1]);
 		}
 
-		printf("\nCONCAN-TEST-ORG SIZE W %d H %d", dTmp[1].cols, dTmp[1].rows);
+		TRACE("\nCONCAN-TEST-ORG SIZE W %d H %d", dTmp[1].cols, dTmp[1].rows);
 
 		cv::Mat tmp1 = dTmp[1].clone();
 		cv::Mat tmp2 = m_imgTestWarpedConcan.clone();
@@ -1345,10 +1345,10 @@ public:
 
 		m_imgTestWarpedConcan = dTmp[1].clone();
 
-		printf("\nCONCAN WRAPPED SIZE W %d H %d", dTmp[1].cols, dTmp[1].rows);
-		printf("\nREF SIZE H %d", sizeRef);
-		printf("\nTest SIZE H %d", sizeTest);
-		printf("\nTestConcan SIZE H %d", sizeTestTrans);
+		TRACE("\nCONCAN WRAPPED SIZE W %d H %d", dTmp[1].cols, dTmp[1].rows);
+		TRACE("\nREF SIZE H %d", sizeRef);
+		TRACE("\nTest SIZE H %d", sizeTest);
+		TRACE("\nTestConcan SIZE H %d", sizeTestTrans);
 
 #ifdef DISPLAY_CONCAN_IMAGE_INTERMEDIATE
 		cv::namedWindow("CONCAN-WARPED-TEST-IMAGE", cv::WINDOW_NORMAL);

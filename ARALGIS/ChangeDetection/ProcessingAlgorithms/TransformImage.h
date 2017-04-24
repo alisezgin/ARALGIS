@@ -29,15 +29,15 @@ public:
 		cv::perspectiveTransform(imgCornerPT, imgCornerPTTransformed, homography); 
 
 
-		printf("\nPNT 1 X %f Y %f", imgCornerPT[0].x, imgCornerPT[0].y);
-		printf("\nPNT 2 X %f Y %f", imgCornerPT[1].x, imgCornerPT[1].y);
-		printf("\nPNT 3 X %f Y %f", imgCornerPT[2].x, imgCornerPT[2].y);
-		printf("\nPNT 4 X %f Y %f", imgCornerPT[3].x, imgCornerPT[3].y);
+		TRACE("\nPNT 1 X %f Y %f", imgCornerPT[0].x, imgCornerPT[0].y);
+		TRACE("\nPNT 2 X %f Y %f", imgCornerPT[1].x, imgCornerPT[1].y);
+		TRACE("\nPNT 3 X %f Y %f", imgCornerPT[2].x, imgCornerPT[2].y);
+		TRACE("\nPNT 4 X %f Y %f", imgCornerPT[3].x, imgCornerPT[3].y);
 
-		printf("\nPNT TRS 1 X %f Y %f", imgCornerPTTransformed[0].x, imgCornerPTTransformed[0].y);
-		printf("\nPNT TRS 2 X %f Y %f", imgCornerPTTransformed[1].x, imgCornerPTTransformed[1].y);
-		printf("\nPNT TRS 3 X %f Y %f", imgCornerPTTransformed[2].x, imgCornerPTTransformed[2].y);
-		printf("\nPNT TRS 4 X %f Y %f", imgCornerPTTransformed[3].x, imgCornerPTTransformed[3].y);
+		TRACE("\nPNT TRS 1 X %f Y %f", imgCornerPTTransformed[0].x, imgCornerPTTransformed[0].y);
+		TRACE("\nPNT TRS 2 X %f Y %f", imgCornerPTTransformed[1].x, imgCornerPTTransformed[1].y);
+		TRACE("\nPNT TRS 3 X %f Y %f", imgCornerPTTransformed[2].x, imgCornerPTTransformed[2].y);
+		TRACE("\nPNT TRS 4 X %f Y %f", imgCornerPTTransformed[3].x, imgCornerPTTransformed[3].y);
 
 		float maxX, minX, maxY, minY;
 
@@ -70,7 +70,7 @@ public:
 
 		sizeCalc = cv::Size((int)(maxX - minX + 0.5), (int)(maxY - minY + 0.5));
 
-		printf("\n\n FINAL SIZE X %d Y %d", sizeCalc.width, sizeCalc.height);
+		TRACE("\n\n FINAL SIZE X %d Y %d", sizeCalc.width, sizeCalc.height);
 
 		return sizeCalc;
 	}
@@ -220,14 +220,14 @@ public:
 			cv::warpPerspective(imgTest, persImage, homography, imgTrain.size(), cv::INTER_NEAREST, cv::BORDER_REPLICATE);
 
 
-			//printf("\nTEST H %d W %d \n", imgTest.rows, imgTest.cols);
+			//TRACE("\nTEST H %d W %d \n", imgTest.rows, imgTest.cols);
 			//homography_warp(imgTest, homography, persImage);
 		}
 
 
 		for (int jj = 0; jj < (int) matchesHomography.size(); jj++)
 		{
-			//printf("\n RID %d TID %d JJ %d", matchesHomography[jj].trainIdx, matchesHomography[jj].queryIdx, jj);
+			//TRACE("\n RID %d TID %d JJ %d", matchesHomography[jj].trainIdx, matchesHomography[jj].queryIdx, jj);
 			keypoints2Tmp[matchesHomography[jj].queryIdx].pt = keyPointTestPTWarped[jj];
 		}
 
@@ -247,11 +247,11 @@ public:
 		char sNumCntTrl[20];
 		_itoa_s(aDisplayIndex, sNumCntTrl, sizeof(sNumCntTrl), 10);
 		strcat_s(trialNo, sNumCntTrl);
-		printf("\n%s", trialNo);
+		TRACE("\n%s", trialNo);
 
-		printf("\n Size Ref Image W %d H %d", imgTrain.cols, imgTrain.rows);
-		printf("\n Size Test Image W %d H %d", imgTest.cols, imgTest.rows);
-		printf("\n Size Warped Test Image W %d H %d", persImage.cols, persImage.rows);
+		TRACE("\n Size Ref Image W %d H %d", imgTrain.cols, imgTrain.rows);
+		TRACE("\n Size Test Image W %d H %d", imgTest.cols, imgTest.rows);
+		TRACE("\n Size Warped Test Image W %d H %d", persImage.cols, persImage.rows);
 #endif
 
 #ifdef  DISPLAY_DEBUG_PARTITION

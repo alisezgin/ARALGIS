@@ -162,22 +162,22 @@ void CMainFrame::NotifyProcPTSComm(LPVOID lpParam, UINT nCode)
 		case PTS_CONNECTION_LOST:
 		{
 			pView->UpdatePTSStatus(false);
-			::MessageBox(NULL,
-				(LPCWSTR)L"PTS Bağlantısı Kayboldu",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
+			//::MessageBox(NULL,
+			//	(LPCWSTR)L"PTS Bağlantısı Kayboldu",
+			//	(LPCWSTR)WARNINGWINDOW_TITLE,
+			//	MB_OK | MB_ICONERROR
+			//	);
 			break;
 		}
 
 		case PTS_CONNECTION_OK:
 		{
 			pView->UpdatePTSStatus(true);
-			::MessageBox(NULL,
-				(LPCWSTR)L"PTS Bağlantısı Kuruldu",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
+			//::MessageBox(NULL,
+			//	(LPCWSTR)L"PTS Bağlantısı Kuruldu",
+			//	(LPCWSTR)WARNINGWINDOW_TITLE,
+			//	MB_OK | MB_ICONERROR
+			//	);
 			break;
 		}
 		default:
@@ -300,30 +300,15 @@ void CMainFrame::NotifyProcImageFiltering(LPVOID lpParam, UINT nCode)
 		switch (nCode)
 		{
 		case FILTER_PROCESS_FILTER1_READY:
-			//pView->SetTimerDisplay();
-			::MessageBox(NULL,
-				(LPCWSTR)L"Filter-1",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
+			pView->FilterAvailable(1);
 			break;
 
 		case FILTER_PROCESS_FILTER2_READY:
-			//pView->KillTimerCamera();
-			::MessageBox(NULL,
-				(LPCWSTR)L"Filter-2",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
+			pView->FilterAvailable(2);
 			break;
 
 		case FILTER_PROCESS_FILTER3_READY:
-			//pView->KillTimerCamera();
-			::MessageBox(NULL,
-				(LPCWSTR)L"Filter-3",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
+			pView->FilterAvailable(3);
 			break;
 
 		default:

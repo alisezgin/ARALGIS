@@ -2,7 +2,7 @@
 
 #include "..\..\Constants.h"
 
-// ARALGIS - Client Communication Messages Constants
+// ARALGIS - Odroid Communication Messages Constants
 // Information about Messages going/coming to/from TCP client
 #define MESSAGE_LENGTH         (16)
 
@@ -46,12 +46,4 @@ typedef struct _MessageOdroid {
 	unsigned char reserved2[MESSAGE_RESERVED2_SIZE];	
 	unsigned char messageTime[TIME_SIZE];
 } MessageOdroid;
-
-typedef struct _ReceivedMessage{
-	unsigned char NumberOfBytes;
-	unsigned char MessageId;
-	unsigned char MagicNumber;
-	unsigned char Data[MAX_MESSAGE_LENGTH_FROM_PTS];
-	unsigned char Checksum;
-} ReceivedMessage;
 

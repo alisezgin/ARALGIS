@@ -616,18 +616,7 @@ UINT __stdcall CPTSCommunicator::CommThread(LPVOID pParam)
 ////////////////////////////////////////////////////////////////////////////////
 BOOL CPTSCommunicator::ControlMessage(BYTE *message)
 {
-	//int countData = (int)message[NUMBYTEPOS];
-	//BYTE checksum = 0x00;
 
-	//checksum = message[NUMBYTEPOS] ^ message[MESSAGEIDPOS] ^ message[MAGICNUMPOS];
-	//for(int i=DATAPOS; i<countData; i++)
-	//	checksum ^= message[i];
-
-	//if (checksum !=  message[countData])
-	//	return FALSE;
-
-	//if (MAGICNUMBER !=  message[MAGICNUMPOS])
-	//	return FALSE;
 
 	return TRUE; /// boraN always return TRUE for the time being
 }

@@ -41,8 +41,8 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	{
 		std::cout << " --(!) Error reading images " << std::endl; return -1;
 	}
-	//printf("\n\n Image 1 Width %d  Height %d\n", imgReference.cols, imgReference.rows);
-	//printf("\n Image 2 Width %d  Height %d\n\n", imgTest.cols, imgTest.rows);
+	//TRACE("\n\n Image 1 Width %d  Height %d\n", imgReference.cols, imgReference.rows);
+	//TRACE("\n Image 2 Width %d  Height %d\n\n", imgTest.cols, imgTest.rows);
 
 	cv::Mat img1, img2;
 	imgReference.copyTo(img1);
@@ -76,16 +76,16 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	PreprocessImage preImg;
 	preImg.PreprocessStage(&imgReference, &imgTest);
 
-	printf("\n Preprocess Gray Image 1 Width %d  Height %d\n", imgReference.cols, imgReference.rows);
-	printf("\n Preprocess Gray  Image 2 Width %d  Height %d\n\n", imgTest.cols, imgTest.rows);
+	TRACE("\n Preprocess Gray Image 1 Width %d  Height %d\n", imgReference.cols, imgReference.rows);
+	TRACE("\n Preprocess Gray  Image 2 Width %d  Height %d\n\n", imgTest.cols, imgTest.rows);
 
 	/// Preprocess Colour Image
 	/// Includes only resize and scale down if selected
 	PreprocessImage preImgClr;
 	preImgClr.PreprocessStageColour(&imgReferenceClr, &imgTestClr);
 
-	printf("\n Preprocess Colour Image 1 Width %d  Height %d\n", imgReferenceClr.cols, imgReferenceClr.rows);
-	printf("\n Preprocess Colour  Image 2 Width %d  Height %d\n\n", imgTestClr.cols, imgTestClr.rows);
+	TRACE("\n Preprocess Colour Image 1 Width %d  Height %d\n", imgReferenceClr.cols, imgReferenceClr.rows);
+	TRACE("\n Preprocess Colour  Image 2 Width %d  Height %d\n\n", imgTestClr.cols, imgTestClr.rows);
 
 #ifdef  DISPLAY_CONCAN_IMAGE_INTERMEDIATE
 	ImageDisplayer imageDisplayerClr3;
@@ -192,7 +192,7 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 
 
 #ifdef INCLUDE_SURF
-	printf("\n SURF Matcher begins");
+	TRACE("\n SURF Matcher begins");
 	/// SURF MATCHER begins
 	rmatcherSURF.match(imgReference, imgTest,
 		matchesSURF, keypointsRefSURF, keypointsTestSURF,
@@ -212,7 +212,7 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 #endif
 
 #ifdef INCLUDE_ORB
-	printf("\n ORB Matcher begins");
+	TRACE("\n ORB Matcher begins");
 
 	/// ORB MATCHER begins
 	rmatcherORB.match(imgReference, imgTest,
@@ -233,7 +233,7 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 #endif
 
 	cv::Point2f offset((float)imgReference.cols, 0);
-	printf("\n OFFSET %d\n", imgReference.cols);
+	TRACE("\n OFFSET %d\n", imgReference.cols);
 
 	matchProcessor1.combineEliminateMatches(imgReference,
 		imgTest,
@@ -293,18 +293,18 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 
 	// time in miliseconds
 	double time22 = ((tick22 - tick1) / cv::getTickFrequency());
-	printf("\nExecution Time After SURF-ORB PROCESSING %.3f seconds\n", time22);
+	TRACE("\nExecution Time After SURF-ORB PROCESSING %.3f seconds\n", time22);
 
 	// get the matches, transformed and combined image
 	//cv::Mat imageTestProcessed1 = imgTest;
 
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-	printf("\nCalculating FAST \n");
+	TRACE("\nCalculating FAST \n");
 #endif
 
 #ifdef INCLUDE_STAR
-	printf("\n STAR Matcher begins");
+	TRACE("\n STAR Matcher begins");
 
 	/// FAST MATCHER begins
 	RobustMatcher rmatcherFAST;
@@ -332,12 +332,12 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 #endif
 
 #ifdef INCLUDE_FAST
-	printf("\n FAST Matcher begins");
+	TRACE("\n FAST Matcher begins");
 
 	int64 tick3333 = cv::getTickCount();
 	// time in miliseconds
 	double time3333 = ((tick3333 - tick1) / cv::getTickFrequency());
-	printf("\nExecution Time After FAST Calculation %.3f seconds\n", time3333);
+	TRACE("\nExecution Time After FAST Calculation %.3f seconds\n", time3333);
 
 	/// STAR MATCHER begins
 	RobustMatcher rmatcherSTAR;
@@ -367,7 +367,7 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	int64 tick333 = cv::getTickCount();
 	// time in miliseconds
 	double time333 = ((tick333 - tick1) / cv::getTickFrequency());
-	printf("\nExecution Time After STAR-FAST Calculation %.3f seconds\n", time333);
+	TRACE("\nExecution Time After STAR-FAST Calculation %.3f seconds\n", time333);
 
 	// Match the two images begins
 	MatchCombinerEliminator matchProcessor2;
@@ -405,7 +405,7 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	int64 tick33 = cv::getTickCount();
 	// time in miliseconds
 	double time33 = ((tick33 - tick1) / cv::getTickFrequency());
-	printf("\nExecution Time After STAR-FAST PROCESSING %.3f seconds\n", time33);
+	TRACE("\nExecution Time After STAR-FAST PROCESSING %.3f seconds\n", time33);
 
 	std::vector<cv::DMatch> matchesCombined2;
 	std::vector<cv::KeyPoint> keypointsRefCombined2, keypointsTestCombined2;
@@ -429,13 +429,13 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	int64 tick44 = cv::getTickCount();
 	// time in miliseconds
 	double time44 = ((tick44 - tick1) / cv::getTickFrequency());
-	printf("\nExecution Time After FINAL PROCESSING %.3f seconds\n", time44);
+	TRACE("\nExecution Time After FINAL PROCESSING %.3f seconds\n", time44);
 
 	cv::Mat imgTestWarpedPersNormClr;
 
 	if ((int)MAX_CLUSTERS > 1)  // more than 1 cluster, i.e., real partitioning
 	{
-		printf("\nCLUSTERING Begins for %d CLUSTERS\n", (int)MAX_CLUSTERS);
+		TRACE("\nCLUSTERING Begins for %d CLUSTERS\n", (int)MAX_CLUSTERS);
 
 		ImagePartitioner ddd;
 
@@ -456,7 +456,7 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	}
 	else // process whole image
 	{
-		printf("\nSINGLE PARTITION HOMOGRAPHY\n");
+		TRACE("\nSINGLE PARTITION HOMOGRAPHY\n");
 
 		cv::Mat homographyRefined1;
 		HomographyEstimator homographyEstimator;
@@ -474,22 +474,22 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 
 			if (ishomogCalculated == false)
 			{
-				printf("\n\n\n HOMOGRAPHY can not be calculated!!!! Exiting..................");
+				TRACE("\n\n\n HOMOGRAPHY can not be calculated!!!! Exiting..................");
 				//getchar();
 				//exit(0);
 			}
 			else
 			{
-				printf("\n Size after homography %d\n\n", matchesCombined2.size());
+				TRACE("\n Size after homography %d\n\n", matchesCombined2.size());
 				int ii = 0;
 				for (std::vector<cv::DMatch>::iterator matchIterator = matchesCombined2.begin();
 					matchIterator != matchesCombined2.end();
 					++matchIterator)
 				{
-					//std::printf("\n DIST Index %d X %.5f ", ii, matchIterator->distance);
+					//TRACE("\n DIST Index %d X %.5f ", ii, matchIterator->distance);
 					ii++;
 				}
-				std::printf("\n\n");
+				TRACE("\n\n");
 			}
 		}
 
@@ -541,8 +541,8 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	if (resizedImgNo == 1)
 	{
 #ifdef DISPLAY_CONCAN_IMAGE
-		printf("\nRESIZED REFERENCE SIZE W %d H %d", resizedImage.cols, resizedImage.rows);
-		printf("\nTEST SIZE W %d H %d", imgTestWarpedPersNormClr.cols, imgTestWarpedPersNormClr.rows);
+		TRACE("\nRESIZED REFERENCE SIZE W %d H %d", resizedImage.cols, resizedImage.rows);
+		TRACE("\nTEST SIZE W %d H %d", imgTestWarpedPersNormClr.cols, imgTestWarpedPersNormClr.rows);
 
 		ImageDisplayer imageDisplayerClr2;
 		char titleClr2[1000];
@@ -554,8 +554,8 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	else if (resizedImgNo == 2)
 	{
 #ifdef DISPLAY_CONCAN_IMAGE
-		printf("\nREFERENCE SIZE W %d H %d", imgReferenceClr.cols, imgReferenceClr.rows);
-		printf("\nRESIZED nTEST SIZE W %d H %d", resizedImage.cols, resizedImage.rows);
+		TRACE("\nREFERENCE SIZE W %d H %d", imgReferenceClr.cols, imgReferenceClr.rows);
+		TRACE("\nRESIZED nTEST SIZE W %d H %d", resizedImage.cols, resizedImage.rows);
 
 		ImageDisplayer imageDisplayerClr2;
 		char titleClr2[1000];
@@ -626,7 +626,7 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 
 	// time in miliseconds
 	double time55 = ((tick2 - tick1) / cv::getTickFrequency());
-	printf("\n\n TOTaL Execution Time %.3f seconds\n\n", time55);
+	TRACE("\n\n TOTaL Execution Time %.3f seconds\n\n", time55);
 
 	getchar();
 
