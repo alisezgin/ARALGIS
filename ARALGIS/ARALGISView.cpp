@@ -80,6 +80,7 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 , m_FormEFVI(_T(""))
 , m_FormECBCI(_T(""))
 , m_FormECBRI(_T(""))
+, m_FormDN(_T(""))
 {
 	// TODO: add construction code here
 
@@ -137,6 +138,7 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_FORM_EFVI, m_FormEFVI);
 	DDX_Text(pDX, IDC_FORM_ECBCI, m_FormECBCI);
 	DDX_Text(pDX, IDC_FORM_ECBRI, m_FormECBRI);
+	DDX_Text(pDX, IDC_FORM_DN, m_FormDN);
 }
 
 BOOL CARALGISView::PreCreateWindow(CREATESTRUCT& cs)
@@ -705,20 +707,52 @@ void CARALGISView::OnLbnSelchangeList2()
 	int index = m_FormListBox.GetCurSel();
 	m_FormListBox.GetText(index, strLP);
 
-	MessageBox(strLP);
+
+	//MessageBox(strLP);
 }
 
 
 void CARALGISView::OnAdd()
 {
 	// TODO: Add your control notification handler code here
-	CString strNewLP;
+	CString strLP;
 
 	UpdateData();
 
-	strNewLP = m_FormLPEntry;
+	strLP = m_FormLPEntry;
+	m_FormListBox.ResetContent();
+
+	// find all visits of the given LP
+	CVehicleSet vSet;
+	CString filter = CString{ "LicensePlate = '" } +strLP;
+	filter += CString{ "'" };
+	vSet.m_strFilter = filter;
+	vSet.m_strSort = _T("MostRecentVisitDate DESC");
+
+	vSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	if (vSet.IsBOF()) {
+		MessageBox(CString{ "Kayit bulunamadi; plaka no: " } +strLP);
+		m_FormListBox.AddString(LPCTSTR{ CString{ "Kayit yok" } });
+		UpdateData(FALSE);
+		return;
+	}
+
+	// these should belong to the most recent visit
+	m_FormELPI = vSet.m_LicensePlateImage;
+	m_FormEFVI = vSet.m_FrontViewImage;
+	m_FormECBCI = vSet.m_ChassisBottomImageCurrent;
+	m_FormECBRI = vSet.m_ChassisBottomImageRef;
+	m_FormDN = vSet.m_DriverName;
+
+	while (!vSet.IsEOF()) {
+		CTime visitDate = vSet.m_MostRecentVisitDate;
+		MessageBox(visitDate.Format("%d/%m/%Y %X"));
+		m_FormListBox.AddString(visitDate.Format("%d/%m/%Y %X"));
+		vSet.MoveNext();
+	}
+
 	UpdateData(FALSE);
-	m_FormListBox.AddString(strNewLP);
+	// m_FormListBox.AddString(strLP);
 }
 
 

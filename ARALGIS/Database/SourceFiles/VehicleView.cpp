@@ -30,7 +30,7 @@ void CVehicleView::DoDataExchange(CDataExchange* pDX)
 	DDX_FieldText(pDX, IDC_VEHICLE_ID, m_pSet->m_VehicleID, m_pSet);
 	DDX_FieldText(pDX, IDC_VEHICLE_LP, m_pSet->m_LicensePlate, m_pSet);
 	DDX_FieldText(pDX, IDC_VEHICLE_LPI, m_pSet->m_LicensePlateImage, m_pSet);
-	DDX_FieldText(pDX, IDC_VEHICLE_CBCI, m_pSet->m_ChassisBottomeImageCurrent, m_pSet);
+	DDX_FieldText(pDX, IDC_VEHICLE_CBCI, m_pSet->m_ChassisBottomImageCurrent, m_pSet);
 	DDX_FieldText(pDX, IDC_VEHICLE_CBRI, m_pSet->m_ChassisBottomImageRef, m_pSet);
 	DDX_FieldText(pDX, IDC_VEHICLE_FVI, m_pSet->m_FrontViewImage, m_pSet);
 	DDX_DateTimeCtrl(pDX, IDC_VEHICLE_LASTVISIT, m_pSet->m_MostRecentVisitDate);

@@ -160,6 +160,8 @@ public:
 	// controls the edit box for chassis bottom reference image in ARALGISForm; eventually will be of type MyPic
 	CString m_FormECBRI;
 	afx_msg void OnGuncelle();
+	// holds the driver name for the current record
+	CString m_FormDN;
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

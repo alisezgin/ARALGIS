@@ -66,6 +66,8 @@
 #define IDC_FORM_LISTBOX                1034
 #define IDC_FORM_ADDCOMMAND             1035
 #define IDC_FORM_BMODIFY                1036
+#define IDC_FORM_ELP2                   1037
+#define IDC_FORM_DN                     1037
 #define IDC_VEHICLE_LASTVISIT           1040
 #define ID_KAMERA_KONFIG32771           32771
 #define ID_KAMERA_KAY32772              32772

@@ -24,9 +24,10 @@ public:
 	CString		m_LicensePlate;
 	CString		m_LicensePlateImage;
 	CString		m_FrontViewImage;
-	CString		m_ChassisBottomeImageCurrent;
+	CString		m_ChassisBottomImageCurrent;
 	CString		m_ChassisBottomImageRef;
 	CTime		m_MostRecentVisitDate;
+	CString		m_DriverName;
 
 // Overrides
 	// Wizard generated virtual function overrides

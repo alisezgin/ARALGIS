@@ -17,10 +17,11 @@ CVehicleSet::CVehicleSet(CDatabase* pdb)
 	m_LicensePlate = L"";
 	m_LicensePlateImage = L"";
 	m_FrontViewImage = L"";
-	m_ChassisBottomeImageCurrent = L"";
+	m_ChassisBottomImageCurrent = L"";
 	m_ChassisBottomImageRef = L"";
 	m_MostRecentVisitDate;
-	m_nFields = 7;
+	m_DriverName = L"";
+	m_nFields = 8;
 	m_nDefaultType = dynaset;
 }
 // #error Security Issue: The connection string may contain a password
@@ -48,9 +49,10 @@ void CVehicleSet::DoFieldExchange(CFieldExchange* pFX)
 	RFX_Text(pFX, _T("[LicensePlate]"), m_LicensePlate);
 	RFX_Text(pFX, _T("[LicensePlateImage]"), m_LicensePlateImage);
 	RFX_Text(pFX, _T("[FrontViewImage]"), m_FrontViewImage);
-	RFX_Text(pFX, _T("[ChassisBottomeImageCurrent]"), m_ChassisBottomeImageCurrent);
+	RFX_Text(pFX, _T("[ChassisBottomImageCurrent]"), m_ChassisBottomImageCurrent);
 	RFX_Text(pFX, _T("[ChassisBottomImageRef]"), m_ChassisBottomImageRef);
 	RFX_Date(pFX, _T("[MostRecentVisitDate]"), m_MostRecentVisitDate);
+	RFX_Text(pFX, _T("[DriverName]"), m_DriverName);
 
 }
 /////////////////////////////////////////////////////////////////////////////
