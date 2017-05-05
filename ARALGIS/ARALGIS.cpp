@@ -140,6 +140,17 @@ char g_TestImageFileName[MAX_DIR_PATH_LENGTH];
 // global variable to hold reference image filename (includes directory path)
 char g_RefImageFileName[MAX_DIR_PATH_LENGTH];
 
+int  g_CameraWidth;
+int  g_CameraHeight;
+int  g_CameraPixelBits;
+int  g_CameraBuffer;
+char g_Odroid_Port[PORT_BYTE_LEN + 1];
+char g_PTSPort[PORT_BYTE_LEN + 1];
+char g_ReferenceFilePath[MAX_DIR_PATH_LENGTH + 1];
+char g_ConfigFilename[MAX_FILENAME_LENGTH + 1];
+int  g_ImageOnScreenDuration;
+// boraN INI ends
+
 
 /////////////////////////////////////////////////////
 //// GLOBAL DATA VARIABLES end here////////////////

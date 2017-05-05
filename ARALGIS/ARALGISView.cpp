@@ -246,18 +246,6 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_OFF, ANCHOR_RIGHT);
 	ASSERT(bOk);
 
-
-	//arrID.RemoveAll();
-
-	//arrID.Add(IDC_STATIC_FILTERS);
-	//arrID.Add(IDC_BUTTON_ORGINAL);
-	//arrID.Add(IDC_BUTTON_FILTER1);
-	//arrID.Add(IDC_BUTTON_FILTER2);
-	//arrID.Add(IDC_BUTTON_FILTER3);
-
-	//bOk = m_resizer.CreatePanel(_T("Image_Panel"), &arrID, TRUE);
-	//ASSERT(bOk);
-
 	bOk = m_resizer.SetAnchor(IDC_STATIC_FILTERS, ANCHOR_RIGHT);
 	ASSERT(bOk);
 
@@ -273,25 +261,6 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER3, ANCHOR_RIGHT);
 	ASSERT(bOk);
 
-	//bOk = m_resizer.CreateSplitContainer(_T("StaImage_Splitter"), _T("Status_Panel"), _T("Image_Panel"));
-	//ASSERT(bOk);
-
-	//bOk = m_resizer.SetShowSplitterGrip(_T("StaImage_Splitter"), TRUE);
-	//ASSERT(bOk);
-
-	//bOk = m_resizer.SetAnchor(_T("StaImage_Splitter"), ANCHOR_ALL);
-	//ASSERT(bOk);
-
-	//CSize size3(0, 200); // cy member will be ignored
-	//bOk = m_resizer.SetMinimumSize(_T("Status_Panel"), size3);
-	//ASSERT(bOk);
-
-	//CSize size4(0, 200); // cy member will be ignored
-	//bOk = m_resizer.SetMinimumSize(_T("Image_Panel"), size4);
-	//ASSERT(bOk);
-
-	
-		
 
 	CRect workArea;
 	::SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
@@ -424,9 +393,12 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 
 afx_msg LRESULT CARALGISView::OnDBaseCarInfoReady(WPARAM wParam, LPARAM lParam)
 {
-	//g_CVImageRef = cv::imread(g_RefImageFileName, cv::IMREAD_COLOR);
+	strncpy_s(g_RefImageFileName, (size_t)(MAX_FILENAME_LENGTH + 1), g_ReferenceFilePath, (size_t)(MAX_FILENAME_LENGTH));
+	strncat_s(g_RefImageFileName, (size_t)(MAX_FILENAME_LENGTH + 1), "car-1-handCropped.bmp", (size_t)(MAX_FILENAME_LENGTH));
 
-	g_CVImageRef = cv::imread("C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp", cv::IMREAD_COLOR);
+	g_CVImageRef = cv::imread(g_RefImageFileName, cv::IMREAD_COLOR);
+
+	//g_CVImageRef = cv::imread("C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp", cv::IMREAD_COLOR);
 
 	// no need to transpose+flip
 	// since image files are written landscape!!!

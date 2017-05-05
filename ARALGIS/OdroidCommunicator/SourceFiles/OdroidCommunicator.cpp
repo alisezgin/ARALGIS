@@ -179,7 +179,7 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 	hints.ai_flags = AI_PASSIVE;
 
 	// Resolve the address and port
-	iResult = getaddrinfo(NULL, ARALGIS_ODROID_TCP_PORT_CHAR, &hints, &resultAddr);
+	iResult = getaddrinfo(NULL, g_Odroid_Port, &hints, &resultAddr);
 	if (iResult != 0)
 	{
 		TRACE("getaddrinfo failed with error: %d failure COdroidCommunicator::OdroidCommunicatorThread\n", iResult);

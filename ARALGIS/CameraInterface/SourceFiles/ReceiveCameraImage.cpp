@@ -159,7 +159,10 @@ BOOL CReceiveCameraImage::InitSAPERA(void)
 
 				m_AcqDevice = new SapAcqDevice(serverName);
 
-				CString configFile(_T("E:\\FuzyonSoft\\CamFiles\\default_withGain.ccf"));
+				//CString configFile(_T("E:\\FuzyonSoft\\CamFiles\\default_withGain.ccf"));
+
+				CString configFile(g_ConfigFilename);
+
 				char dummy[1000];
 				size_t i = configFile.GetLength();
 				strncpy_s(dummy, "\n", 1000);
@@ -174,7 +177,7 @@ BOOL CReceiveCameraImage::InitSAPERA(void)
 			}
 		}
 
-		m_Buffers = new SapBufferWithTrash(CAM_MAX_BUFFER, m_AcqDevice);
+		m_Buffers = new SapBufferWithTrash(g_CameraBuffer, m_AcqDevice);
 		m_Xfer = new SapAcqDeviceToBuf(m_AcqDevice, m_Buffers, XferCallback, this);
 	}
 	
@@ -183,7 +186,7 @@ BOOL CReceiveCameraImage::InitSAPERA(void)
 	if (m_bServerAvailable == FALSE)
 	{
 		// Define off-line objects
-		m_Buffers = new SapBuffer(CAM_MAX_BUFFER, CAM_SIZE, CAM_HEIGHT, SapFormatRGB888, SapBuffer::TypeScatterGather); // MAX_BUFFER
+		m_Buffers = new SapBuffer(g_CameraBuffer, CAM_SIZE, g_CameraHeight, SapFormatRGB888, SapBuffer::TypeScatterGather); // MAX_BUFFER
 
 	} // End if, else.
 
@@ -940,7 +943,7 @@ void CReceiveCameraImage::GetCameraDataAsMat()
 		for (i = 0; i < bufOffset; i++)
 			m_Buffers->Next();
 
-		for (i = 0; i < inumFrames; i++)  // CAM_MAX_BUFFER
+		for (i = 0; i < inumFrames; i++)  // g_CameraBuffer
 		{
 			j = k * size * bytesPerPixel;
 

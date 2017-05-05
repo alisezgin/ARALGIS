@@ -4,11 +4,7 @@
 #include "ARALGIS.h"
 #include "..\HeaderFiles\ImageFilterProcessing.h"
 
-#include ".\ImageFiltering\HeaderFiles\pixkit-timer.hpp"
-#include ".\ImageFiltering\HeaderFiles\pixkit-file.hpp"
-#include ".\ImageFiltering\HeaderFiles\pixkit-ml.hpp"
 #include ".\ImageFiltering\HeaderFiles\pixkit-image.hpp"
-#include ".\ImageFiltering\HeaderFiles\pixkit-cv.hpp"
 #include ".\ImageFiltering\HeaderFiles\cvt.hpp"
 
 #include "MainFrm.h"

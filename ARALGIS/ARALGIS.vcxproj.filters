@@ -88,6 +88,27 @@
     <Filter Include="ImageFiltering\ImageFilterProcesing\SourceFiles">
       <UniqueIdentifier>{9a524954-c7c3-4d3c-9c7e-327939ee4b38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="miniIni">
+      <UniqueIdentifier>{e0dc87b5-9857-4a6b-b9df-6ee06b30e1d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="miniIni\Implementation">
+      <UniqueIdentifier>{5f9f7f91-bbb6-4a91-bd03-86683f241e9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="miniIni\Implementation\HeaderFiles">
+      <UniqueIdentifier>{82282e20-9dc0-4cb0-a910-c0ce7308f51e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="miniIni\Implementation\SourceFiles">
+      <UniqueIdentifier>{9d82bfa7-1f01-4963-81c9-c6cc7ab256d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="miniIni\Processing">
+      <UniqueIdentifier>{26c4cecb-821d-44a3-bcf1-39fb180531c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="miniIni\Processing\HeaderFiles">
+      <UniqueIdentifier>{7aeef1fc-9a90-481d-a04a-9c3e7b91c4e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="miniIni\Processing\SourceFiles">
+      <UniqueIdentifier>{29a956c9-8279-4c04-a0aa-0b92b2b73b0a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -222,19 +243,7 @@
     <ClInclude Include="ImageFiltering\HeaderFiles\cvt.hpp">
       <Filter>ImageFiltering\HeaderFiles</Filter>
     </ClInclude>
-    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-cv.hpp">
-      <Filter>ImageFiltering\HeaderFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-file.hpp">
-      <Filter>ImageFiltering\HeaderFiles</Filter>
-    </ClInclude>
     <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-image.hpp">
-      <Filter>ImageFiltering\HeaderFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-ml.hpp">
-      <Filter>ImageFiltering\HeaderFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-timer.hpp">
       <Filter>ImageFiltering\HeaderFiles</Filter>
     </ClInclude>
     <ClInclude Include="ImageFiltering\HeaderFiles\Includes.h">
@@ -258,6 +267,12 @@
     <ClInclude Include="BitmapDisplay\HeaderFiles\ShowpicCV.h">
       <Filter>BitmapDisplay\HeaderFiles</Filter>
     </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\CameraDBServer.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFiltering\ImageFilterProcessing\HeaderFiles\ImageFilterProcessing.h">
+      <Filter>ImageFiltering\ImageFilterProcesing\HeaderFiles</Filter>
+    </ClInclude>
     <ClInclude Include="Database\HeaderFiles\UserTableSet.h">
       <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
@@ -266,11 +281,51 @@
     </ClInclude>
     <ClInclude Include="Database\HeaderFiles\VehicleView.h">
       <Filter>Database\HeaderFiles</Filter>
-    <ClInclude Include="Database\HeaderFiles\CameraDBServer.h">
-      <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
-    <ClInclude Include="ImageFiltering\ImageFilterProcessing\HeaderFiles\ImageFilterProcessing.h">
-      <Filter>ImageFiltering\ImageFilterProcesing\HeaderFiles</Filter>
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\allocator.h">
+      <Filter>miniIni\Implementation\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\globals.h">
+      <Filter>miniIni\Implementation\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\inifile.h">
+      <Filter>miniIni\Implementation\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\inifileutil.h">
+      <Filter>miniIni\Implementation\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\inisection.h">
+      <Filter>miniIni\Implementation\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\inisectionutil.h">
+      <Filter>miniIni\Implementation\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\linetoken.h">
+      <Filter>miniIni\Implementation\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\log.h">
+      <Filter>miniIni\Implementation\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\miniini.h">
+      <Filter>miniIni\Implementation\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\miniini_assert.h">
+      <Filter>miniIni\Implementation\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\parse.h">
+      <Filter>miniIni\Implementation\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\time.h">
+      <Filter>miniIni\Implementation\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\typedefs.h">
+      <Filter>miniIni\Implementation\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\util.h">
+      <Filter>miniIni\Implementation\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniIni\Processing\HeaderFiles\IniFileProcessing.h">
+      <Filter>miniIni\Processing\HeaderFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -328,13 +383,7 @@
     <ClCompile Include="WndResizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\attack.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\CelikTjahjadi2012.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\ChanduStanichWuTrager2014.cpp">
       <Filter>ImageFiltering\SourceFiles</Filter>
     </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\comp.cpp">
@@ -346,25 +395,10 @@
     <ClCompile Include="ImageFiltering\SourceFiles\DBSBTC2011.cpp">
       <Filter>ImageFiltering\SourceFiles</Filter>
     </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\detection.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\DMS2012.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\edgedetection.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\enhancement.cpp">
       <Filter>ImageFiltering\SourceFiles</Filter>
     </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\filtering.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\fuzzyCMeans.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\halftoning.cpp">
       <Filter>ImageFiltering\SourceFiles</Filter>
     </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\iCLUDMS2016.cpp">
@@ -376,25 +410,7 @@
     <ClCompile Include="ImageFiltering\SourceFiles\IW_SSIM.cpp">
       <Filter>ImageFiltering\SourceFiles</Filter>
     </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\KMeans.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\KNN.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\labeling.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\LAT2011.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\LiuGuo2015.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\mldata.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\MS_SSIM.cpp">
       <Filter>ImageFiltering\SourceFiles</Filter>
     </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\MSRCP2014.cpp">
@@ -409,25 +425,13 @@
     <ClCompile Include="ImageFiltering\SourceFiles\PGF1999.cpp">
       <Filter>ImageFiltering\SourceFiles</Filter>
     </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\pixkit-file.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\pixkit-timer.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\pohe.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\qualityassessment.cpp">
       <Filter>ImageFiltering\SourceFiles</Filter>
     </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\retinex.cpp">
       <Filter>ImageFiltering\SourceFiles</Filter>
     </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\WangZhengHuLi2013.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\YangTsai1998.cpp">
       <Filter>ImageFiltering\SourceFiles</Filter>
     </ClCompile>
     <ClCompile Include="PTSCommunicator\SourceFiles\PTSCommunicator.cpp">
@@ -442,6 +446,12 @@
     <ClCompile Include="BitmapDisplay\SourceFiles\ShowpicCV.cpp">
       <Filter>BitmapDisplay\SourceFiles</Filter>
     </ClCompile>
+    <ClCompile Include="Database\SourceFiles\CameraDBServer.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\ImageFilterProcessing\SourceFiles\ImageFilterProcessing.cpp">
+      <Filter>ImageFiltering\ImageFilterProcesing\SourceFiles</Filter>
+    </ClCompile>
     <ClCompile Include="Database\SourceFiles\UserTableSet.cpp">
       <Filter>Database\SourceFiles</Filter>
     </ClCompile>
@@ -450,11 +460,27 @@
     </ClCompile>
     <ClCompile Include="Database\SourceFiles\VehicleView.cpp">
       <Filter>Database\SourceFiles</Filter>
-    <ClCompile Include="Database\SourceFiles\CameraDBServer.cpp">
-      <Filter>Database\SourceFiles</Filter>
     </ClCompile>
-    <ClCompile Include="ImageFiltering\ImageFilterProcessing\SourceFiles\ImageFilterProcessing.cpp">
-      <Filter>ImageFiltering\ImageFilterProcesing\SourceFiles</Filter>
+    <ClCompile Include="MiniIni\Implementation\SourceFiles\allocator.cpp">
+      <Filter>miniIni\Implementation\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniIni\Implementation\SourceFiles\benchmark.cpp">
+      <Filter>miniIni\Implementation\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniIni\Implementation\SourceFiles\globals.cpp">
+      <Filter>miniIni\Implementation\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniIni\Implementation\SourceFiles\inifile.cpp">
+      <Filter>miniIni\Implementation\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniIni\Implementation\SourceFiles\inisection.cpp">
+      <Filter>miniIni\Implementation\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniIni\Implementation\SourceFiles\log.cpp">
+      <Filter>miniIni\Implementation\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniIni\Processing\SourceFiles\IniFileProcessing.cpp">
+      <Filter>miniIni\Processing\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

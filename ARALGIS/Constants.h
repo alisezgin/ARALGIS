@@ -10,8 +10,8 @@
 #define WM_DBASE_CAR_INFO_READY (WM_USER + 5)
 
 
-#define MAX_DIR_PATH_LENGTH (400)
-#define MAX_FILENAME_LENGTH (2356)
+#define MAX_DIR_PATH_LENGTH (256)
+#define MAX_FILENAME_LENGTH (512)
 #define PLAKA_CHAR_LENGTH (8)
 
 
@@ -29,6 +29,8 @@
 #define CAM_BITS   (24)
 #define CAM_SIZE   (2048)
 #define CAM_MAX_BUFFER   (90)
+
+#define PORT_BYTE_LEN  (4)
 
 // ARALGIS TCP PORTS
 #define ARALGIS_ODROID_TCP_PORT_CHAR ("1001")

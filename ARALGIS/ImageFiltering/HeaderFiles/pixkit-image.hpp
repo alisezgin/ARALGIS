@@ -38,14 +38,14 @@ namespace pixkit{
 		*
 		* @param		sd:	standard deviation, unit: grayscale. range: 0~255
 		*/
-		bool	addGaussianNoise(const cv::Mat &src,cv::Mat &dst,const double sd);
+		//bool	addGaussianNoise(const cv::Mat &src,cv::Mat &dst,const double sd);
 		
 		/**
 		* @brief		add white noise to each pixel
 		*
 		* @param		maxMag: the biggest mag of the noise
 		*/
-		bool	addWhiteNoise(const cv::Mat &src,cv::Mat &dst,const double maxMag);
+		//bool	addWhiteNoise(const cv::Mat &src,cv::Mat &dst,const double maxMag);
 
 	}
 
@@ -79,23 +79,23 @@ namespace pixkit{
 
 	//////////////////////////////////////////////////////////////////////////
 	/// Edge detection related
-	namespace edgedetection{
+	//namespace edgedetection{
 
-		/**
-		* @brief		Sobel edge detection
-		* @brief		paper: digital image processing textbook
-		*
-		* @author		Yunfu Liu (yunfuliu@gmail.com)
-		* @date			Sept. 4, 2013
-		* @version		1.0
-		*
-		* @param		src: input image (grayscale only)
-		* @param		dst: output image
-		*
-		* @return		bool: true: successful, false: failure
-		*/
-		bool Sobel(const cv::Mat &src, cv::Mat &dst);
-	}
+	//	/**
+	//	* @brief		Sobel edge detection
+	//	* @brief		paper: digital image processing textbook
+	//	*
+	//	* @author		Yunfu Liu (yunfuliu@gmail.com)
+	//	* @date			Sept. 4, 2013
+	//	* @version		1.0
+	//	*
+	//	* @param		src: input image (grayscale only)
+	//	* @param		dst: output image
+	//	*
+	//	* @return		bool: true: successful, false: failure
+	//	*/
+	//	bool Sobel(const cv::Mat &src, cv::Mat &dst);
+	//}
 
 	//////////////////////////////////////////////////////////////////////////
 	/// Halftoning related
@@ -248,7 +248,7 @@ namespace pixkit{
 			* @param	dst: dst model.
 			* @param	others: Please refer to the paper.
 			*/
-			bool generateTwoComponentGaussianModel(cv::Mat &dst1d,float k1=40.8,float k2=9.03,float sd1=0.0384,float sd2=0.105);
+			//bool generateTwoComponentGaussianModel(cv::Mat &dst1d,float k1=40.8,float k2=9.03,float sd1=0.0384,float sd2=0.105);
 
 		}
 	}
