@@ -78,7 +78,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(MSBuildProjectDirectory)\Database\HeaderFiles;.\ARALGIS\ImageFiltering\HeaderFiles;$(IncludePath)</IncludePath>
-    <SourcePath>.\ARALGIS\Database\SourceFiles;$(VC_SourcePath);$(MSBuildProjectDirectory)\Database\SourceFiles</SourcePath>
+    <SourcePath>$(MSBuildProjectDirectory)\Database\SourceFiles;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -127,8 +127,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OPENCV_DIR)\x64\vc12\lib;C:\Program Files\Teledyne DALSA\Sapera\Lib\Win64;C:\Program Files\Teledyne DALSA\Sapera\Lib\Win64\VS2013;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>odbc32.lib;SapClassBasic.lib;SapClassGuiD.lib;opencv_calib3d2411d.lib;opencv_contrib2411d.lib;opencv_core2411d.lib;opencv_features2d2411d.lib;opencv_flann2411d.lib;opencv_gpu2411d.lib;opencv_highgui2411d.lib;opencv_imgproc2411d.lib;opencv_legacy2411d.lib;opencv_ml2411d.lib;opencv_objdetect2411d.lib;opencv_ts2411d.lib;opencv_video2411d.lib;opencv_nonfree2411d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <LinkTimeCodeGeneration>PGInstrument</LinkTimeCodeGeneration>
+      <AdditionalDependencies>odbc32.lib;SapClassBasic.lib;SapClassGUId.lib;opencv_calib3d2411d.lib;opencv_contrib2411d.lib;opencv_core2411d.lib;opencv_features2d2411d.lib;opencv_flann2411d.lib;opencv_gpu2411d.lib;opencv_highgui2411d.lib;opencv_imgproc2411d.lib;opencv_legacy2411d.lib;opencv_ml2411d.lib;opencv_objdetect2411d.lib;opencv_ts2411d.lib;opencv_video2411d.lib;opencv_nonfree2411d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -243,14 +243,25 @@
     <ClInclude Include="Database\HeaderFiles\VehicleView.h" />
     <ClInclude Include="ImageFiltering\HeaderFiles\cvt.hpp" />
     <ClInclude Include="ImageFiltering\HeaderFiles\Includes.h" />
-    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-cv.hpp" />
-    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-file.hpp" />
     <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-image.hpp" />
-    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-ml.hpp" />
-    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-timer.hpp" />
     <ClInclude Include="ImageFiltering\ImageFilterProcessing\HeaderFiles\ImageFilterProcessing.h" />
     <ClInclude Include="InitGlobalVars.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\allocator.h" />
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\globals.h" />
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\inifile.h" />
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\inifileutil.h" />
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\inisection.h" />
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\inisectionutil.h" />
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\linetoken.h" />
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\log.h" />
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\miniini.h" />
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\miniini_assert.h" />
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\parse.h" />
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\time.h" />
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\typedefs.h" />
+    <ClInclude Include="MiniIni\Implementation\HeaderFiles\util.h" />
+    <ClInclude Include="MiniIni\Processing\HeaderFiles\IniFileProcessing.h" />
     <ClInclude Include="OdroidCommunicator\HeaderFiles\OdroidCommunicator.h" />
     <ClInclude Include="OdroidCommunicator\HeaderFiles\OdroidMessageDefinitions.h" />
     <ClInclude Include="PTSCommunicator\HeaderFiles\PTSMessageDefinitions.h" />
@@ -283,13 +294,7 @@
     <ClCompile Include="Database\SourceFiles\VehicleSet.cpp" />
     <ClCompile Include="Database\SourceFiles\VehicleView.cpp" />
     <ClCompile Include="ImageFiltering\ImageFilterProcessing\SourceFiles\ImageFilterProcessing.cpp" />
-    <ClCompile Include="ImageFiltering\SourceFiles\attack.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\CelikTjahjadi2012.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\ChanduStanichWuTrager2014.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\comp.cpp">
@@ -301,25 +306,10 @@
     <ClCompile Include="ImageFiltering\SourceFiles\DBSBTC2011.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\detection.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\DMS2012.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\edgedetection.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\enhancement.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\filtering.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\fuzzyCMeans.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\halftoning.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\iCLUDMS2016.cpp">
@@ -331,28 +321,10 @@
     <ClCompile Include="ImageFiltering\SourceFiles\IW_SSIM.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\KMeans.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\KNN.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\labeling.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\LAT2011.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\LiuGuo2015.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\mldata.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\MSRCP2014.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\MS_SSIM.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\NADD.cpp">
@@ -364,16 +336,7 @@
     <ClCompile Include="ImageFiltering\SourceFiles\PGF1999.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\pixkit-file.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\pixkit-timer.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\pohe.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\qualityassessment.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ImageFiltering\SourceFiles\retinex.cpp">
@@ -382,11 +345,15 @@
     <ClCompile Include="ImageFiltering\SourceFiles\WangZhengHuLi2013.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\YangTsai1998.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="InitGlobalVars.cpp" />
     <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MiniIni\Implementation\SourceFiles\allocator.cpp" />
+    <ClCompile Include="MiniIni\Implementation\SourceFiles\benchmark.cpp" />
+    <ClCompile Include="MiniIni\Implementation\SourceFiles\globals.cpp" />
+    <ClCompile Include="MiniIni\Implementation\SourceFiles\inifile.cpp" />
+    <ClCompile Include="MiniIni\Implementation\SourceFiles\inisection.cpp" />
+    <ClCompile Include="MiniIni\Implementation\SourceFiles\log.cpp" />
+    <ClCompile Include="MiniIni\Processing\SourceFiles\IniFileProcessing.cpp" />
     <ClCompile Include="OdroidCommunicator\SourceFiles\OdroidCommunicator.cpp" />
     <ClCompile Include="PTSCommunicator\SourceFiles\PTSCommunicator.cpp" />
     <ClCompile Include="stdafx.cpp">

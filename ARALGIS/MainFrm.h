@@ -10,8 +10,7 @@
 #include ".\\OdroidCommunicator\\HeaderFiles\\OdroidCommunicator.h"
 #include ".\\Database\\HeaderFiles\\CameraDBServer.h"
 #include ".\\ImageFiltering\\ImageFilterProcessing\\HeaderFiles\\ImageFilterProcessing.h"
-
-
+#include ".\\miniIni\\Processing\\HeaderFiles\\IniFileProcessing.h"
 
 class CMainFrame : public CFrameWnd
 {
@@ -29,7 +28,12 @@ public:
 	CCameraDBServer        *m_CameraDatabaseServer;
 	CImageFilterProcessing *m_ImageFilterProcessing;
 
-protected:
+protected:  // control bar embedded members
+	CToolBar          m_wndToolBar;
+	CStatusBar        m_wndStatusBar;
+	HANDLE			m_hSemaphore;
+	IniFileProcessing  m_IniFile;
+
 	bool m_IsFirstTime;
 
 	// Operations
@@ -55,13 +59,7 @@ public:
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
 #endif
-
-protected:  // control bar embedded members
-	CToolBar          m_wndToolBar;
-	CStatusBar        m_wndStatusBar;
-
-	HANDLE			m_hSemaphore;
-
+	
 	// Generated message map functions
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);

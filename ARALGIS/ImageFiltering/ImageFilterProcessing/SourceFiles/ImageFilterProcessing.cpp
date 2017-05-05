@@ -4,6 +4,9 @@
 #include "ARALGIS.h"
 #include "..\HeaderFiles\ImageFilterProcessing.h"
 
+#include ".\ImageFiltering\HeaderFiles\pixkit-image.hpp"
+#include ".\ImageFiltering\HeaderFiles\cvt.hpp"
+
 #include "MainFrm.h"
 #include "ARALGISView.h"
 
@@ -213,6 +216,12 @@ UINT __stdcall CImageFilterProcessing::Filter1ProcessingThread(LPVOID pParam)
 		{
 			ResetEvent(g_ProcessFilter1Event);
 
+			pixkit::enhancement_global::RajuNair2014(g_CVImageTest, g_CVImageTestFilter1);
+
+			//cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE(2.0, cv::Size(8, 8));
+			//clahe->setClipLimit(4);
+			//clahe->apply(g_CVImageTest, g_CVImageTestFilter1);
+
 			pFilterProcessing->m_pNotifyProc((LPVOID)pFilterProcessing->m_pFrame, FILTER_PROCESS_FILTER1_READY);
 		}
 
@@ -237,6 +246,8 @@ UINT __stdcall CImageFilterProcessing::Filter1ProcessingThread(LPVOID pParam)
 UINT __stdcall CImageFilterProcessing::Filter2ProcessingThread(LPVOID pParam)
 {
 	CImageFilterProcessing *pFilterProcessing = (CImageFilterProcessing*)pParam;
+
+	cv::Mat inGray;
 
 	TRACE("Filter Processing Thread Number 2 Started\n");
 
@@ -266,6 +277,12 @@ UINT __stdcall CImageFilterProcessing::Filter2ProcessingThread(LPVOID pParam)
 		{
 			ResetEvent(g_ProcessFilter2Event);
 
+			cv::cvtColor(g_CVImageTest, inGray, CV_RGB2GRAY);
+
+			cv::equalizeHist(inGray, g_CVImageTestFilter2);
+
+			//pixkit::enhancement_global::GlobalHistogramEqualization1992(inGray, g_CVImageTestFilter2);
+
 			pFilterProcessing->m_pNotifyProc((LPVOID)pFilterProcessing->m_pFrame, FILTER_PROCESS_FILTER2_READY);
 		}
 
@@ -290,6 +307,8 @@ UINT __stdcall CImageFilterProcessing::Filter2ProcessingThread(LPVOID pParam)
 UINT __stdcall CImageFilterProcessing::Filter3ProcessingThread(LPVOID pParam)
 {
 	CImageFilterProcessing *pFilterProcessing = (CImageFilterProcessing*)pParam;
+
+	cv::Mat inGray;
 
 	TRACE("Filter Processing Thread Number 3 Started\n");
 
@@ -318,6 +337,10 @@ UINT __stdcall CImageFilterProcessing::Filter3ProcessingThread(LPVOID pParam)
 		else if (EventCaused == WAIT_OBJECT_0 + 1)
 		{
 			ResetEvent(g_ProcessFilter3Event);
+
+			cv::cvtColor(g_CVImageTest, inGray, CV_RGB2GRAY);
+
+			pixkit::enhancement_local::CLAHEnon1987(inGray, g_CVImageTestFilter3, cv::Size(8, 8));
 
 			pFilterProcessing->m_pNotifyProc((LPVOID)pFilterProcessing->m_pFrame, FILTER_PROCESS_FILTER3_READY);
 		}

@@ -123,9 +123,6 @@ extern cv::Mat g_CVImageTestFilter3;
 // global variable to hold openCV reference image from Camera
 extern cv::Mat g_CVImageRef;
 
-// global variable to hold Plaka Tanýma Sistemi (PTS) Client IP
-extern char g_PtsIP[IP_ADDRESS_LEN + 1];
-
 // global variable to hold car PLAKA NUMBER
 extern char g_PlakaNoChars[PLAKA_CHAR_LENGTH + 1];
 
@@ -142,6 +139,15 @@ extern char g_TestImageFileName[MAX_DIR_PATH_LENGTH];
 // global variable to hold reference image filename (includes directory path)
 extern char g_RefImageFileName[MAX_DIR_PATH_LENGTH];
 
+extern int  g_CameraWidth;
+extern int  g_CameraHeight;
+extern int  g_CameraPixelBits;
+extern int  g_CameraBuffer;
+extern char g_Odroid_Port[PORT_BYTE_LEN + 1];
+extern char g_PTSPort[PORT_BYTE_LEN + 1];
+extern char g_ReferenceFilePath[MAX_DIR_PATH_LENGTH + 1];
+extern char g_ConfigFilename[MAX_FILENAME_LENGTH + 1];
+extern int  g_ImageOnScreenDuration;
 
 /////////////////////////////////////////////////////
 //// GLOBAL DATA VARIABLES end here////////////////

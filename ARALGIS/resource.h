@@ -80,6 +80,8 @@
 #define IDC_FORM_EBL                    1041
 #define IDC_BUTTON1                     1042
 #define IDC_FORM_BUPDATEDB              1042
+#define IDC_BUTTON1                     1050
+#define IDC_BUTTON_ORGINAL              1051
 #define ID_KAMERA_KONFIG32771           32771
 #define ID_KAMERA_KAY32772              32772
 #define ID_KAMERA_RESIMG32773           32773

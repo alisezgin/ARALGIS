@@ -162,22 +162,22 @@ void CMainFrame::NotifyProcPTSComm(LPVOID lpParam, UINT nCode)
 		case PTS_CONNECTION_LOST:
 		{
 			pView->UpdatePTSStatus(false);
-			::MessageBox(NULL,
-				(LPCWSTR)L"PTS Baðlantýsý Kayboldu",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
+			//::MessageBox(NULL,
+			//	(LPCWSTR)L"PTS Baðlantýsý Kayboldu",
+			//	(LPCWSTR)WARNINGWINDOW_TITLE,
+			//	MB_OK | MB_ICONERROR
+			//	);
 			break;
 		}
 
 		case PTS_CONNECTION_OK:
 		{
 			pView->UpdatePTSStatus(true);
-			::MessageBox(NULL,
-				(LPCWSTR)L"PTS Baðlantýsý Kuruldu",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
+			//::MessageBox(NULL,
+			//	(LPCWSTR)L"PTS Baðlantýsý Kuruldu",
+			//	(LPCWSTR)WARNINGWINDOW_TITLE,
+			//	MB_OK | MB_ICONERROR
+			//	);
 			break;
 		}
 		default:
@@ -300,30 +300,15 @@ void CMainFrame::NotifyProcImageFiltering(LPVOID lpParam, UINT nCode)
 		switch (nCode)
 		{
 		case FILTER_PROCESS_FILTER1_READY:
-			//pView->SetTimerDisplay();
-			::MessageBox(NULL,
-				(LPCWSTR)L"Filter-1",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
+			pView->FilterAvailable(1);
 			break;
 
 		case FILTER_PROCESS_FILTER2_READY:
-			//pView->KillTimerCamera();
-			::MessageBox(NULL,
-				(LPCWSTR)L"Filter-2",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
+			pView->FilterAvailable(2);
 			break;
 
 		case FILTER_PROCESS_FILTER3_READY:
-			//pView->KillTimerCamera();
-			::MessageBox(NULL,
-				(LPCWSTR)L"Filter-3",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
+			pView->FilterAvailable(3);
 			break;
 
 		default:
@@ -374,86 +359,91 @@ void CMainFrame::Activate()
 	}
 	else
 	{
-		g_isProgramStarted = TRUE;
-
-		MyRegisterClass(AfxGetInstanceHandle());
-
-		//// initilize the local printer list 
-		//CARALGISView* pView = static_cast<CARALGISView*>(GetActiveView());
-		////pView->Initialize();
-
-		// start the thread for receiving camera data
-		m_CameraDataReceiver = new CCameraDataReceiver;
-		if (!m_CameraDataReceiver->Start(NotifyProcCameraComm, this))
+		BOOL bIsSucessFul = m_IniFile.ReadIniFile();
+		if (bIsSucessFul == TRUE)
 		{
-			delete m_CameraDataReceiver;
-			m_CameraDataReceiver = NULL;
+			g_isProgramStarted = TRUE;
 
-			::MessageBox( NULL,
-						 (LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Kamera",
-						 (LPCWSTR)WARNINGWINDOW_TITLE,
-						 MB_OK | MB_ICONERROR
-						);
+			MyRegisterClass(AfxGetInstanceHandle());
+
+			// initilize GUI 
+			//CARALGISView* pView = static_cast<CARALGISView*>(GetActiveView());
+			//pView->Initialize();
+
+			// start the thread for receiving camera data
+			m_CameraDataReceiver = new CCameraDataReceiver;
+			if (!m_CameraDataReceiver->Start(NotifyProcCameraComm, this))
+			{
+				delete m_CameraDataReceiver;
+				m_CameraDataReceiver = NULL;
+
+				::MessageBox(NULL,
+					(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Kamera",
+					(LPCWSTR)WARNINGWINDOW_TITLE,
+					MB_OK | MB_ICONERROR
+					);
+			}
+
+			// start the thread for PTS communication
+			m_PTSCommunicator = new CPTSCommunicator;
+			if (!m_PTSCommunicator->Start(NotifyProcPTSComm, this))
+			{
+				delete m_PTSCommunicator;
+				m_PTSCommunicator = NULL;
+
+				::MessageBox(NULL,
+					(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Plaka Tanýma Sistemi",
+					(LPCWSTR)WARNINGWINDOW_TITLE,
+					MB_OK | MB_ICONERROR
+					);
+			}
+
+			// start the thread for Odroid communication
+			m_OdroidCommunicator = new COdroidCommunicator;
+			if (!m_OdroidCommunicator->Start(NotifyProcOdroidComm, this))
+			{
+				delete m_OdroidCommunicator;
+				m_OdroidCommunicator = NULL;
+
+				::MessageBox(NULL,
+					(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Çevre Birimler",
+					(LPCWSTR)WARNINGWINDOW_TITLE,
+					MB_OK | MB_ICONERROR
+					);
+			}
+
+			// start the thread for Car Image - Database processing
+			m_CameraDatabaseServer = new CCameraDBServer;
+			if (!m_CameraDatabaseServer->Start(this))
+			{
+				delete m_CameraDatabaseServer;
+				m_CameraDatabaseServer = NULL;
+
+				::MessageBox(NULL,
+					(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: VeriTabaný",
+					(LPCWSTR)WARNINGWINDOW_TITLE,
+					MB_OK | MB_ICONERROR
+					);
+			}
+
+			// start the threads for Image Filtering
+			m_ImageFilterProcessing = new CImageFilterProcessing;
+			if (!m_ImageFilterProcessing->Start(NotifyProcImageFiltering, this))
+			{
+				delete m_ImageFilterProcessing;
+				m_ImageFilterProcessing = NULL;
+
+				::MessageBox(NULL,
+					(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Filtreleme",
+					(LPCWSTR)WARNINGWINDOW_TITLE,
+					MB_OK | MB_ICONERROR
+					);
+			}
 		}
-
-		// start the thread for PTS communication
-		m_PTSCommunicator = new CPTSCommunicator;
-		if (!m_PTSCommunicator->Start(NotifyProcPTSComm, this))
+		else /// ini file fails
 		{
-			delete m_PTSCommunicator;
-			m_PTSCommunicator = NULL;
-
-			::MessageBox( NULL,
-						 (LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Plaka Tanýma Sistemi",
-						 (LPCWSTR)WARNINGWINDOW_TITLE,
-						 MB_OK | MB_ICONERROR
-						);
+			AfxGetMainWnd()->PostMessage(WM_CLOSE, 0, 0);
 		}
-
-		// start the thread for Odroid communication
-		m_OdroidCommunicator = new COdroidCommunicator;
-		if (!m_OdroidCommunicator->Start(NotifyProcOdroidComm, this))
-		{
-			delete m_OdroidCommunicator;
-			m_OdroidCommunicator = NULL;
-
-			::MessageBox( NULL,
-						 (LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Çevre Birimler",
-						 (LPCWSTR)WARNINGWINDOW_TITLE,
-						 MB_OK | MB_ICONERROR
-						);
-		}
-
-		// start the thread for Car Image - Database processing
-		m_CameraDatabaseServer = new CCameraDBServer;
-		if (!m_CameraDatabaseServer->Start(this))
-		{
-			delete m_CameraDatabaseServer;
-			m_CameraDatabaseServer = NULL;
-
-			::MessageBox( NULL,
-						  (LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: VeriTabaný",
-						  (LPCWSTR)WARNINGWINDOW_TITLE,
-						  MB_OK | MB_ICONERROR
-				        );
-		}
-
-
-		
-		// start the thread for Imahe Giltering
-		m_ImageFilterProcessing = new CImageFilterProcessing;
-		if (!m_ImageFilterProcessing->Start(NotifyProcImageFiltering, this))
-		{
-			delete m_ImageFilterProcessing;
-			m_ImageFilterProcessing = NULL;
-
-			::MessageBox(NULL,
-				(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Filtreleme",
-				(LPCWSTR)WARNINGWINDOW_TITLE,
-				MB_OK | MB_ICONERROR
-				);
-		}
-
 	}
 }
 

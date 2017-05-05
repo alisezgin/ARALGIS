@@ -8,9 +8,6 @@
 
 #include "afxbutton.h"
 
-//#include <gdiplus.h>
-//#pragma comment(lib, "gdiplus.lib")
-
 #ifndef SHARED_HANDLERS
 #include "ARALGIS.h"
 #endif
@@ -72,6 +69,7 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_LBN_SELCHANGE(IDC_FORM_LISTBOX, &CARALGISView::OnLbnSelchangeList2)
 	ON_BN_CLICKED(IDC_FORM_ADDCOMMAND, &CARALGISView::OnAdd)
 	ON_BN_CLICKED(IDC_FORM_BMODIFY, &CARALGISView::OnGuncelle)
+	ON_BN_CLICKED(IDC_BUTTON_ORGINAL, &CARALGISView::OnBnClickedButtonOrginal)
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -148,6 +146,10 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_FORM_DN, m_FormEDN);
 	DDX_Text(pDX, IDC_FORM_ERN, m_FormERN);
 	DDX_Control(pDX, IDC_FORM_EBL, m_FormEBL);
+	DDX_Control(pDX, IDC_BUTTON_FILTER1, m_ButtonFilter1);
+	DDX_Control(pDX, IDC_BUTTON_FILTER2, m_ButtonFilter2);
+	DDX_Control(pDX, IDC_BUTTON_FILTER3, m_ButtonFilter3);
+	DDX_Control(pDX, IDC_BUTTON_ORGINAL, m_ButtonOrgImage);
 }
 
 BOOL CARALGISView::PreCreateWindow(CREATESTRUCT& cs)
@@ -176,6 +178,11 @@ void CARALGISView::OnInitialUpdate()
 	CColorFormView::OnInitialUpdate();
 
 	SetBackgroundColor(RGB(240, 240, 240));
+
+	m_ButtonOrgImage.EnableWindow(FALSE);
+	m_ButtonFilter1.EnableWindow(FALSE);
+	m_ButtonFilter2.EnableWindow(FALSE);
+	m_ButtonFilter3.EnableWindow(FALSE); 
 
 	GetParentFrame()->RecalcLayout();
 	ResizeParentToFit();
@@ -229,6 +236,23 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetMinimumSize(_T("Ref_Panel"), size2);
 	ASSERT(bOk);
 
+
+	//arrID.RemoveAll();
+
+	//arrID.Add(IDC_STATIC_PTS);
+	//arrID.Add(IDC_BUTTON_PTS_STATUS);
+	//arrID.Add(IDC_STATIC_BARRIER);
+	//arrID.Add(IDC_BUTTON_BARRIER_CLOSE);
+	//arrID.Add(IDC_BUTTON_BARRIER_OPEN);
+	//arrID.Add(IDC_BUTTON_PTS_STATUS);
+	//arrID.Add(IDC_BUTTON_HEATER_ON);
+	//arrID.Add(IDC_BUTTON_HEATER_OFF);
+	//arrID.Add(IDC_BUTTON_ALARM_ON);
+	//arrID.Add(IDC_BUTTON_ALARM_OFF);
+
+	//bOk = m_resizer.CreatePanel(_T("Status_Panel"), &arrID, TRUE);
+	//ASSERT(bOk);
+	
 	bOk = m_resizer.SetAnchor(IDC_STATIC_PTS, ANCHOR_RIGHT);
 	ASSERT(bOk);
 
@@ -259,7 +283,20 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_OFF, ANCHOR_RIGHT);
 	ASSERT(bOk);
 
+	bOk = m_resizer.SetAnchor(IDC_STATIC_FILTERS, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_ORGINAL, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER1, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER2, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER3, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
 
 	CRect workArea;
@@ -369,8 +406,23 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 	SendMessage(WM_DBASE_CAR_INFO_READY, 0, pLparam);
 	// code deletion ends here
 
+	m_ButtonOrgImage.EnableWindow(TRUE);
+
+	if (g_CVImageTest.cols > 0)
+	{
+		SetEvent(g_ProcessFilter1Event);
+		SetEvent(g_ProcessFilter2Event);
+		SetEvent(g_ProcessFilter3Event);
+
+		m_ButtonFilter1.EnableWindow(FALSE);
+		m_ButtonFilter2.EnableWindow(FALSE);
+		m_ButtonFilter3.EnableWindow(FALSE);
+	}
+
+
+
 	// get Singleton ChangeDetectionController and start the change detection process
-	CChangeDetectController::getInstance()->process(m_FilenameRef, m_FilenameTest);
+	//CChangeDetectController::getInstance()->process(m_FilenameRef, m_FilenameTest);
 
 	return 0;
 }
@@ -378,9 +430,12 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 
 afx_msg LRESULT CARALGISView::OnDBaseCarInfoReady(WPARAM wParam, LPARAM lParam)
 {
-	//g_CVImageRef = cv::imread(g_RefImageFileName, cv::IMREAD_COLOR);
+	strncpy_s(g_RefImageFileName, (size_t)(MAX_FILENAME_LENGTH + 1), g_ReferenceFilePath, (size_t)(MAX_FILENAME_LENGTH));
+	strncat_s(g_RefImageFileName, (size_t)(MAX_FILENAME_LENGTH + 1), "car-1-handCropped.bmp", (size_t)(MAX_FILENAME_LENGTH));
 
-	g_CVImageRef = cv::imread("C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp", cv::IMREAD_COLOR);
+	g_CVImageRef = cv::imread(g_RefImageFileName, cv::IMREAD_COLOR);
+
+	//g_CVImageRef = cv::imread("C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp", cv::IMREAD_COLOR);
 
 	// no need to transpose+flip
 	// since image files are written landscape!!!
@@ -664,48 +719,46 @@ BOOL CARALGISView::OnEraseBkgnd(CDC* pDC)
 	return CColorFormView::OnEraseBkgnd(pDC);
 }
 
+void CARALGISView::OnBnClickedButtonOrginal()
+{
+	m_iDisplayTestImageType = 0;
+	m_MatToGDITest->DrawImg(g_CVImageTest);
+}
 
 void CARALGISView::OnBnClickedButtonFilter1()
 {
-	if (g_CVImageTest.cols > 0)
-	{
-		m_iDisplayTestImageType = 1;
-		pixkit::enhancement_local::MSRCP2014(g_CVImageTest, g_CVImageTestFilter1, 15, 127, 255, (float)0.1, (float)0.1);
-		m_MatToGDITest->DrawImg(g_CVImageTestFilter1);
-	}
-
-	SetEvent(g_ProcessFilter1Event);
+	m_iDisplayTestImageType = 1;
+	m_MatToGDITest->DrawImg(g_CVImageTestFilter1);
 }
 
 
 void CARALGISView::OnBnClickedButtonFilter2()
 {
-	if (g_CVImageTest.cols > 0)
-	{
-		m_iDisplayTestImageType = 2;
-
-		cv::Mat inGray;
-		cv::cvtColor(g_CVImageTest, inGray, CV_RGB2GRAY);
-
-		pixkit::enhancement_global::GlobalHistogramEqualization1992(inGray, g_CVImageTestFilter2);
-		m_MatToGDITest->DrawImg(g_CVImageTestFilter2);
-	}
-	SetEvent(g_ProcessFilter2Event);
+	m_iDisplayTestImageType = 2;
+	m_MatToGDITest->DrawImg(g_CVImageTestFilter2);
 }
 
 
 void CARALGISView::OnBnClickedButtonFilter3()
 {
-	if (g_CVImageTest.cols > 0)
-	{
-		m_iDisplayTestImageType = 3;
-		cv::Mat inGray;
-		cv::cvtColor(g_CVImageTest, inGray, CV_RGB2GRAY);
+	m_iDisplayTestImageType = 3;
+	m_MatToGDITest->DrawImg(g_CVImageTestFilter3);	
+}
 
-		pixkit::enhancement_local::CLAHEnon1987(inGray, g_CVImageTestFilter3, cv::Size(8, 8));
-		m_MatToGDITest->DrawImg(g_CVImageTestFilter3);
+void CARALGISView::FilterAvailable(int aNumFilter)
+{
+	if (aNumFilter == 1)
+	{
+		m_ButtonFilter1.EnableWindow(TRUE);
 	}
-	SetEvent(g_ProcessFilter3Event);
+	else if (aNumFilter == 2)
+	{
+		m_ButtonFilter2.EnableWindow(TRUE);
+	}
+	else if (aNumFilter == 3)
+	{
+		m_ButtonFilter3.EnableWindow(TRUE);
+	}
 }
 
 

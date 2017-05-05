@@ -7,16 +7,9 @@
 
 #include "WndResizer.h"
 #include "ColorFormView.h"
-
-//#include ".\\BitmapDisplay\\HeaderFiles\\ShowpicCV.h"
+#include "ColourButton.h"
 #include ".\\BitmapDisplay\\HeaderFiles\\PictureCtrl.h"
-//#include ".\\BitmapDisplay\\HeaderFiles\\PkMattoGDI.h"
-//#include ".\\BitmapDisplay\\HeaderFiles\\MatBitmapconvert.h"
-
-
 #include ".\\BitmapDisplay\\HeaderFiles\\PkMattoGDI.h"
-
-
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -27,7 +20,6 @@
 #include "ColourButton.h"
 #include "afxdtctl.h"
 #include "atltime.h"
-
 
 class CARALGISDoc;
 
@@ -72,6 +64,8 @@ public:
 
 	void UpdatePTSStatus(bool aStatus);
 	void UpdatePeripheralStatus(bool aStatus);
+
+	void FilterAvailable(int aNumFilter);
 
 protected:
 
@@ -173,6 +167,11 @@ public:
 	CTime m_FormEDT;
 	// checks whether the current vehicle is in the black list
 	CButton m_FormEBL;
+	CButton m_ButtonFilter1;
+	CButton m_ButtonFilter2;
+	CButton m_ButtonFilter3;
+	CButton m_ButtonOrgImage;
+	afx_msg void OnBnClickedButtonOrginal();
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

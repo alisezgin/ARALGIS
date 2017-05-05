@@ -1,18 +1,11 @@
 #pragma once
 
-
-
 #include "SapClassBasic.h"
-#include "SapClassGui.h"
+#include "SapClassGUI.h"
 #include "afxwin.h"
-
-
 #include <iostream>
-
-
-#pragma once
-
 #include "ARALGIS.h"
+#include "ARALGISView.h"
 
 
 class CReceiveCameraImage
@@ -37,55 +30,42 @@ public:
 	float       m_MinTime;
 	int         m_ActiveBuffer;
 	int         m_BufferCount;
-	int         m_Slider;
-	CString		m_Msg;
-
 
 	void StartDataReception();
 	void StopDataReception();
-	void PauseDataReception();
-	void LoadConfiguationFile();
-	void DisplayRecordSelectDialog();
+	//void PauseDataReception();
+	//void LoadConfiguationFile();
+	//void DisplayRecordSelectDialog();
 	void UpdateControls();
 	void OnWaitableTimer();
 	void OnTimerCamera();
-	int GetFrameTime();
+	int  GetFrameTime();
 	void SetFrameTime(int aframeTime);
 
 	void GetCameraDataAsMat();
 
-
-
 	// Implementation
 protected:
-	HICON          m_hIcon;
-	CString        m_appTitle;
-
 	SapAcqDevice		*m_AcqDevice;
 	SapBuffer			*m_Buffers;
 	SapTransfer			*m_Xfer;
 	SapPerformance		m_FrameTimer;
 	SapPerformance		m_RecordTimer;
 
-	BOOL m_IsSignalDetected;   // TRUE if camera signal is detected
-
 	// Button flags
 	BOOL           m_bRecordOn;      // TRUE if recording
 	BOOL           m_bPlayOn;        // TRUE if playing back
-	BOOL           m_bPauseOn;       // TRUE if pausing
-
-	int 		 m_nFramesPerCallback;
-	int          m_nFramesLost;
-
+	//BOOL           m_bPauseOn;       // TRUE if pausing
+	int			   m_nFramesPerCallback;
+	int            m_nFramesLost;
+	int            m_frameTime;
 
 	BOOL InitSAPERA(void);
 	void OnDestroySAPERA(void);
-
-
 	void OnBoraKillfocusFrameRate(void);
 
-	int m_frameTime;
+	CView * m_pView;
+	LPARAM  m_pLparam;
 
-private:
-
+	BOOL m_bServerAvailable;
 };

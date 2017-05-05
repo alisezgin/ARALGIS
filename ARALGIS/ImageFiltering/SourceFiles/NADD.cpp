@@ -308,28 +308,28 @@ bool check_cm_type(int *src,CLOAD &order,int x,int y,int &CM_Size){
 	//////////////////////////////////////////////////////////////////////////common
 	// check �P��cm���F��
 	if(same_cm_point(&src[0],7,6,1,order,x,y,CM_Size)){
-		//		printf("E1 ");
+		//		TRACE("E1 ");
 		return false;
 	}
 	if(same_cm_point(&src[0],5,6,3,order,x,y,CM_Size)){
-		//		printf("E2 ");
+		//		TRACE("E2 ");
 		return false;
 	}
 	// check �M����cm���ۦ�
 	if(same_cm_point(&src[0],5,6,5,order,x,y,CM_Size)&&same_cm_point(&src[0],7,6,7,order,x,y,CM_Size)){
-		//		printf("E3 ");
+		//		TRACE("E3 ");
 		return false;
 	}
 	// check �M����cm���i�P���۳s
 	if(same_cm_point(&src[0],5,6,1,order,x,y,CM_Size)&&same_cm_point(&src[0],7,6,3,order,x,y,CM_Size)){
-		//		printf("E4 ");
+		//		TRACE("E4 ");
 		return false;
 	}
 
 	// �קK�P�۾F���O�x�}�����P�򦳬ۦP������(���U)
 	if(y-1>=0&&((x+CM_Size/2-1)<order.m_Width)&&(y-CM_Size>=0)){
 		if((src[0]==order.m_Image[y-1][x+CM_Size/2-1])&&(src[(CM_Size-1)*CM_Size]==order.m_Image[y-CM_Size][x+CM_Size/2-1])){
-			//			printf("E5 ");
+			//			TRACE("E5 ");
 			return false;
 		}
 	}
@@ -337,7 +337,7 @@ bool check_cm_type(int *src,CLOAD &order,int x,int y,int &CM_Size){
 	// �קK�P�۾F���O�x�}�����P�򦳬ۦP������(�k�U)
 	if(y-1>=0&&((x+CM_Size/2)<order.m_Width)&&(y-CM_Size>=0)){
 		if((src[CM_Size-1]==order.m_Image[y-1][x+CM_Size/2])&&(src[(CM_Size-1)*CM_Size+(CM_Size-1)]==order.m_Image[y-CM_Size][x+CM_Size/2])){
-			//			printf("E6 ");
+			//			TRACE("E6 ");
 			return false;
 		}
 	}
@@ -491,11 +491,11 @@ bool pixkit::halftoning::dotdiffusion::CNADDCT::generation(cv::Size ctSize){
 
 	// exceptions
 	if(ctSize.height%m_CM_size!=0){
-		printf("CCT::generation(): the height [%d] of CT should be fully divided by 8.\n",ctSize.height);
+		printf("CCT::generation(): the height [%d] of CT should be fully divided by 8.\n", ctSize.height);
 		return false;
 	}
 	if(ctSize.width%m_CM_size!=0){
-		printf("CCT::generation(): the width [%d] of CT should be fully divided by 8.\n",ctSize.width);
+		printf("CCT::generation(): the width [%d] of CT should be fully divided by 8.\n", ctSize.width);
 		return false;
 	}
 
@@ -544,7 +544,7 @@ bool pixkit::halftoning::dotdiffusion::CNADDCT::generation(cv::Size ctSize){
 				}
 			}
 			m_ctmap[ctmap_index]=((char)randv);
-			//			printf("%d\t",randv);
+			//			TRACE("%d\t",randv);
 			ctmap_index++;
 			// determine class matrix
 			for(m=0;m<m_CM_size;m++){

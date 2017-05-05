@@ -36,7 +36,7 @@ CCameraDataReceiver::CCameraDataReceiver()
 	m_hTimer = CreateWaitableTimer(NULL, FALSE, NULL);
 	if (NULL == m_hTimer)
 	{
-		printf("CreateWaitableTimer failed (%d)\n", GetLastError());
+		TRACE("CreateWaitableTimer failed (%d)\n", GetLastError());
 	}
 	///////////////////////////// TIMER ///////////////////////////////////////
 }
@@ -120,9 +120,7 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 
 			pServer->m_MyCamera.StopDataReception();
 
-			//BOOL aRetVal = SetEvent(g_KillTimerEvent); //// bora temporary code for the time being
-
-			//BOOL cc = aRetVal;
+			SetEvent(g_KillTimerEvent); 
 		}
 
 		else if (EventCaused == (WAIT_OBJECT_0 + 10)) // set timer frame rate 
@@ -135,22 +133,15 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 			LARGE_INTEGER   liDueTime;
 
 			qwDueTime = -10 * tFrameTime; // -10 is: negative since relative time
-			                              //       : multiplied by 10, since it is in 100 nanoseconds and  tFrameTime is in miliseconds
-
-			//qwDueTime = -10;
-
-			//Copy the relative time into a LARGE_INTEGER.
-			//liDueTime.LowPart = (DWORD)(qwDueTime & 0xFFFFFFFF);
-			//liDueTime.HighPart = (LONG)(qwDueTime >> 32);
+			                              //       : multiplied by 10, since it is in 100 nanoseconds 
+			                              //         and  tFrameTime is in miliseconds
 
 			liDueTime.QuadPart = (long long)qwDueTime;
-
-
 
 			//Set a timer to wait for XX seconds.
 			if (!SetWaitableTimer(pServer->m_hTimer, &liDueTime, tFrameTime, NULL, NULL, 0))
 			{
-				printf("SetWaitableTimer failed (%d)\n", GetLastError());
+				TRACE("SetWaitableTimer failed (%d)\n", GetLastError());
 				return 2;
 			}
 
@@ -205,7 +196,7 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 			// reset the event for further processing
 			ResetEvent(g_CameraPauseDataRecieveEvent);
 
-			pServer->m_MyCamera.PauseDataReception();
+			//pServer->m_MyCamera.PauseDataReception();
 		}
 
 		else if (EventCaused == (WAIT_OBJECT_0 + 4)) // Load Camera Configuration File
@@ -213,21 +204,21 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 			// reset the event for further processing
 			ResetEvent(g_CameraConfigFileChangeEvent);
 
-			pServer->m_MyCamera.LoadConfiguationFile();
+			//pServer->m_MyCamera.LoadConfiguationFile();
 		}
 
 		else if (EventCaused == (WAIT_OBJECT_0 + 5)) // Display Recording Selection Dialog
 		{
 			// reset the event for further processing
 			ResetEvent(g_CameraSelectStreamFileEvent);
-			pServer->m_MyCamera.DisplayRecordSelectDialog();
+			//pServer->m_MyCamera.DisplayRecordSelectDialog();
 		}
 
 		else if (EventCaused == (WAIT_OBJECT_0 + 6)) // update camera controls  
 		{
 			// reset the event for further processing
 			ResetEvent(g_CameraUpdateControlsEvent);
-			pServer->m_MyCamera.UpdateControls();
+			//pServer->m_MyCamera.UpdateControls();
 		}
 
 	}

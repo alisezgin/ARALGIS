@@ -123,8 +123,8 @@ public:
 
 		if (width*height < 256 * 256)
 		{
-			printf("WARNING: small image\n");
-			printf("++++++++ dynamic selection of bin width has not yet been implemented\n");
+			TRACE("WARNING: small image\n");
+			TRACE("++++++++ dynamic selection of bin width has not yet been implemented\n");
 		}
 
 		long int N = input.cols * input.rows;
@@ -175,7 +175,7 @@ public:
 		{
 			pk = find_start(hist, MAX_HIST);
 			hist[pk] = 0;
-			printf("deleting largest bin: %d\n", pk);
+			TRACE("deleting largest bin: %d\n", pk);
 		}
 
 		iCounter++; //5
@@ -192,9 +192,9 @@ public:
 		d2 = fi - pk;
 		if ((d1 < 0) || (d2 < 0))
 		{
-			fprintf(stderr, "ERROR: histogram peak in strange location\n");
-			printf("ST %d  PK %d  FI %d\n", st, pk, fi);
-			printf("D %d %d\n", d1, d2);
+			TRACE("ERROR: histogram peak in strange location\n");
+			TRACE("ST %d  PK %d  FI %d\n", st, pk, fi);
+			TRACE("D %d %d\n", d1, d2);
 			exit(-1);
 		}
 
@@ -202,7 +202,7 @@ public:
 			if (d1 > d2)
 			{
 				do_invert = TRUE;
-				printf("inverting histogram\n");
+				TRACE("inverting histogram\n");
 			}
 
 		/* invert image - actually just invert histogram */
@@ -233,8 +233,8 @@ public:
 
 		if (ratio > 10)
 		{
-			printf("WARNING: ratio of largest to second largest histogram bin = %f\n", ratio);
-			printf("++++++++ maybe you should delete the largest histogram bin using the -D option\n");
+			TRACE("WARNING: ratio of largest to second largest histogram bin = %f\n", ratio);
+			TRACE("++++++++ maybe you should delete the largest histogram bin using the -D option\n");
 		}
 
 		if (big_peak)
@@ -250,7 +250,7 @@ public:
 			st = 0;
 		}
 
-		printf("starting from peak at position %d\n", st);
+		TRACE("starting from peak at position %d\n", st);
 
 		if (cumulative)
 		{
@@ -268,7 +268,7 @@ public:
 			thresh = 255 - thresh;
 		}
 
-		printf("ROSIN thresholding at %d (= %d)\n", thresh, thresh*divide);
+		TRACE("ROSIN thresholding at %d (= %d)\n", thresh, thresh*divide);
 
 		return thresh;
 	}
@@ -305,7 +305,7 @@ public:
 		//for (int i = 0; i < MAX_HIST; i++)
 		//{
 		//	out[i] = (int)b_hist[i];
-		//	printf("\n HIST %d %d %d", i, out[i], (int)b_hist[i]);
+		//	TRACE("\n HIST %d %d %d", i, out[i], (int)b_hist[i]);
 
 		//}
 
@@ -318,10 +318,10 @@ public:
 
 		// Iterate image
 
-		//printf("\n\n");
+		//TRACE("\n\n");
 		//for (int i = 0; i < MAX_HIST; i++)
 		//{
-		//	printf("\n HIST %d %f", i, out1[i]);
+		//	TRACE("\n HIST %d %f", i, out1[i]);
 
 		//}
 
@@ -355,7 +355,7 @@ public:
 	{
 		long int N = input.cols * input.rows;
 
-		printf("ROSIN Threshold is: %d\n", threshold);
+		TRACE("ROSIN Threshold is: %d\n", threshold);
 
 		// Modify output image
 
@@ -495,7 +495,7 @@ public:
 
 		if (end <= 0)
 		{
-			fprintf(stderr, "ERROR: empty histogram\n");
+			TRACE("ERROR: empty histogram\n");
 		}
 
 		for (i = st; i <= no_pts; i++) 
@@ -522,7 +522,7 @@ public:
 		x2 = X[st]; y2 = Y[st];
 		xi = (x1 + m*(m*x2 + y1 - y2)) / (1 + SQR(m));
 		yi = (m*x1 - m*x2 + SQR(m)*y1 + y2) / (1 + SQR(m));
-		printf("intersection point %f %f\n", xi, yi);
+		TRACE("intersection point %f %f\n", xi, yi);
 
 		return thresh;
 	}
@@ -586,7 +586,7 @@ public:
 		long int N = imageTrackbar.cols * imageTrackbar.rows;
 
 
-		printf("Threshold is: %d\n", thresholdSelected);
+		TRACE("Threshold is: %d\n", thresholdSelected);
 
 		// Modify output image
 

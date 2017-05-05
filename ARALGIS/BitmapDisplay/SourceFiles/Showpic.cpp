@@ -12,9 +12,9 @@ IMPLEMENT_DYNAMIC(CShowpic, CStatic)
 
 CShowpic::CShowpic()
 {
-	m_un32ImageWidth = CAM_WIDTH;
-	m_un32ImageHeight = CAM_HEIGHT;
-	m_un32ImageBits = CAM_BITS;
+	m_un32ImageWidth = g_CameraWidth;
+	m_un32ImageHeight = g_CameraHeight;
+	m_un32ImageBits = g_CameraPixelBits;
 	m_pImageBytes = NULL;
 	m_pBmp = NULL;
 	//MakeBMPHeader();

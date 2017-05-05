@@ -215,7 +215,7 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 	hints.ai_flags = AI_PASSIVE;
 
 	// Resolve the address and port
-	iResult = getaddrinfo(NULL, ARALGIS_PTS_TCP_PORT_CHAR, &hints, &resultAddr);
+	iResult = getaddrinfo(NULL, g_PTSPort, &hints, &resultAddr);
 	if ( iResult != 0 ) 
 	{
 		TRACE("getaddrinfo failed with error: %d failure CPTSCommunicator::PTSCommunicatorThread\n", iResult);	
@@ -616,18 +616,7 @@ UINT __stdcall CPTSCommunicator::CommThread(LPVOID pParam)
 ////////////////////////////////////////////////////////////////////////////////
 BOOL CPTSCommunicator::ControlMessage(BYTE *message)
 {
-	//int countData = (int)message[NUMBYTEPOS];
-	//BYTE checksum = 0x00;
 
-	//checksum = message[NUMBYTEPOS] ^ message[MESSAGEIDPOS] ^ message[MAGICNUMPOS];
-	//for(int i=DATAPOS; i<countData; i++)
-	//	checksum ^= message[i];
-
-	//if (checksum !=  message[countData])
-	//	return FALSE;
-
-	//if (MAGICNUMBER !=  message[MAGICNUMPOS])
-	//	return FALSE;
 
 	return TRUE; /// boraN always return TRUE for the time being
 }

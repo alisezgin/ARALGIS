@@ -1,13 +1,11 @@
 #include "stdafx.h"
 
 #include "..\\HeaderFiles\\ReceiveCameraImage.h"
-//#include "HighFrameRateDlg.h"
 #include "float.h"
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
-#include "ARALGISView.h"
 
 CReceiveCameraImage::CReceiveCameraImage()
 {
@@ -16,26 +14,57 @@ CReceiveCameraImage::CReceiveCameraImage()
 	m_MinTime = 0.0f;
 	m_ActiveBuffer = 0;
 	m_BufferCount = 0;
-	m_Slider = 0;
-	m_Msg = _T("");
 
 	m_AcqDevice = NULL;
 	m_Buffers = NULL;
 	m_Xfer = NULL;
-	//m_View = NULL;
-
-	m_IsSignalDetected = TRUE;
 
 	m_bRecordOn = FALSE;
 	m_bPlayOn = FALSE;
-	m_bPauseOn = FALSE;
+	//m_bPauseOn = FALSE;
 
 	m_nFramesPerCallback = 1;
 	m_nFramesLost = 0;
 
 	m_frameTime = 0;
 
+	m_bServerAvailable = FALSE;
+
 	InitSAPERA();
+
+	CFrameWnd *pFrame = (CFrameWnd *)(AfxGetApp()->m_pMainWnd);
+	if (!pFrame)
+	{
+		::MessageBox(NULL,
+			(LPCWSTR)L"CReceiveCameraImage::FrameNotFound",
+			(LPCWSTR)WARNINGWINDOW_TITLE,
+			MB_OK | MB_ICONERROR
+			);
+	}
+
+
+	m_pView = pFrame->GetActiveView();
+	if (!m_pView)
+	{
+		::MessageBox(NULL,
+			(LPCWSTR)L"CReceiveCameraImage::GetActiveView",
+			(LPCWSTR)WARNINGWINDOW_TITLE,
+			MB_OK | MB_ICONERROR
+			);
+	}
+
+	// Fail if view is of wrong kind
+	if (!m_pView->IsKindOf(RUNTIME_CLASS(CARALGISView)))
+	{
+		::MessageBox(NULL,
+			(LPCWSTR)L"CReceiveCameraImage::GetActiveView NOK",
+			(LPCWSTR)WARNINGWINDOW_TITLE,
+			MB_OK | MB_ICONERROR
+			);
+	}
+
+	m_pLparam = reinterpret_cast<LPARAM>("ARALGIS");
+
 }
 
 
@@ -59,7 +88,7 @@ void CReceiveCameraImage::AcqCallback(SapAcqCallbackInfo *pInfo)
 	pDlg->m_nFramesLost++;
 
 	// Refresh controls
-	SetEvent(g_CameraUpdateControlsEvent);
+	//SetEvent(g_CameraUpdateControlsEvent);
 }
 
 //==============================================================================
@@ -71,13 +100,6 @@ void CReceiveCameraImage::XferCallback(SapXferCallbackInfo *pInfo)
 {
 	CReceiveCameraImage *pDlg = (CReceiveCameraImage *)pInfo->GetContext();
 
-	// If grabbing in trash buffer, do not display the image, update the
-	// appropriate number of frames on the status bar instead
-	/*if (pInfo->IsTrash())
-	{
-	m_Msg.Format("Frames acquired in trash buffer: %d", pInfo->GetEventCount());
-	}*/
-
 	// Measure real frame time
 	pDlg->UpdateFrameRate();
 
@@ -87,17 +109,9 @@ void CReceiveCameraImage::XferCallback(SapXferCallbackInfo *pInfo)
 	if (((pDlg->m_Buffers->GetIndex() + 1) % pDlg->m_nFramesPerCallback) == 0 ||
 		pDlg->m_Buffers->GetIndex() == pDlg->m_Buffers->GetCount() - 1)
 	{
-		// Refresh view
-		//pDlg->m_View->Show();
-
 		// Refresh controls
-		SetEvent(g_CameraUpdateControlsEvent);
+		//SetEvent(g_CameraUpdateControlsEvent);
 	}
-
-	//CString str;
-	//str.Format(_T("Current Buffer Number: %d"), pDlg->m_Buffers->GetIndex());
-	//pDlg->m_statusWnd.SetWindowText(str);
-
 } // End of the CGigESeqGrabDemoDlg::XferCallback method.
 
 
@@ -108,34 +122,71 @@ void CReceiveCameraImage::XferCallback(SapXferCallbackInfo *pInfo)
 //==============================================================================
 BOOL CReceiveCameraImage::InitSAPERA(void)
 {
-	// Are we operating on-line?
-	CAcqConfigDlg dlg(NULL, CAcqConfigDlg::ServerAcqDevice); // boraN added NULL
+	SapManager::Open();
 
-	if (dlg.DoModal() == IDOK)
+	int serverCount = SapManager::GetServerCount();
+
+	if (serverCount == 0)
 	{
-		// Define objects
-		m_AcqDevice = new SapAcqDevice(dlg.GetLocation(), NULL);
+		::MessageBox(NULL,
+			(LPCWSTR)L"Baðlý Kamera Bulunamadý",
+			(LPCWSTR)WARNINGWINDOW_TITLE,
+			MB_OK | MB_ICONERROR
+			);
 
-		CString configFile;
-		dlg.GetConfigFile(configFile);
+		//return FALSE;
+	}
 
+	BOOL serverFound = FALSE;
+	char serverName[CORSERVER_MAX_STRLEN];
 
-		char dummy[1000];
-		size_t i = configFile.GetLength();
-		strncpy_s(dummy, "\n", 1000);
-		strncpy_s(dummy, CStringA(configFile).GetBuffer(), i);
+	for (int serverIndex = 0; serverIndex < serverCount; serverIndex++)
+	{
+		if (SapManager::GetResourceCount(serverIndex, SapManager::ResourceAcqDevice) != 0)
+			serverFound = TRUE;
+	}
 
-		SapLocation loc = dlg.GetLocation();
-		m_AcqDevice->SetLocation(loc);
-		m_AcqDevice->SetConfigFile(dummy);
+	bool dretVal = true;
+	if (serverFound == TRUE)
+	{
 
-		m_Buffers = new SapBufferWithTrash(MAX_BUFFER, m_AcqDevice);
+		for (int serverIndex = 0; serverIndex < serverCount; serverIndex++)
+		{
+			if (SapManager::GetResourceCount(serverIndex, SapManager::ResourceAcqDevice) != 0)
+			{
+				// Get Server Name Value
+				SapManager::GetServerName(serverIndex, serverName, sizeof(serverName));
+
+				m_AcqDevice = new SapAcqDevice(serverName);
+
+				//CString configFile(_T("E:\\FuzyonSoft\\CamFiles\\default_withGain.ccf"));
+
+				CString configFile(g_ConfigFilename);
+
+				char dummy[1000];
+				size_t i = configFile.GetLength();
+				strncpy_s(dummy, "\n", 1000);
+				strncpy_s(dummy, CStringA(configFile).GetBuffer(), i);
+
+				BOOL retVal = FALSE;
+				retVal = m_AcqDevice->SetConfigFile(dummy);
+				if (retVal)
+				{
+					m_bServerAvailable = TRUE;
+				}
+			}
+		}
+
+		m_Buffers = new SapBufferWithTrash(g_CameraBuffer, m_AcqDevice);
 		m_Xfer = new SapAcqDeviceToBuf(m_AcqDevice, m_Buffers, XferCallback, this);
 	}
-	else
+	
+
+
+	if (m_bServerAvailable == FALSE)
 	{
 		// Define off-line objects
-		m_Buffers = new SapBuffer(MAX_BUFFER, 2048, IMAGE_HEIGHT, SapFormatRGB888, SapBuffer::TypeScatterGather); // MAX_BUFFER
+		m_Buffers = new SapBuffer(g_CameraBuffer, CAM_SIZE, g_CameraHeight, SapFormatRGB888, SapBuffer::TypeScatterGather); // MAX_BUFFER
 
 	} // End if, else.
 
@@ -277,6 +328,8 @@ void CReceiveCameraImage::OnDestroySAPERA(void)
 	{
 		delete m_AcqDevice;
 	}
+
+	SapManager::Close();
 
 } // End of the CGigESeqGrabDemoDlg::OnDestroySAPERA method.
 
@@ -537,20 +590,18 @@ void CReceiveCameraImage::CheckForLastFrame(void)
 	{
 		if (m_bRecordOn)
 		{
-			m_bRecordOn = FALSE;
-			//KillTimer(1);
-			SetEvent(g_CameraStopDataRecieveEvent);  // g_KillTimerEvent
+			//m_bRecordOn = FALSE;
 			ComputeFrameRate();
+			SetEvent(g_CameraStopDataRecieveEvent);  
 		}
 
 		if (m_bPlayOn)
 		{
 			//m_bPlayOn = FALSE;
-			//KillTimer(1);
-			SetEvent(g_CameraStopDataRecieveEvent); // g_KillTimerEvent
+			SetEvent(g_CameraStopDataRecieveEvent); 
 		} // End if.
 
-		SetEvent(g_CameraUpdateControlsEvent);
+		//SetEvent(g_CameraUpdateControlsEvent);
 
 	} // End if. 
 } // End of the CReceiveCameraImage::CheckForLastFrame method.
@@ -566,14 +617,11 @@ void CReceiveCameraImage::OnWaitableTimer()
 	// Increase buffer index
 	m_Buffers->Next();
 
-	// Resfresh display
-	//m_View->Show();
-
 	// Check if last frame is reached
 	CheckForLastFrame();
 
 	// Refresh controls
-	SetEvent(g_CameraUpdateControlsEvent);
+	//SetEvent(g_CameraUpdateControlsEvent);
 
 } // End of the CReceiveCameraImage::OnTimer method.
 
@@ -592,7 +640,7 @@ void CReceiveCameraImage::OnTimerCamera()
 	CheckForLastFrame();
 
 	// Refresh controls
-	SetEvent(g_CameraUpdateControlsEvent);
+	//SetEvent(g_CameraUpdateControlsEvent);
 
 } // End of the CReceiveCameraImage::OnTimer method.
 
@@ -606,7 +654,6 @@ void CReceiveCameraImage::UpdateControls()
 	// Update edit controls
 	m_ActiveBuffer = m_Buffers->GetIndex() + 1;
 	m_BufferCount = m_Buffers->GetCount();
-	m_Slider = m_Buffers->GetIndex();
 	m_FrameRate = m_Buffers->GetFrameRate();
 
 	if (m_nFramesLost != 0)
@@ -630,27 +677,33 @@ void CReceiveCameraImage::StartDataReception(void)
 
 	// these lines are for online operation
 	// starting from here
-	//m_nFramesLost = 0;
+	m_nFramesLost = 0;
 
-	//// Acquire all frames
-	//m_Xfer->Init();
-
-	//if (m_Xfer->Snap(m_Buffers->GetCount()))
-	//{
-	//	m_bRecordOn = TRUE;
-	//}
-	// online operation upto here
-
-	///// delete these lines 
-	CLoadSaveDlg dlg(NULL, m_Buffers, TRUE, TRUE);
-	if (dlg.DoModal() == IDOK)
+	if (m_bServerAvailable == TRUE)
 	{
+		// Acquire all frames
+		m_Xfer->Init();
 
+		if (m_Xfer->Snap(m_Buffers->GetCount()))
+		{
+			m_bRecordOn = TRUE;
+		}
+		m_Buffers->SetIndex(0);
+	}
+	// online operation upto here
+	else
+	{
+		///// delete these lines 
+		CLoadSaveDlg dlg(NULL, m_Buffers, TRUE, TRUE);
+		if (dlg.DoModal() == IDOK)
+		{
+			m_bPlayOn = TRUE;
+		}
 	}
 	/////////////  delete these lines
 	
 	// Initialize buffer index
-	m_Buffers->SetIndex(0);
+	
 
 	//m_Buffers->ResetIndex();
 
@@ -661,75 +714,76 @@ void CReceiveCameraImage::StartDataReception(void)
 	//int frameTime = (int)(1000.0 / m_Buffers->GetFrameRate());
 	m_frameTime = (int)(1000.0 / m_Buffers->GetFrameRate());
 
-	//SetTimer(1, frameTime, NULL);
-	SetEvent(g_SetTimerFrameRateEvent);
+	if (m_bServerAvailable == FALSE)
+	{
+		SetEvent(g_SetTimerFrameRateEvent);
+	}
 
-	m_bPlayOn = TRUE;
 
 	//SetEvent(g_CameraUpdateControlsEvent);
 } // End of the CReceiveCameraImage::OnPlay method.
 
-//==============================================================================
-// Name      : CReceiveCameraImage::OnPause
-// Purpose   : Pause the recording or playing of frames.
-// Parameters: None
-//==============================================================================
-void CReceiveCameraImage::PauseDataReception(void)
-{
-	if (!m_bPauseOn)
-	{
-		// Check if recording or playing
-		if (m_bRecordOn)
-		{
-			//KillTimer(1);
-			SetEvent(g_KillTimerEvent);
-
-			// Stop current acquisition
-			if (!m_Xfer->Freeze())
-				return;
-
-			if (CAbortDlg(AfxGetApp()->m_pMainWnd, m_Xfer).DoModal() != IDOK)
-				m_Xfer->Abort();
-		}
-		else if (m_bPlayOn)
-		{
-			// Stop playback timer
-			//KillTimer(1);
-
-			SetEvent(g_KillTimerEvent);
-		} // End if, else if.
-	}
-	else
-	{
-		// Check if recording or playing
-		if (m_bRecordOn)
-		{
-			//int frameTime = (int)(1000.0 / m_Buffers->GetFrameRate());
-			m_frameTime = (int)(1000.0 / m_Buffers->GetFrameRate());
-
-			//SetTimer(1, frameTime, NULL);
-			SetEvent(g_SetTimerFrameRateEvent);
-
-			// Acquire remaining frames
-			if (!m_Xfer->Snap(m_Buffers->GetCount() - m_Buffers->GetIndex() - 1))
-				return;
-		}
-		else if (m_bPlayOn)
-		{
-			// Restart playback timer
-			//int frameTime = (int)(1000.0 / m_Buffers->GetFrameRate());
-			m_frameTime = (int)(1000.0 / m_Buffers->GetFrameRate());
-
-			//SetTimer(1, frameTime, NULL);
-			SetEvent(g_SetTimerFrameRateEvent);
-
-		} // End if, else if.
-	} // End if, else.
-
-	m_bPauseOn = !m_bPauseOn;
-
-	SetEvent(g_CameraUpdateControlsEvent);
-} // End of the CReceiveCameraImage::OnPause method.
+////==============================================================================
+//// Name      : CReceiveCameraImage::OnPause
+//// Purpose   : Pause the recording or playing of frames.
+//// Parameters: None
+////==============================================================================
+//void CReceiveCameraImage::PauseDataReception(void)
+//{
+//	if (!m_bPauseOn)
+//	{
+//		// Check if recording or playing
+//		if (m_bRecordOn)
+//		{
+//			//KillTimer(1);
+//			SetEvent(g_KillTimerEvent);
+//
+//			// Stop current acquisition
+//			if (!m_Xfer->Freeze())
+//				return;
+//
+//			if (CAbortDlg(AfxGetApp()->m_pMainWnd, m_Xfer).DoModal() != IDOK)
+//				m_Xfer->Abort();
+//		}
+//		else if (m_bPlayOn)
+//		{
+//			// Stop playback timer
+//			//KillTimer(1);
+//
+//			SetEvent(g_KillTimerEvent);
+//		} // End if, else if.
+//	}
+//	else
+//	{
+//		// Check if recording or playing
+//		if (m_bRecordOn)
+//		{
+//			//int frameTime = (int)(1000.0 / m_Buffers->GetFrameRate());
+//			m_frameTime = (int)(1000.0 / m_Buffers->GetFrameRate());
+//
+//			//SetTimer(1, frameTime, NULL);
+//			SetEvent(g_SetTimerFrameRateEvent);
+//
+//			// Acquire remaining frames
+//			if (!m_Xfer->Snap(m_Buffers->GetCount() - m_Buffers->GetIndex() - 1))
+//				return;
+//		}
+//		else if (m_bPlayOn)
+//		{
+//			// Restart playback timer
+//			//int frameTime = (int)(1000.0 / m_Buffers->GetFrameRate());
+//			m_frameTime = (int)(1000.0 / m_Buffers->GetFrameRate());
+//
+//			//SetTimer(1, frameTime, NULL);
+//			SetEvent(g_SetTimerFrameRateEvent);
+//
+//		} // End if, else if.
+//	} // End if, else.
+//
+//	m_bPauseOn = !m_bPauseOn;
+//
+//	//SetEvent(g_CameraUpdateControlsEvent);
+//} // End of the CReceiveCameraImage::OnPause method.
 
 //==============================================================================
 // Name      : CReceiveCameraImage::OnStop
@@ -745,21 +799,22 @@ void CReceiveCameraImage::StopDataReception(void)
 		if (!m_Xfer->Freeze())
 			return;
 
-		if (CAbortDlg(AfxGetApp()->m_pMainWnd, m_Xfer).DoModal() != IDOK) /// buraya SAP help'ten bak ve gerekli düzenlemeyi yap
+		//if (CAbortDlg(AfxGetApp()->m_pMainWnd, m_Xfer).DoModal() != IDOK) /// buraya SAP help'ten bak ve gerekli düzenlemeyi yap
 			m_Xfer->Abort();
+
+		//SetEvent(g_KillTimerEvent);
 
 		m_bRecordOn = FALSE;
 	}
 	else if (m_bPlayOn)
 	{
 		// Stop playback timer
-		//KillTimer(1);
-		SetEvent(g_KillTimerEvent);
+		//SetEvent(g_KillTimerEvent);
 
 		m_bPlayOn = FALSE;
 	} // End if, else if.
 
-	m_bPauseOn = FALSE;
+	//m_bPauseOn = FALSE;
 
 	//SetEvent(g_CameraUpdateControlsEvent);
 } // End of the CReceiveCameraImage::OnStop method.
@@ -769,80 +824,49 @@ void CReceiveCameraImage::StopDataReception(void)
 //             General Options
 //
 //*****************************************************************************************
-
-//==============================================================================
-// Name      : CReceiveCameraImage::OnBufferOptions
-// Purpose   : Change the number of buffers used.
-// Parameters: None
-//==============================================================================
-//void CReceiveCameraImage::OnBufferOptions(void)
+////==============================================================================
+//// Name      : CReceiveCameraImage::OnLoadAcqConfig
+//// Purpose   : Select a new configuration file for the acquisition.
+//// Parameters: None
+////==============================================================================
+//void CReceiveCameraImage::LoadConfiguationFile(void)
 //{
-	//CBufDlg dlg(this, m_Buffers, m_View->GetDisplay());
-	//if (dlg.DoModal() == IDOK)
-	//{
-	//	CWaitCursor cur;
-
-	//	// Destroy objects
-	//	DestroyObjects();
-
-	//	// Update buffer object
-	//	SapBuffer buf = *m_Buffers;
-	//	*m_Buffers = dlg.GetBuffer();
-
-	//	// Recreate objects
-	//	if (!CreateObjects())
-	//	{
-	//		*m_Buffers = buf;
-	//		CreateObjects();
-	//	} // End if.
-
-	//	SetEvent(g_CameraUpdateControlsEvent);
-	//} // End if.
-//} // End of the CReceiveCameraImage::OnBufferOptions method.
-
-//==============================================================================
-// Name      : CReceiveCameraImage::OnLoadAcqConfig
-// Purpose   : Select a new configuration file for the acquisition.
-// Parameters: None
-//==============================================================================
-void CReceiveCameraImage::LoadConfiguationFile(void)
-{
-	// Set acquisition parameters
-	CAcqConfigDlg dlg(NULL, CAcqConfigDlg::ServerAcqDevice); // boraN changed this --> NULL
-	if (dlg.DoModal() == IDOK)
-	{
-		// Destroy objects
-		DestroyObjects();
-
-		// Backup
-		SapLocation loc = m_AcqDevice->GetLocation();
-
-		// Update object
-		m_AcqDevice->SetLocation(dlg.GetLocation());
-
-		//CString configFile = dlg.GetConfigFile();
-
-		CString configFile;
-		dlg.GetConfigFile(configFile);
-
-
-		char dummy[1000];
-		size_t i = configFile.GetLength();
-		strncpy_s(dummy, "\n", 1000);
-		strncpy_s(dummy, CStringA(configFile).GetBuffer(), i);
-		m_AcqDevice->SetConfigFile(dummy);
-
-		// Recreate objects
-		if (!CreateObjects())
-		{
-			m_AcqDevice->SetLocation(loc);
-			m_AcqDevice->SetConfigFile(dummy);
-			CreateObjects();
-		} // End if.
-
-		SetEvent(g_CameraUpdateControlsEvent);
-	} // End if, else.
-} // End of the CReceiveCameraImage::OnLoadAcqConfig method.
+//	// Set acquisition parameters
+//	CAcqConfigDlg dlg(NULL, CAcqConfigDlg::ServerAcqDevice); // boraN changed this --> NULL
+//	if (dlg.DoModal() == IDOK)
+//	{
+//		// Destroy objects
+//		DestroyObjects();
+//
+//		// Backup
+//		SapLocation loc = m_AcqDevice->GetLocation();
+//
+//		// Update object
+//		m_AcqDevice->SetLocation(dlg.GetLocation());
+//
+//		//CString configFile = dlg.GetConfigFile();
+//
+//		CString configFile;
+//		dlg.GetConfigFile(configFile);
+//
+//
+//		char dummy[1000];
+//		size_t i = configFile.GetLength();
+//		strncpy_s(dummy, "\n", 1000);
+//		strncpy_s(dummy, CStringA(configFile).GetBuffer(), i);
+//		m_AcqDevice->SetConfigFile(dummy);
+//
+//		// Recreate objects
+//		if (!CreateObjects())
+//		{
+//			m_AcqDevice->SetLocation(loc);
+//			m_AcqDevice->SetConfigFile(dummy);
+//			CreateObjects();
+//		} // End if.
+//
+//		SetEvent(g_CameraUpdateControlsEvent);
+//	} // End if, else.
+//} // End of the CReceiveCameraImage::OnLoadAcqConfig method.
 
 //*****************************************************************************************
 //
@@ -850,52 +874,29 @@ void CReceiveCameraImage::LoadConfiguationFile(void)
 //
 //*****************************************************************************************
 
-//==============================================================================
-// Name      : CReceiveCameraImage::OnHighFrameRate
-// Purpose   :
-// Parameters: None
-//==============================================================================
-//void CReceiveCameraImage::OnHighFrameRate()
+
+//void CReceiveCameraImage::DisplayRecordSelectDialog()
 //{
-//	CHighFrameRateDlg dlg(this, m_nFramesPerCallback, m_Xfer);
+//	if (m_Buffers->GetFormat() == SapFormatMono16)
+//	{
+//		::MessageBox(NULL, _T("Sequence images in AVI format are sampled at 8-bit pixel depth.\nYou cannot load a sequence in the current configuration."), NULL, MB_OK);
 //
+//		return;
+//	}
+//
+//	if ((m_Buffers->GetFormat() == SapFormatRGBR888))
+//	{
+//		::MessageBox(NULL, _T("Sequence images acquired in RGBR888 format (red first) were saved as RGB888 (blue first).\nYou cannot load a sequence in the current configuration."), NULL, MB_OK);
+//
+//		return;
+//	}
+//
+//	CLoadSaveDlg dlg(NULL, m_Buffers, TRUE, TRUE);
 //	if (dlg.DoModal() == IDOK)
 //	{
-//		CWaitCursor cursor;
-//
-//		m_nFramesPerCallback = dlg.GetNFramesPerCallback();
-//
-//		// Destroy transfer object
-//		m_Xfer->Destroy();
-//
-//		// Recreate transfer object with new setting
-//		CreateObjects();
-//	}
-//}// End of the CGigESeqGrabDemoDlg::OnHighFrameRate method.
-//==============================================================================
-
-void CReceiveCameraImage::DisplayRecordSelectDialog()
-{
-	if (m_Buffers->GetFormat() == SapFormatMono16)
-	{
-		::MessageBox(NULL, _T("Sequence images in AVI format are sampled at 8-bit pixel depth.\nYou cannot load a sequence in the current configuration."), NULL, MB_OK);
-
-		return;
-	}
-
-	if ((m_Buffers->GetFormat() == SapFormatRGBR888))
-	{
-		::MessageBox(NULL, _T("Sequence images acquired in RGBR888 format (red first) were saved as RGB888 (blue first).\nYou cannot load a sequence in the current configuration."), NULL, MB_OK);
-
-		return;
-	}
-
-	CLoadSaveDlg dlg(NULL, m_Buffers, TRUE, TRUE);
-	if (dlg.DoModal() == IDOK)
-	{
-		SetEvent(g_CameraUpdateControlsEvent);
-	} // End if.  SapFormatRGB888
-}
+//		SetEvent(g_CameraUpdateControlsEvent);
+//	} // End if.  SapFormatRGB888
+//}
 
 int CReceiveCameraImage::GetFrameTime()
 {
@@ -914,7 +915,7 @@ void CReceiveCameraImage::GetCameraDataAsMat()
 	int iHeight = m_Buffers->GetHeight();
 
 	int size = iWidth * iHeight;
-	//int pixel_depth = m_Buffers->GetPixelDepth();
+
 	int bytesPerPixel = m_Buffers->GetBytesPerPixel();
 
 	int i = 0;
@@ -922,18 +923,10 @@ void CReceiveCameraImage::GetCameraDataAsMat()
 	int k = 0;
 	int inumFrames = 0;
 	int bufOffset = 0;
+	BOOL success = FALSE;
+
 
 	int nNumBuffers = m_Buffers->GetCount();
-
-	//for (i = 0; i < MAX_BUFFER; i++)
-	//{
-	//	inumFrames++;
-	//}
-
-	//if (inumFrames > nNumBuffers)
-	//{
-	//	inumFrames = nNumBuffers;
-	//}
 
 	inumFrames = m_Buffers->GetIndex();
 
@@ -943,30 +936,24 @@ void CReceiveCameraImage::GetCameraDataAsMat()
 		BYTE *pData = new BYTE[size * bytesPerPixel  * inumFrames];
 		if (pData == NULL)
 		{
-			::MessageBox(NULL, _T("Can not allocate memory in OnBnClickedopenCV"), NULL, MB_OK);
+			::MessageBox(NULL, _T("Can not allocate memory in GetCameraDataAsMat"), NULL, MB_OK);
 		}
-		BOOL success = FALSE;
-
-		int iCount = m_Buffers->GetCount();
-		int iIndex = m_Buffers->GetIndex();
 
 		bufOffset = nNumBuffers - 1 - m_Buffers->GetIndex();
 		for (i = 0; i < bufOffset; i++)
 			m_Buffers->Next();
 
-		for (i = 0; i < inumFrames; i++)  // MAX_BUFFER
+		for (i = 0; i < inumFrames; i++)  // g_CameraBuffer
 		{
-			//if (m_selList[i] == TRUE)
-			//{
-				j = k * size * bytesPerPixel;
-				success = m_Buffers->Read(0, size, (pData + j));
+			j = k * size * bytesPerPixel;
 
-				if (success == FALSE)
-				{
-					::MessageBox(NULL, _T("Can not read buffer in OnBnClickedopenCV"), NULL, MB_OK);
-				}
-				k++;
-			//}
+			success = m_Buffers->Read(0, size, (pData + j));
+
+			if (success == FALSE)
+			{
+				::MessageBox(NULL, _T("Can not read buffer in OnBnClickedopenCV"), NULL, MB_OK);
+			}
+			k++;
 			m_Buffers->Next();
 		}
 
@@ -984,34 +971,9 @@ void CReceiveCameraImage::GetCameraDataAsMat()
 
 		delete[] pData;
 
-
-		CFrameWnd *pFrame = (CFrameWnd *)(AfxGetApp()->m_pMainWnd);
-
-		if (!pFrame)
-		{
-			::MessageBox(NULL, _T("Frame Window Not OK in CReceiveCameraImage::GetCameraDataAsMat"), NULL, MB_OK);
-		}
-
-
-		CView * pView = pFrame->GetActiveView();
-
-		if (!pView)
-		{
-			::MessageBox(NULL, _T("GetActiveView Not OK"), NULL, MB_OK);
-		}
-
-		// Fail if view is of wrong kind
-		if (!pView->IsKindOf(RUNTIME_CLASS(CARALGISView)))
-		{
-			::MessageBox(NULL, _T("GetActiveView Not OK"), NULL, MB_OK);
-		}
-
-		LPARAM pLparam;
-		pLparam = reinterpret_cast<LPARAM>("ARALGIS");
 		// below must be send message
 		// in sendmessage, message is immediately processed
 		// so the pLparam, which is window title is still available 
-		// when DestroyWindow is called within SketcherDoc class
-		pView->SendMessage(WM_CAMERA_DATA_READY, 0, pLparam);
+		m_pView->SendMessage(WM_CAMERA_DATA_READY, 0, m_pLparam);
 	}
 }
