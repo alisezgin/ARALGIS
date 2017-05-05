@@ -284,6 +284,7 @@
     </ClInclude>
     <ClInclude Include="VehicleDlg.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="MiniIni\Implementation\HeaderFiles\allocator.h">
       <Filter>miniIni\Implementation\HeaderFiles</Filter>
     </ClInclude>
@@ -465,6 +466,7 @@
     </ClCompile>
     <ClCompile Include="VehicleDlg.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="MiniIni\Implementation\SourceFiles\allocator.cpp">
       <Filter>miniIni\Implementation\SourceFiles</Filter>
     </ClCompile>

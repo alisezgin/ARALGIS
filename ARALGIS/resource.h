@@ -78,8 +78,14 @@
 #define IDC_VEHICLE_RN                  1039
 #define IDC_VEHICLE_LASTVISIT           1040
 #define IDC_FORM_EBL                    1041
-#define IDC_BUTTON1                     1042
 #define IDC_FORM_BUPDATEDB              1042
+#define IDC_FORM_GRPVEHICLE             1043
+#define IDC_FORM_SLPI                   1044
+#define IDC_FORM_SFVI                   1045
+#define IDC_FORM_SMRV                   1046
+#define IDC_FORM_SDN                    1047
+#define IDC_FORM_SLP                    1048
+#define IDC_FORM_SRN                    1049
 #define IDC_BUTTON1                     1050
 #define IDC_BUTTON_ORGINAL              1051
 #define ID_KAMERA_KONFIG32771           32771
@@ -137,7 +143,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        313
 #define _APS_NEXT_COMMAND_VALUE         32810
-#define _APS_NEXT_CONTROL_VALUE         1043
+#define _APS_NEXT_CONTROL_VALUE         1050
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif
