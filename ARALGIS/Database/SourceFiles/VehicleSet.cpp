@@ -21,7 +21,8 @@ CVehicleSet::CVehicleSet(CDatabase* pdb)
 	m_ChassisBottomImageRef = L"";
 	m_MostRecentVisitDate;
 	m_DriverName = L"";
-	m_nFields = 8;
+	m_BlackList = FALSE;
+	m_nFields = 9;
 	m_nDefaultType = dynaset;
 }
 // #error Security Issue: The connection string may contain a password
@@ -53,6 +54,7 @@ void CVehicleSet::DoFieldExchange(CFieldExchange* pFX)
 	RFX_Text(pFX, _T("[ChassisBottomImageRef]"), m_ChassisBottomImageRef);
 	RFX_Date(pFX, _T("[MostRecentVisitDate]"), m_MostRecentVisitDate);
 	RFX_Text(pFX, _T("[DriverName]"), m_DriverName);
+	RFX_Bool(pFX, _T("[BlackList]"), m_BlackList);
 
 }
 /////////////////////////////////////////////////////////////////////////////

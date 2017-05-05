@@ -12,6 +12,12 @@ CVehicleView::CVehicleView()
 {
 }
 
+CVehicleView::~CVehicleView()
+{
+	if (m_pSet != nullptr)
+		delete m_pSet;
+}
+
 #ifdef _DEBUG
 void CVehicleView::AssertValid() const
 {
@@ -27,13 +33,14 @@ void CVehicleView::Dump(CDumpContext& dc) const
 void CVehicleView::DoDataExchange(CDataExchange* pDX)
 {
 	CRecordView::DoDataExchange(pDX);
-	DDX_FieldText(pDX, IDC_VEHICLE_ID, m_pSet->m_VehicleID, m_pSet);
 	DDX_FieldText(pDX, IDC_VEHICLE_LP, m_pSet->m_LicensePlate, m_pSet);
 	DDX_FieldText(pDX, IDC_VEHICLE_LPI, m_pSet->m_LicensePlateImage, m_pSet);
 	DDX_FieldText(pDX, IDC_VEHICLE_CBCI, m_pSet->m_ChassisBottomImageCurrent, m_pSet);
 	DDX_FieldText(pDX, IDC_VEHICLE_CBRI, m_pSet->m_ChassisBottomImageRef, m_pSet);
 	DDX_FieldText(pDX, IDC_VEHICLE_FVI, m_pSet->m_FrontViewImage, m_pSet);
-	DDX_DateTimeCtrl(pDX, IDC_VEHICLE_LASTVISIT, m_pSet->m_MostRecentVisitDate);
+	DDX_FieldText(pDX, IDC_VEHICLE_DN, m_pSet->m_DriverName, m_pSet);
+	//DDX_FieldText(pDX, IDC_VEHICLE_BL, m_pSet->m_BlackList, m_pSet);
+	//DDX_DateTimeCtrl(pDX, IDC_VEHICLE_LASTVISIT, m_pSet->m_MostRecentVisitDate);
 }
 
 CVehicleSet* CVehicleView::GetRecordSet()
@@ -50,11 +57,16 @@ CRecordset* CVehicleView::OnGetRecordset()
 void CVehicleView::OnInitialUpdate()
 {
 	// normally, it should be the following
+	BeginWaitCursor();
 	m_pSet = &GetDocument()->m_VehicleSet;
+
+	if (m_pSet->IsOpen()) {
+		GetDocument()->SetTitle(_T("All entries"));
+	}
 	CRecordView::OnInitialUpdate();
+	EndWaitCursor();
 	
 	// the following is used in case the link in doc does not have the correct Recordset object
-	//	BeginWaitCursor();
 	//CARALGISDoc* pDoc = static_cast<CARALGISDoc*>(GetDocument());
 	//m_pSet = &pDoc->m_pVehicleSet;
 
@@ -65,5 +77,4 @@ void CVehicleView::OnInitialUpdate()
 	//// m_pSet->m_strFilter = {filter string};
 
 	//CRecordView::OnInitialUpdate();
-	//EndWaitCursor();
 }

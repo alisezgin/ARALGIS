@@ -28,6 +28,7 @@ public:
 	CString		m_ChassisBottomImageRef;
 	CTime		m_MostRecentVisitDate;
 	CString		m_DriverName;
+	BOOL		m_BlackList;
 
 // Overrides
 	// Wizard generated virtual function overrides

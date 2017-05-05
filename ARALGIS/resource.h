@@ -23,6 +23,9 @@
 #define IDD_BITMAP_DLG                  310
 #define IDD_CAMERASTR_DLG               311
 #define IDD_VEHICLE_DIALOG              314
+#define IDD_VEHICLE_DIALOG_VIEW         314
+#define IDD_VEHICLE_DIALOG1             315
+#define IDD_VEHICLE_DLG                 315
 #define IDC_BITMAP                      1000
 #define IDC_GRP_TEST                    1006
 #define IDC_GRP_REF                     1007
@@ -37,6 +40,7 @@
 #define IDC_EDIT_KAMERA_NO              1015
 #define IDC_VEHICLE_ID                  1015
 #define IDC_FORM_ELP                    1015
+#define IDC_VEHICLE_DN                  1015
 #define IDC_BUTTON_BARRIER_OPEN         1016
 #define IDC_VEHICLE_LP                  1016
 #define IDC_BUTTON_BARRIER_CLOSE        1017
@@ -68,7 +72,14 @@
 #define IDC_FORM_BMODIFY                1036
 #define IDC_FORM_ELP2                   1037
 #define IDC_FORM_DN                     1037
+#define IDC_VEHICLE_BLACKLIST           1037
+#define IDC_FORM_ERN                    1038
+#define IDC_                            1039
+#define IDC_VEHICLE_RN                  1039
 #define IDC_VEHICLE_LASTVISIT           1040
+#define IDC_FORM_EBL                    1041
+#define IDC_BUTTON1                     1042
+#define IDC_FORM_BUPDATEDB              1042
 #define ID_KAMERA_KONFIG32771           32771
 #define ID_KAMERA_KAY32772              32772
 #define ID_KAMERA_RESIMG32773           32773
@@ -124,7 +135,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        313
 #define _APS_NEXT_COMMAND_VALUE         32810
-#define _APS_NEXT_CONTROL_VALUE         1037
+#define _APS_NEXT_CONTROL_VALUE         1043
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

@@ -69,7 +69,7 @@ protected:
 #endif // SHARED_HANDLERS
 public:
 	// points to the Recordset object representing the Araclar tab
-	CVehicleSet m_pVehicleSet;
+	CVehicleSet* m_pVehicleSet;
 	// used to link the Doc to the database; default connect of CVehicleSet opens the db connection
 	CVehicleSet m_VehicleSet;
 };

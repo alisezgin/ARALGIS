@@ -8,12 +8,12 @@ class CVehicleView : public CRecordView
 	DECLARE_DYNCREATE(CVehicleView)
 
 protected:
-	virtual ~CVehicleView() {}
+	virtual ~CVehicleView();
 	virtual void DoDataExchange(CDataExchange* pDX);
 	virtual void OnInitialUpdate();
 
 public:
-	enum { IDD = IDD_VEHICLE_DIALOG };
+	enum { IDD = IDD_VEHICLE_DIALOG_VIEW };
 
 	CVehicleSet* m_pSet;
 

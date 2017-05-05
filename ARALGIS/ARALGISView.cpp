@@ -28,6 +28,10 @@
 #include ".\ImageFiltering\HeaderFiles\pixkit-cv.hpp"
 #include ".\ImageFiltering\HeaderFiles\cvt.hpp"
 
+#include "VehicleSet.h"
+#include "VehicleView.h"
+#include "VehicleDlg.h"
+
 
 
 //#include ".\\BitmapDisplay\\HeaderFiles\\PkMattoGDI.h"
@@ -78,9 +82,12 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 , m_FormLPEntry(_T(""))
 , m_FormELPI(_T(""))
 , m_FormEFVI(_T(""))
-, m_FormECBCI(_T(""))
-, m_FormECBRI(_T(""))
-, m_FormDN(_T(""))
+//, m_FormECBCI(_T(""))
+//, m_FormECBRI(_T(""))
+, m_FormEDN(_T(""))
+, m_FormEDT(0)
+, m_FormEBL{}
+, m_FormERN(_T(""))
 {
 	// TODO: add construction code here
 
@@ -136,9 +143,11 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_FORM_ELP, m_FormELP);
 	DDX_Text(pDX, IDC_FORM_ELPI, m_FormELPI);
 	DDX_Text(pDX, IDC_FORM_EFVI, m_FormEFVI);
-	DDX_Text(pDX, IDC_FORM_ECBCI, m_FormECBCI);
-	DDX_Text(pDX, IDC_FORM_ECBRI, m_FormECBRI);
-	DDX_Text(pDX, IDC_FORM_DN, m_FormDN);
+	//DDX_Text(pDX, IDC_FORM_ECBCI, m_FormECBCI);
+	//DDX_Text(pDX, IDC_FORM_ECBRI, m_FormECBRI);
+	DDX_Text(pDX, IDC_FORM_DN, m_FormEDN);
+	DDX_Text(pDX, IDC_FORM_ERN, m_FormERN);
+	DDX_Control(pDX, IDC_FORM_EBL, m_FormEBL);
 }
 
 BOOL CARALGISView::PreCreateWindow(CREATESTRUCT& cs)
@@ -711,7 +720,6 @@ void CARALGISView::OnLbnSelchangeList2()
 	//MessageBox(strLP);
 }
 
-
 void CARALGISView::OnAdd()
 {
 	// TODO: Add your control notification handler code here
@@ -720,39 +728,8 @@ void CARALGISView::OnAdd()
 	UpdateData();
 
 	strLP = m_FormLPEntry;
-	m_FormListBox.ResetContent();
 
-	// find all visits of the given LP
-	CVehicleSet vSet;
-	CString filter = CString{ "LicensePlate = '" } +strLP;
-	filter += CString{ "'" };
-	vSet.m_strFilter = filter;
-	vSet.m_strSort = _T("MostRecentVisitDate DESC");
-
-	vSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
-	if (vSet.IsBOF()) {
-		MessageBox(CString{ "Kayit bulunamadi; plaka no: " } +strLP);
-		m_FormListBox.AddString(LPCTSTR{ CString{ "Kayit yok" } });
-		UpdateData(FALSE);
-		return;
-	}
-
-	// these should belong to the most recent visit
-	m_FormELPI = vSet.m_LicensePlateImage;
-	m_FormEFVI = vSet.m_FrontViewImage;
-	m_FormECBCI = vSet.m_ChassisBottomImageCurrent;
-	m_FormECBRI = vSet.m_ChassisBottomImageRef;
-	m_FormDN = vSet.m_DriverName;
-
-	while (!vSet.IsEOF()) {
-		CTime visitDate = vSet.m_MostRecentVisitDate;
-		MessageBox(visitDate.Format("%d/%m/%Y %X"));
-		m_FormListBox.AddString(visitDate.Format("%d/%m/%Y %X"));
-		vSet.MoveNext();
-	}
-
-	UpdateData(FALSE);
-	// m_FormListBox.AddString(strLP);
+	OnLPUpdateInfo(strLP);
 }
 
 
@@ -760,4 +737,94 @@ void CARALGISView::OnGuncelle()
 {
 	// TODO: Add your control notification handler code here
 	// it should open a dialog for row entry into the Vehicle database
+	CVehicleDlg vDlg{ m_FormEDT, m_FormEDN, m_FormELP, 
+		m_FormEBL.GetCheck(), m_FormERN };
+	if (vDlg.DoModal() == IDOK) {
+		m_FormEBL.SetCheck(vDlg.getBL());
+		m_FormEDN = vDlg.getDN();
+		//m_FormEDT = vDlg.getDT();
+		m_FormELP = vDlg.getLP();
+		m_FormERN = vDlg.getRN();
+
+//		MessageBox(_T("You pressed OK; the database will be updated"));
+	}
+	else {
+//		MessageBox(_T("You pressed CANCEL; the database will not be updated"));
+	}
+
+	UpdateData(FALSE);
+	CVehicleSet vSet;
+	if (!vSet.Open()) {
+		MessageBox(_T("Recordset is not open!"));
+		return;
+	}
+
+	vSet.AddNew();
+
+	//vSet.m_VehicleID = 0;
+	//vSet.m_LicensePlate = m_FormELP;
+	//vSet.m_LicensePlateImage = m_FormELPI; // _T("some file");
+	//vSet.m_DriverName = m_FormEDN; // _T("Abuzer Negezer");
+	//vSet.m_ChassisBottomImageCurrent = m_FormECBCI; // _T("UpSkirtNow.jpg");
+	//vSet.m_ChassisBottomImageRef = m_FormECBRI; // _T("UpSkirtVintage.jpg");
+	//vSet.m_FrontViewImage = m_FormEFVI; // _T("Cleavage.jpg");
+	//vSet.m_MostRecentVisitDate = CTime::GetCurrentTime(); // CTime{ 2016, 12, 30, 22, 58, 0 };
+	//if (!vSet.Update()) {
+	//	MessageBox(_T("Record not added"));
+	//	return;
+	//}
+}
+
+
+// called to update the vehicle info boxes upon the retrieval of a new license plate number
+void CARALGISView::OnLPUpdateInfo(CString strLP)
+{
+	m_FormListBox.ResetContent();
+
+	// find all visits of the given LP
+	CVehicleSet vSet;
+	CString filter = CString{ _T("LicensePlate = '") } +strLP;
+	filter += CString{ _T("'") };
+	vSet.m_strFilter = filter;
+	vSet.m_strSort = _T("MostRecentVisitDate DESC");
+
+	m_FormEDT = CTime::GetCurrentTime();
+	vSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	if (vSet.IsBOF()) {
+		MessageBox(CString{ _T("Kayit bulunamadi; plaka no: ") } +strLP);
+		m_FormListBox.AddString(LPCTSTR{ CString{ _T("Kayit yok") } });
+		m_FormELPI = _T("Kayit yok");
+		m_FormELP = _T("Kayit yok");
+		m_FormEFVI = _T("Kayit yok");
+		//m_FormECBCI = _T("Kayit yok");
+		//m_FormECBRI = _T("Kayit yok");
+		m_FormEDN = _T("Kayit yok");
+		m_FormERN = _T("Kayit yok");
+		m_FormEBL.SetCheck(BST_INDETERMINATE);
+		UpdateData(FALSE);
+		return;
+	}
+
+	// these should belong to the most recent visit
+//	strLP.Remove(' ');
+	strLP.MakeUpper();
+	m_FormELP = strLP;
+	m_FormELPI = vSet.m_LicensePlateImage;
+	m_FormEFVI = vSet.m_FrontViewImage;
+	//m_FormECBCI = vSet.m_ChassisBottomImageCurrent;
+	//m_FormECBRI = vSet.m_ChassisBottomImageRef;
+	m_FormEDN = vSet.m_DriverName;
+	m_FormERN = _T("readDB");
+	//m_FormEBL.SetCheck(vSet.m_BlackList? BST_CHECKED : BST_UNCHECKED);
+
+	while (!vSet.IsEOF()) {
+		CTime visitDate = vSet.m_MostRecentVisitDate;
+//		MessageBox(visitDate.Format("%d/%m/%Y %X"));
+		m_FormListBox.AddString(visitDate.Format("%d/%m/%Y %X"));
+		vSet.MoveNext();
+	}
+
+	UpdateData(FALSE);
+	// m_FormListBox.AddString(strLP);
+
 }

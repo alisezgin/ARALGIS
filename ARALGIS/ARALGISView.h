@@ -26,6 +26,7 @@
 
 #include "ColourButton.h"
 #include "afxdtctl.h"
+#include "atltime.h"
 
 
 class CARALGISDoc;
@@ -155,13 +156,23 @@ public:
 	CString m_FormELPI;
 	// controls the edit box of frontal view image in ARALGISForm; eventually will be of type MyPic
 	CString m_FormEFVI;
-	// controls the edit box of car chassis bottom image (current) in ARALGISForm; eventually will be of type MyPic
-	CString m_FormECBCI;
-	// controls the edit box for chassis bottom reference image in ARALGISForm; eventually will be of type MyPic
-	CString m_FormECBRI;
+	//// controls the edit box of car chassis bottom image (current) in ARALGISForm; eventually will be of type MyPic
+	//CString m_FormECBCI;
+	//// controls the edit box for chassis bottom reference image in ARALGISForm; eventually will be of type MyPic
+	//CString m_FormECBRI;
 	afx_msg void OnGuncelle();
 	// holds the driver name for the current record
-	CString m_FormDN;
+	CString m_FormEDN;
+	// holds the registration number for the current record
+	CString m_FormERN;
+protected:
+	// called to update the vehicle info boxes upon the retrieval of a new license plate number
+	void OnLPUpdateInfo(CString);
+public:
+	// snaps the current time and date for the current vehicle database entry
+	CTime m_FormEDT;
+	// checks whether the current vehicle is in the black list
+	CButton m_FormEBL;
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp
