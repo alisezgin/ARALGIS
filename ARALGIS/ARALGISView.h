@@ -62,8 +62,9 @@ public:
 	void DeletePTSImage();
 	void SetTimerDisplay();
 
-	void UpdatePTSStatus(bool aStatus);
+	void UpdatePTSStatus(int aStatus);
 	void UpdatePeripheralStatus(bool aStatus);
+	void GetTestImageAsByte();
 
 	void FilterAvailable(int aNumFilter);
 

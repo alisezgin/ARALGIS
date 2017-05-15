@@ -29,9 +29,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 CPTSCommunicator::CPTSCommunicator()
 {
-	SOCKET ListenSocket = INVALID_SOCKET;
-	SOCKET ClientSocket = INVALID_SOCKET;
-	m_bClientedAccepted = false;
+	SOCKET scSocket = INVALID_SOCKET;
+
+	m_bIsConnectedToServer = false;
 
 	WSADATA wsaData;
 
@@ -156,6 +156,8 @@ BOOL CPTSCommunicator::Shutdown()
       return FALSE;
 
    TRACE("PTSCommunicator Shutting down ...\n");
+
+   bRun = FALSE;
 	
    SetEvent(ShutdownEvent);
 
@@ -169,8 +171,6 @@ BOOL CPTSCommunicator::Shutdown()
 
 
 	WSACleanup();
-
-	bRun = FALSE;
 
 	return TRUE;
 }
@@ -195,351 +195,310 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 {
 	CPTSCommunicator *pPTSCommunicator = (CPTSCommunicator*)pParam;
 
+//////////////////////////////////
 	WSANETWORKEVENTS	NetworkEvents;
-	int result;
-
-	TRACE("PTS Communicator Thread Started\n");
-
-	struct addrinfo* resultAddr = NULL;
-	struct addrinfo hints;
 	int iResult;
 
-	BYTE buffer[15];
-	int dCamId = 0;
+	struct addrinfo *result = NULL,
+		*ptr = NULL,
+		hints;
 
+	TRACE("\n\n PTS Communicator Thread Started\n");
 
-	ZeroMemory(&hints, sizeof(hints));
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
-	hints.ai_flags = AI_PASSIVE;
-
-	// Resolve the address and port
-	iResult = getaddrinfo(NULL, g_PTSPort, &hints, &resultAddr);
-	if ( iResult != 0 ) 
+	// Create Notification Event
+	WSAEVENT NotificationEvent = WSACreateEvent();
+	if (NotificationEvent == WSA_INVALID_EVENT)
 	{
-		TRACE("getaddrinfo failed with error: %d failure CPTSCommunicator::PTSCommunicatorThread\n", iResult);	
-		WSACleanup();
-		return THREADEXIT_SUCCESS;
-	}
-
-	// Create a SOCKET for connecting to server
-	pPTSCommunicator->ListenSocket = socket(resultAddr->ai_family, resultAddr->ai_socktype, resultAddr->ai_protocol);
-	if (pPTSCommunicator->ListenSocket == INVALID_SOCKET)
-	{
-		TRACE("socket failed with error: %d failure CPTSCommunicator::PTSCommunicatorThread\n", WSAGetLastError());
-		freeaddrinfo(resultAddr);
-		WSACleanup();
-		return THREADEXIT_SUCCESS;
-	}
-
-	// Setup the TCP listening socket
-	iResult = bind(pPTSCommunicator->ListenSocket, resultAddr->ai_addr, (int)resultAddr->ai_addrlen);
-	if (iResult == SOCKET_ERROR) 
-	{
-		TRACE("bind failed with error: %d failure CPTSCommunicator::PTSCommunicatorThread\n", WSAGetLastError());
-		freeaddrinfo(resultAddr);
-		closesocket(pPTSCommunicator->ListenSocket);
-		WSACleanup();
-		return THREADEXIT_SUCCESS;
-	}
-
-	// Set the mode of the socket to be nonblocking
-	u_long iMode = 1;
-	iResult = ioctlsocket(pPTSCommunicator->ListenSocket, FIONBIO, &iMode);
-
-	if (iResult == SOCKET_ERROR) 
-	{
-		TRACE("ioctlsocket failed with error: %d failure CPTSCommunicator::PTSCommunicatorThread\n", WSAGetLastError());
-		closesocket(pPTSCommunicator->ListenSocket);
-		WSACleanup();
-		exit(1);
-	}
-
-	freeaddrinfo(resultAddr);
-
-	iResult = listen(pPTSCommunicator->ListenSocket, SOMAXCONN);
-	if (iResult == SOCKET_ERROR) 
-	{
-		TRACE("listen failed with error: %d failure CPTSCommunicator::PTSCommunicatorThread\n", WSAGetLastError());
-		closesocket(pPTSCommunicator->ListenSocket);
-		WSACleanup();
-		return THREADEXIT_SUCCESS;
-	}
-
-
-	// Create Notification Event for Listen Socket
-	WSAEVENT NotificationEventListen = WSACreateEvent();
-	if (NotificationEventListen == WSA_INVALID_EVENT)
-	{
-		TRACE("WSACreateEvent(ListenSocket) %d failure for Event CPTSCommunicator::PTSCommunicatorThread\n",
+		TRACE("WSACreateEvent(...) failure for Event CPTSCommunicator::PTSCommunicatorThread",
 			WSAGetLastError());
-		closesocket(pPTSCommunicator->ListenSocket);
+		closesocket(pPTSCommunicator->scSocket);
 		return THREADEXIT_SUCCESS;
 	}
 
-	// selects the READ, WRITE, ACCEPT, CONNECT and CLOSE operations 
-	result = WSAEventSelect(pPTSCommunicator->ListenSocket, NotificationEventListen, FD_ACCEPT);
 
-	// No longer need server socket
-	//closesocket(pPTSCommunicator->ListenSocket);
+	// set address info
+	ZeroMemory(&hints, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;  //TCP connection!!!
+
+	//resolve server address and port 
+	iResult = getaddrinfo(PTS_IP_ADDRESS_CHAR, g_PTSPort, &hints, &result);
+	if (iResult != 0)
+	{
+		TRACE("CPTSCommunicator::PTSCommunicatorThread getaddrinfo failed with error: %d\n", iResult);
+		WSACleanup();
+		return THREADEXIT_SUCCESS;
+	}
 
 	WSAEVENT Handles[2];
+
 	Handles[0] = pPTSCommunicator->ShutdownEvent;
-	Handles[1] = NotificationEventListen;
+	Handles[1] = NotificationEvent;
 
-	WSAEVENT HandlesClient[2];
-	HandlesClient[0] = pPTSCommunicator->ShutdownEvent;
-
-	// Create Notification Event for Client Socket
-	WSAEVENT NotificationEventClient = WSACreateEvent();
-	if (NotificationEventClient == WSA_INVALID_EVENT)
+	while (pPTSCommunicator->bRun)
 	{
-		TRACE("WSACreateEvent(NotificationEventClient) %d failure for Event CPTSCommunicator::PTSCommunicatorThread\n",
-			WSAGetLastError());
-		closesocket(pPTSCommunicator->ClientSocket);
-		return THREADEXIT_SUCCESS;
-	}
-
-
-	for(;;)
-	{
-		DWORD EventCaused = WSAWaitForMultipleEvents( 2,
-													  Handles,  
-													  FALSE,                  
-													  100,  //WSA_INFINITE, 
-													  FALSE);
-
-		if(EventCaused == WAIT_FAILED || EventCaused == WAIT_OBJECT_0)
+		// Attempt to connect to an address until one succeeds
+		for (ptr = result; ptr != NULL; ptr = ptr->ai_next)
 		{
-			if(EventCaused == WAIT_FAILED)
-				TRACE( "WaitForMultipleObjects(...) %d failure CPTSCommunicator::PTSCommunicatorThread\n", 
-				       GetLastError());
-			TRACE( "PTSCommunicatorThread Shutting Down ...\n");
-			closesocket(pPTSCommunicator->ClientSocket);
-			return THREADEXIT_SUCCESS;
-		}
-		else
-		{
-			if(WaitForSingleObject(pPTSCommunicator->ShutdownEvent, 0) == WAIT_OBJECT_0)
+
+			// Create a SOCKET for connecting to server
+			pPTSCommunicator->scSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
+
+			if (pPTSCommunicator->scSocket == INVALID_SOCKET)
 			{
-				TRACE( "PTSCommunicatorThread Shutting Down normally ...\n");
+				TRACE("socket failed with error: %ld\n", WSAGetLastError());
+			}
+
+			// Connect to server.
+			iResult = connect(pPTSCommunicator->scSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+			if (iResult == SOCKET_ERROR)
+			{
+				pPTSCommunicator->scSocket = INVALID_SOCKET;
+				TRACE("The server is down... did not connect\n");
+			}
+			else
+			{
+				pPTSCommunicator->m_bIsConnectedToServer = true;
+				bool bretVal = pPTSCommunicator->SendIDMessage();
+
+				if (bretVal)
+				{
+					pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_CONNECTION_OK);
+				}
+				else
+				{
+					pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_CONNECTION_NOK);
+				}
+			}
+		}
+
+
+		// if connection failed
+		if (pPTSCommunicator->scSocket == INVALID_SOCKET)
+		{
+			TRACE("Unable to connect to server!\n");
+			Sleep(100);
+		}
+
+		while (pPTSCommunicator->m_bIsConnectedToServer == true)
+		{
+			// selects the READ, WRITE, ACCEPT, CONNECT and CLOSE operations 
+			iResult = WSAEventSelect(pPTSCommunicator->scSocket, NotificationEvent,
+				FD_READ | FD_CLOSE);
+
+			if (iResult == SOCKET_ERROR)
+			{
+				TRACE("WSAEventSelect(...) failure CPTSCommunicator::PTSCommunicatorThread",
+					WSAGetLastError());
+				closesocket(pPTSCommunicator->scSocket);
 				return THREADEXIT_SUCCESS;
 			}
 
-			// Check if it is an event coming from Listen Socket
-			if (EventCaused == WAIT_OBJECT_0 + 1)
-			{
-				result = WSAEnumNetworkEvents(pPTSCommunicator->ListenSocket,
-											  NotificationEventListen,
-											  &NetworkEvents);
+			DWORD EventCaused = WSAWaitForMultipleEvents(2,
+				Handles,
+				FALSE,
+				100,  //WSA_INFINITE, 
+				FALSE);
 
-				if (result == SOCKET_ERROR)
+			if (EventCaused == WAIT_FAILED || EventCaused == WAIT_OBJECT_0)
+			{
+				if (EventCaused == WAIT_FAILED)
+					TRACE("WaitForMultipleObjects(...) failure CPTSCommunicator::PTSCommunicatorThread",
+					GetLastError());
+				TRACE("PTSCommunicatorThread Shutting Down ...\n");
+				closesocket(pPTSCommunicator->scSocket);
+				return THREADEXIT_SUCCESS;
+			}
+			else
+			{
+				if (WaitForSingleObject(pPTSCommunicator->ShutdownEvent, 0) == WAIT_OBJECT_0)
 				{
-					TRACE("WSAEnumNetworkEvents(...) %d failure CPTSCommunicator::PTSCommunicatorThread\n",
+					TRACE("PTSCommunicatorThread Shutting Down normally bbbb...\n");
+					return THREADEXIT_SUCCESS;
+				}
+
+				iResult = WSAEnumNetworkEvents(pPTSCommunicator->scSocket,
+					NotificationEvent,
+					&NetworkEvents);
+
+				if (iResult == SOCKET_ERROR)
+				{
+					TRACE("WSAEnumNetworkEvents(...) failure CPTSCommunicator::PTSCommunicatorThread",
 						WSAGetLastError());
-					closesocket(pPTSCommunicator->ClientSocket);
+					closesocket(pPTSCommunicator->scSocket);
 					return THREADEXIT_SUCCESS;
 				}
 
 				// data received from Server
-				if (NetworkEvents.lNetworkEvents & FD_ACCEPT)
+				if (NetworkEvents.lNetworkEvents & FD_READ)
 				{
-					// Accept a client socket
-					pPTSCommunicator->ClientSocket = accept(pPTSCommunicator->ListenSocket, NULL, NULL);
-					if (pPTSCommunicator->ClientSocket == INVALID_SOCKET)
+					BYTE buffer[1024];
+					int nBytes = recv(pPTSCommunicator->scSocket, (char*)buffer, 5, NULL);
+
+					if ((INVALID_SOCKET == nBytes) || (0 == nBytes))
 					{
-						TRACE("accept failed with error: %d failure CPTSCommunicator::PTSCommunicatorThread\n", WSAGetLastError());
-						closesocket(pPTSCommunicator->ListenSocket);
-						WSACleanup();
-						return THREADEXIT_SUCCESS;
-					}
-					pPTSCommunicator->m_bClientedAccepted = true;
-					pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_CONNECTION_OK);
-
-
-
-					// selects the READ, CONNECT and CLOSE operations 
-					result = WSAEventSelect(pPTSCommunicator->ClientSocket, NotificationEventClient,
-						FD_READ | FD_CLOSE | FD_CONNECT);
-					if (result == SOCKET_ERROR)
-					{
-						TRACE("WSAEventSelect(...) %d failure CPTSCommunicator::PTSCommunicatorThread\n",
+						TRACE("recvfrom(...) failure CPTSCommunicator::PTSCommunicatorThread",
 							WSAGetLastError());
-						closesocket(pPTSCommunicator->ClientSocket);
-						return THREADEXIT_SUCCESS;
-					}
-
-					HandlesClient[1] = NotificationEventClient;
-
-				}
-
-
-				while (pPTSCommunicator->m_bClientedAccepted)
-				{
-
-					DWORD EventCaused = WSAWaitForMultipleEvents(2,
-																 HandlesClient,
-																 FALSE,
-																 100,  //WSA_INFINITE, 
-																 FALSE);
-
-					if (EventCaused == WAIT_FAILED || EventCaused == WAIT_OBJECT_0)
-					{
-						if (EventCaused == WAIT_FAILED)
-							TRACE("WaitForMultipleObjects(...) %d failure CPTSCommunicator::PTSCommunicatorThread\n",
-							GetLastError());
-						TRACE("PTSCommunicatorThread Shutting Down ...\n");
-						closesocket(pPTSCommunicator->ClientSocket);
-						return THREADEXIT_SUCCESS;
+						continue;
 					}
 					else
 					{
-						if (WaitForSingleObject(pPTSCommunicator->ShutdownEvent, 0) == WAIT_OBJECT_0)
+						// control checksum, if failed do not process message
+						if (pPTSCommunicator->ControlMessage(buffer) == FALSE)
+							continue;
+
+
+						// message is OK.	
+						// start processing the received message
+						if (buffer[MESSAGE_TYPE_POS] == PLAKA_NO_MESSAGE)
 						{
-							TRACE("PTSCommunicatorThread Shutting Down normally ...\n");
-							return THREADEXIT_SUCCESS;
+
+							int dPlakaSize = 0;
+
+							//int AA = buffer[0];
+							//int BB = buffer[1];
+							//int CC = buffer[2];
+							//int DD = buffer[3];
+							//int EE = sizeof(int);
+
+							//memcpy(&dPlakaSize, (BYTE*)buffer, 4);
+
+
+							dPlakaSize = buffer[IMAGE_SIZE_CALC_1] * 16777216 +
+										 buffer[IMAGE_SIZE_CALC_2] * 65536 +
+										 buffer[IMAGE_SIZE_CALC_3] * 256 +
+										 buffer[IMAGE_SIZE_CALC_4];
+
+							nBytes = recv(pPTSCommunicator->scSocket, (char*)buffer, dPlakaSize, NULL);
+							if ((INVALID_SOCKET == nBytes) || (0 == nBytes))
+							{
+								TRACE("recvfrom(...) receiving final part %d failure CPTSCommunicator::PTSCommunicatorThread\n",
+									WSAGetLastError());
+								continue;
+							}
+							else
+							{
+								SetEvent(g_CameraStartDataRecieveEvent);
+
+								strncpy_s(g_PlakaNoChars, (char*)buffer, dPlakaSize);
+								pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_DISPLAY_PLAKA);
+							}
 						}
 
-						// Check if it is an event coming from Listen Socket
-						if (EventCaused == WAIT_OBJECT_0 + 1)
+						else if (buffer[MESSAGE_TYPE_POS] == CAR_IMAGE_MESSAGE)
 						{
-							result = WSAEnumNetworkEvents(pPTSCommunicator->ClientSocket,
-														  NotificationEventClient,
-														  &NetworkEvents);
 
-							if (result == SOCKET_ERROR)
+							int dPlakaImageSize = 0;
+							memcpy(&dPlakaImageSize, buffer, 4);
+
+							//dPlakaImageSize = buffer[IMAGE_SIZE_CALC_1] * 16777216 +
+							//				  buffer[IMAGE_SIZE_CALC_2] * 65536 +
+							//				  buffer[IMAGE_SIZE_CALC_3] * 256 +
+							//				  buffer[IMAGE_SIZE_CALC_4];
+
+							BYTE *bigBuffer = new BYTE[dPlakaImageSize];
+
+							//////////////////////////
+							int dTotalBytesReceived = 1;
+							int dLoopCntr = 0;
+							int dReadSize = 1024;
+
+							struct timeval timeout = { 10, 0 };
+
+							fd_set fds;
+							int buffer_fd;
+
+							while (dTotalBytesReceived < dPlakaImageSize)
 							{
-								TRACE("WSAEnumNetworkEvents(...) %d failure CPTSCommunicator::PTSCommunicatorThread\n",
-									WSAGetLastError());
-								closesocket(pPTSCommunicator->ClientSocket);
-								return THREADEXIT_SUCCESS;
-							}
+								FD_ZERO(&fds);
+								FD_SET(pPTSCommunicator->scSocket, &fds);
 
-							// data received from Server
-							if (NetworkEvents.lNetworkEvents & FD_READ)
-							{
-								int nBytes = recv(pPTSCommunicator->ClientSocket, (char*)buffer, 15, NULL);  //// 39321 is calcualted iaw Divit PTS
+								buffer_fd = select(FD_SETSIZE, &fds, NULL, NULL, &timeout);
 
-								if ((INVALID_SOCKET == nBytes) || (0 == nBytes))
+								if (buffer_fd < 0)
 								{
-									TRACE("recvfrom(...) failure CPTSCommunicator::PTSCommunicatorThread\n",
-										WSAGetLastError());
-									continue;
+									TRACE("error: bad file descriptor set.\n");
 								}
-								else
+
+								if (buffer_fd == 0)
 								{
-									// control checksum, if failed do not process message
-									if (pPTSCommunicator->ControlMessage(buffer) == FALSE)
-										continue;
+									TRACE("error: buffer read timeout expired.\n");
+								}
 
-
-									// start processing the received message
-									// PTS sent the new PTS Info
-									if ((buffer[MESSAGEIDPOS] == 2) && (buffer[1] == 0))/// PTS Info message
+								if (buffer_fd > 0)
+								{
+									nBytes = recv(pPTSCommunicator->scSocket, (char*)(bigBuffer + (dLoopCntr*dReadSize)), dReadSize, NULL);
+									if ((INVALID_SOCKET == nBytes) || (0 == nBytes))
 									{
-										dCamId = (int)buffer[2];
-
-										// get the plaka no
-										pPTSCommunicator->GetPlakaData(buffer + 3);
-
-										int dImageSize;
-
-										//BYTE a = buffer[IMAGE_SIZE_CALC_1];
-										//BYTE b = buffer[IMAGE_SIZE_CALC_2];
-										//BYTE c = buffer[IMAGE_SIZE_CALC_3];
-										//BYTE d = buffer[IMAGE_SIZE_CALC_4];
-
-										dImageSize = buffer[IMAGE_SIZE_CALC_1] * 16777216 +
-											buffer[IMAGE_SIZE_CALC_2] * 65536 +
-											buffer[IMAGE_SIZE_CALC_3] * 256 +
-											buffer[IMAGE_SIZE_CALC_4];
-
-
-
-										BYTE *bigBuffer = new BYTE[dImageSize];
-
-										nBytes = recv(pPTSCommunicator->ClientSocket, (char*)bigBuffer, dImageSize, NULL);
-										if ((INVALID_SOCKET == nBytes) || (0 == nBytes))
-										{
-											TRACE("recvfrom(...) receiving image %d failure CPTSCommunicator::PTSCommunicatorThread\n",
-												WSAGetLastError());
-											continue;
-										}
-										pPTSCommunicator->GetImageData(bigBuffer, dImageSize);
-										delete bigBuffer;
-
-										nBytes = recv(pPTSCommunicator->ClientSocket, (char*)buffer, 15, NULL);
-										if ((INVALID_SOCKET == nBytes) || (0 == nBytes))
-										{
-											TRACE("recvfrom(...) receiving final part %d failure CPTSCommunicator::PTSCommunicatorThread\n",
-												WSAGetLastError());
-											continue;
-										}
-
-										///////////////////////////////////////////////////////////
-										//struct timeval timeout = { 10, 0 };
-
-										//fd_set fds;
-										//int buffer_fd, buffer_out;
-										//int recv_size = 0;
-
-										//while (recv_size < dImageSize + 15)  /// 15 from PTS message
-										//{
-										//	FD_ZERO(&fds);
-										//	FD_SET(pPTSCommunicator->ClientSocket, &fds);
-
-										//	buffer_fd = select(FD_SETSIZE, &fds, NULL, NULL, &timeout);
-
-										//	if (buffer_fd < 0)
-										//	{
-										//		TRACE("error: bad file descriptor set.\n");
-										//	}
-
-										//	if (buffer_fd == 0)
-										//	{
-										//		TRACE("error: buffer read timeout expired.\n");
-										//	}
-
-										//	if (buffer_fd > 0)
-										//	{
-										//		do
-										//		{
-										//			nBytes = recv(pPTSCommunicator->ClientSocket, &dImage, 1024, NULL); // recv(pPTSCommunicator->ClientSocket, (char*)buffer, 15, NULL);
-										//		} while (nBytes < 0);
-
-										//		TRACE("Packet size: %i\n", nBytes);
-										//		
-										//		//Increment the total number of bytes read
-										//		recv_size += nBytes;
-										//		TRACE("Total received image size: %i\n", recv_size);
-										//	}
-										//}
-
-										//////////////////////////////////////////////////////////
-
-										pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_DISPLAY_IMAGE);
+										TRACE("recvfrom(...) receiving image %d failure CPTSCommunicator::PTSCommunicatorThread\n",
+											WSAGetLastError());
+										continue;
 									}
+
+									TRACE("Packet size: %i\n", nBytes);
+
+									if (nBytes < dReadSize)
+									{
+										TRACE("CPTSCommunicator::PTSCommunicatorThread probably image receive from socket finished\n");
+									}
+
+									//Increment the total number of bytes read
+									dTotalBytesReceived += nBytes;
+									dLoopCntr++;
+									TRACE("Total received image size: %i\n", dTotalBytesReceived);
 								}
 							}
 
-							//// READ OPERATIONS UPTO HERE
-							// we can handle close operations also
-							else if (NetworkEvents.lNetworkEvents & FD_CLOSE)
-							{
-								TRACE("PTSCommunicator Thread Socket Closed\n");
 
-								pPTSCommunicator->m_bClientedAccepted = false;
+							///////////////////////////////
 
-								pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_CONNECTION_LOST);
+							//nBytes = recv(pPTSCommunicator->scSocket, (char*)bigBuffer, dPlakaImageSize, NULL);
+							//if ((INVALID_SOCKET == nBytes) || (0 == nBytes))
+							//{
+							//	TRACE("recvfrom(...) receiving image %d failure CPTSCommunicator::PTSCommunicatorThread\n",
+							//		WSAGetLastError());
+							//	continue;
+							//}
+							//else
+							//{
+								pPTSCommunicator->GetImageData(bigBuffer, dPlakaImageSize);
+								delete[] bigBuffer;
+								pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_DISPLAY_IMAGE);
+							//}
+						}
 
-							} // FD_CLOSE
-						} // network event
-					}// client socket event
-				} // while loop
-			} // listen socket event
-		} // wait failed
-	} // infite for loop
+					}
+				}
+
+				///
+				// handle ACCEPT operations 
+				else if (NetworkEvents.lNetworkEvents & FD_ACCEPT)
+				{
+					TRACE("CPTSCommunicator Thread Socket ACCEPT\n");
+				}
+
+				// handle WRITE operations 
+				else if (NetworkEvents.lNetworkEvents & FD_WRITE)
+				{
+					TRACE("CPTSCommunicator Thread Socket WRITE\n");
+				}
+				//// READ OPERATIONS UPTO HERE
+				// we can handle close operations also
+				else if (NetworkEvents.lNetworkEvents & FD_CLOSE)
+				{
+					pPTSCommunicator->m_bIsConnectedToServer = false;
+					TRACE("CPTSCommunicator Thread Server Socket Closed\n");
+					pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_CONNECTION_LOST);
+
+				}
+			}
+		}
+	}
+
+	freeaddrinfo(result);
+	closesocket(pPTSCommunicator->scSocket);
+	WSACleanup();
 
 	return THREADEXIT_SUCCESS; 
 }	
@@ -566,8 +525,8 @@ UINT __stdcall CPTSCommunicator::CommThread(LPVOID pParam)
 
 	HANDLE Handles[2];
 	Handles[0] = pPTSCommunicator->ShutdownEvent;
-	Handles[1] = g_PTSTriggerEvent;
-
+	Handles[1] = SendUVSSImageEvent;
+	 
 	
 	for(;;)
 	{
@@ -588,8 +547,8 @@ UINT __stdcall CPTSCommunicator::CommThread(LPVOID pParam)
 		else if (EventCaused == WAIT_OBJECT_0 + 1) // Trigger PTS To make Licence Plate Recognition
 		{
 			TRACE("PTSCommThread PTSTriggerEvent Received\n");
-			ResetEvent(g_PTSTriggerEvent);
-			pPTSCommunicator->SendTriggerMessage();
+			ResetEvent(SendUVSSImageEvent);
+			pPTSCommunicator->SendImageData();
 		}
 	}
 
@@ -626,9 +585,9 @@ BOOL CPTSCommunicator::ControlMessage(BYTE *message)
 
 ////////////////////////////////////////////////////////////////////////////////
 // 
-// FUNCTION:	CPTSCommunicator::SendTriggerMessage
+// FUNCTION:	CPTSCommunicator::SendImageData
 // 
-// DESCRIPTION:	Sends message 0xC0 database closed
+// DESCRIPTION:	Sends UVSS Image to PTS
 // 
 // INPUTS:		
 // 
@@ -640,25 +599,73 @@ BOOL CPTSCommunicator::ControlMessage(BYTE *message)
 // BN            26082003	1.0			Origin
 // 
 ////////////////////////////////////////////////////////////////////////////////
-void CPTSCommunicator::SendTriggerMessage()
+void CPTSCommunicator::SendImageData()
 {
-int                 iLen;
-int                 iSent;
-unsigned char       data[10];
+int  iLen;
+int   iSent;
+BYTE* data;
 
-	data[0] = 2;   // message ID                      
-	data[1] = 0;   // reserved                   
-	data[2] = 0;   // reserved                 
-	data[3] = 1;   // camera number
-	data[4] = 21;  // command number	
-	data[5] = 0;   // reserved  	
-	data[6] = 0;   // reserved  	
-	data[7] = 3;   // end of packet  
+	iLen = 5 + g_ByteImageSize;
+
+	data = new BYTE[iLen];
+
+	// boraN code analysis
+	// chck if data[4] can be written, i.e., iLen is greater than 4
+	data[4] = UVSS_IMAGE;
+
+	memcpy(data, &g_ByteImageSize, 4);
 
 
-	iLen = 8;
+	memcpy(data+5, g_ByteImageTest, g_ByteImageSize);
 
-	iSent = send(ClientSocket, (char*)data, iLen, NULL);
+	/////////////////////////////////////////////////
+	//int dTotalBytesSent = 0;
+	//int dLoopCntr = 0;
+	//int dSendSize = 1024;
+
+	//struct timeval timeout = { 10, 0 };
+
+	//fd_set fds;
+	//int buffer_fd;
+
+	//while (dTotalBytesSent < iLen)
+	//{
+	//	FD_ZERO(&fds);
+	//	FD_SET(scSocket, &fds);
+
+	//	buffer_fd = select(FD_SETSIZE, NULL, &fds, NULL, &timeout);
+
+	//	if (buffer_fd < 0)
+	//	{
+	//		TRACE("error: bad file descriptor set.\n");
+	//	}
+
+	//	if (buffer_fd == 0)
+	//	{
+	//		TRACE("error: buffer read timeout expired.\n");
+	//	}
+
+	//	if (buffer_fd > 0)
+	//	{
+	//		iSent = send(scSocket, (char*)(data + (dLoopCntr*dSendSize)), dSendSize, NULL);
+
+	//		if ((INVALID_SOCKET == iSent) || (0 == iSent))
+	//		{
+	//			TRACE("sendTo(...) sending image %d failure CPTSCommunicator::PTSCommunicatorThread\n",
+	//				WSAGetLastError());
+	//			continue;
+	//		}
+
+	//		TRACE("Packet size: %i\n", iSent);
+
+	//		//Increment the total number of bytes read
+	//		dTotalBytesSent += iSent;
+	//		dLoopCntr++;
+	//		TRACE("Total sent image size: %i\n", dTotalBytesSent);
+	//	}
+	//}
+	//////////////////////////////////////////////
+	iSent = send(scSocket, (char*)data, iLen, NULL);
 
 	// check errors
 	if ( iSent == SOCKET_ERROR )
@@ -677,6 +684,8 @@ unsigned char       data[10];
       // Free the buffer.
       LocalFree( lpMsgBuf );		   
 	}
+	
+	delete[] data;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -699,7 +708,7 @@ void CPTSCommunicator::GetImageData(BYTE* imgDataIn, int dataLenIn)
 {
 	if (g_CarPlakaImage)
 	{
-		delete g_CarPlakaImage;
+		delete[] g_CarPlakaImage;
 	}
 
 	g_CarPlakaImage = new BYTE[dataLenIn];
@@ -731,7 +740,58 @@ void CPTSCommunicator::GetPlakaData(BYTE* plakaDataIn)
 
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// 
+// FUNCTION:	CPTSCommunicator::SendIDMessage
+// 
+// DESCRIPTION:	Send the ID Message to PTS
+// 
+// INPUTS:		
+// 
+// NOTES:	
+// 
+// MODIFICATIONS:
+// 
+// Name				Date		Version		Comments
+// BN              26082003   	1.0			Origin
+// 
+////////////////////////////////////////////////////////////////////////////////
+bool CPTSCommunicator::SendIDMessage()
+{
+	int                 iSent;
+	unsigned char       data[MESSAGE_LENGTH];
+	MessageAralgisID    messageToSend;
+
+	messageToSend.DataLenght[0] = (unsigned char)0;
+	messageToSend.DataLenght[1] = (unsigned char)0;
+	messageToSend.DataLenght[2] = (unsigned char)0;
+	messageToSend.DataLenght[3] = (unsigned char)1;
+	messageToSend.DataLenght[4] = (unsigned char)REGISTRATION_CONSTANT;
+	messageToSend.DataLenght[5] = (unsigned char)1;
 
 
+	memcpy_s(data, size_t(MESSAGE_LENGTH), &messageToSend, size_t(MESSAGE_LENGTH));
 
+	iSent = send(scSocket, (char*)data, (int)MESSAGE_LENGTH, NULL);
 
+	// check errors
+	if (iSent == SOCKET_ERROR)
+	{
+		LPVOID lpMsgBuf;
+		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+			NULL,
+			GetLastError(),
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+			(LPTSTR)&lpMsgBuf,
+			0,
+			NULL);
+
+		// Display the string.
+		::MessageBox(NULL, (LPTSTR)lpMsgBuf, (LPCWSTR)WARNINGWINDOW_TITLE, MB_OK | MB_ICONINFORMATION);
+		// Free the buffer.
+		LocalFree(lpMsgBuf);
+		return false;
+	}
+
+ 	return true;
+}

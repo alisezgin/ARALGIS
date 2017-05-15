@@ -115,7 +115,7 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	cv::Ptr<cv::FeatureDetector> pfd4 = new cv::StarFeatureDetector();
 	cv::Ptr<cv::DescriptorExtractor> pfd44 = new cv::OrbDescriptorExtractor();
 
-	cv::Ptr<cv::FeatureDetector> pfd5 = new cv::FastFeatureDetector();
+	cv::Ptr<cv::FeatureDetector> pfd5 = new cv::FastFeatureDetector(25, true);
 	cv::Ptr<cv::DescriptorExtractor> pfd55 = new cv::OrbDescriptorExtractor();
 
 	//cv::Ptr<cv::FeatureDetector> pfd5 = new cv::SiftFeatureDetector();
@@ -306,14 +306,47 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 #ifdef INCLUDE_STAR
 	TRACE("\n STAR Matcher begins");
 
+	/// STAR MATCHER begins
+	RobustMatcher rmatcherSTAR;
+	rmatcherSTAR.setRatio(0.7f);
+	rmatcherSTAR.setFeatureDetector(pfd4);
+	rmatcherSTAR.setDescriptorExtractor(pfd44);
+	rmatcherSTAR.setDisplay(true);
+
+	rmatcherSTAR.match(imgReference, imgTest, // imageTestProcessed1
+		matchesSTAR, keypointsRefSTAR, keypointsTestSTAR,
+		matches1STARAll, keypoints1STARAll,
+		matches2STARAll, keypoints2STARAll);
+
+#ifdef  DISPLAY_IMAGES_DEBUG_FINAL
+	char titleSTAR[1000];
+	strcpy_s(titleSTAR, "STAR ");
+	//char sNumSTAR[20];
+	//_itoa_s(kkk, sNumFAST, sizeof(sNumSTAR), 10);
+	//strcat_s(titleSTAR, sNumSTAR);
+
+	DisplayMatches matchDisplayerSTAR;
+	matchDisplayerSTAR.displayMatchesProcessor(imgReference, imgTest, matchesSTAR, // imageTestProcessed1
+		keypointsRefSTAR, keypointsTestSTAR, titleSTAR);
+#endif
+#endif
+
+#ifdef INCLUDE_FAST
+	TRACE("\n FAST Matcher begins");
+
+	int64 tick3333 = cv::getTickCount();
+	// time in miliseconds
+	double time3333 = ((tick3333 - tick1) / cv::getTickFrequency());
+	TRACE("\nExecution Time After FAST Calculation %.3f seconds\n", time3333);
+
 	/// FAST MATCHER begins
 	RobustMatcher rmatcherFAST;
 	rmatcherFAST.setRatio(0.7f);
-	rmatcherFAST.setFeatureDetector(pfd4);
-	rmatcherFAST.setDescriptorExtractor(pfd44);
+	rmatcherFAST.setFeatureDetector(pfd5);
+	rmatcherFAST.setDescriptorExtractor(pfd55);
 	rmatcherFAST.setDisplay(true);
 
-	rmatcherFAST.match(imgReference, imgTest, // imageTestProcessed1
+	rmatcherSTAR.match(imgReference, imgTest, // imageTestProcessed1
 		matchesFAST, keypointsRefFAST, keypointsTestFAST,
 		matches1FASTAll, keypoints1FASTAll,
 		matches2FASTAll, keypoints2FASTAll);
@@ -326,41 +359,8 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	//strcat_s(titleFAST, sNumFAST);
 
 	DisplayMatches matchDisplayerFAST;
-	matchDisplayerFAST.displayMatchesProcessor(imgReference, imgTest, matchesFAST, // imageTestProcessed1
+	matchDisplayerSTAR.displayMatchesProcessor(imgReference, imgTest, matchesFAST, // imageTestProcessed1
 		keypointsRefFAST, keypointsTestFAST, titleFAST);
-#endif
-#endif
-
-#ifdef INCLUDE_FAST
-	TRACE("\n FAST Matcher begins");
-
-	int64 tick3333 = cv::getTickCount();
-	// time in miliseconds
-	double time3333 = ((tick3333 - tick1) / cv::getTickFrequency());
-	TRACE("\nExecution Time After FAST Calculation %.3f seconds\n", time3333);
-
-	/// STAR MATCHER begins
-	RobustMatcher rmatcherSTAR;
-	rmatcherSTAR.setRatio(0.7f);
-	rmatcherSTAR.setFeatureDetector(pfd5);
-	rmatcherSTAR.setDescriptorExtractor(pfd55);
-	rmatcherSTAR.setDisplay(true);
-
-	rmatcherSTAR.match(imgReference, imgTest, // imageTestProcessed1
-		matchesSTAR, keypointsRefSTAR, keypointsTestSTAR,
-		matches1STARAll, keypoints1STARAll,
-		matches2STARAll, keypoints2STARAll);
-
-#ifdef  DISPLAY_IMAGES_DEBUG_FINAL
-	char titleSTAR[1000];
-	strcpy_s(titleSTAR, "STAR ");
-	//char sNumSIFT[20];
-	//_itoa_s(kkk, sNumSIFT, sizeof(sNumSIFT), 10);
-	//strcat_s(titleSIFT, sNumSIFT);
-
-	DisplayMatches matchDisplayerSTAR;
-	matchDisplayerSTAR.displayMatchesProcessor(imgReference, imgTest, matchesSTAR, // imageTestProcessed1
-		keypointsRefSTAR, keypointsTestSTAR, titleSTAR);
 #endif
 #endif
 

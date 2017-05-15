@@ -17,12 +17,7 @@
 #include "ARALGISDoc.h"
 #include "ARALGISView.h"
 #include ".\\ChangeDetection\\HeaderFiles\\ChangeDetectController.h"
-
-//#include ".\ImageFiltering\HeaderFiles\pixkit-timer.hpp"
-//#include ".\ImageFiltering\HeaderFiles\pixkit-file.hpp"
-//#include ".\ImageFiltering\HeaderFiles\pixkit-ml.hpp"
 #include ".\ImageFiltering\HeaderFiles\pixkit-image.hpp"
-//#include ".\ImageFiltering\HeaderFiles\pixkit-cv.hpp"
 #include ".\ImageFiltering\HeaderFiles\cvt.hpp"
 
 #include "VehicleSet.h"
@@ -34,9 +29,6 @@
 #include "VehicleDlg.h"
 
 #include "DriverInfoSet.h"
-
-
-//#include ".\\BitmapDisplay\\HeaderFiles\\PkMattoGDI.h"
 
 
 #ifdef _DEBUG
@@ -99,6 +91,8 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 	m_RefImgBMP = new CStatic;
 	m_TestImgBMP = new CStatic;
 
+	g_ByteImageTest = NULL;
+
 	m_MatToGDITest = NULL;
 	m_MatToGDIRef = NULL;
 
@@ -112,19 +106,34 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 CARALGISView::~CARALGISView()
 {
 	if (m_RefImgBMP)
+	{
 		delete m_RefImgBMP;
+	}
 
 	if (m_TestImgBMP)
+	{
 		delete m_TestImgBMP;
+	}
 
 	if (m_MatToGDITest)
+	{
 		delete m_MatToGDITest;
+	}
 
 	if (m_MatToGDIRef)
+	{
 		delete m_MatToGDIRef;
+	}
 
 	if (g_CarPlakaImage)
-		delete g_CarPlakaImage;
+	{
+		delete[] g_CarPlakaImage;
+	}
+
+	if (g_ByteImageTest)
+	{
+		delete[] g_ByteImageTest;
+	}
 }
 
 
@@ -227,13 +236,13 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetAnchor(IDC_BMP_REFERENCE, ANCHOR_ALL);
 	ASSERT(bOk);
 
-	bOk = m_resizer.CreateSplitContainer(_T("Splitter"), _T("Test_Panel"), _T("Ref_Panel"));
+	bOk = m_resizer.CreateSplitContainer(_T("Splitter_H"), _T("Test_Panel"), _T("Ref_Panel"));
 	ASSERT(bOk);
 
-	bOk = m_resizer.SetShowSplitterGrip(_T("Splitter"), TRUE);
+	bOk = m_resizer.SetShowSplitterGrip(_T("Splitter_H"), TRUE);
 	ASSERT(bOk);
 
-	bOk = m_resizer.SetAnchor(_T("Splitter"), ANCHOR_ALL);
+	bOk = m_resizer.SetAnchor(_T("Splitter_H"), ANCHOR_ALL);
 	ASSERT(bOk);
 
 	CSize size(0, 200); // cy member will be ignored
@@ -244,11 +253,10 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetMinimumSize(_T("Ref_Panel"), size2);
 	ASSERT(bOk);
 
-
+	
 	// ali: anchoring stuff
 
 	arrID.RemoveAll();
-
 	arrID.Add(IDC_FORM_GRPVEHICLE);
 	/*arrID.Add(IDC_FORM_SLPI);
 	arrID.Add(IDC_FORM_SFVI);*/
@@ -267,8 +275,6 @@ void CARALGISView::OnInitialUpdate()
 	arrID.Add(IDC_FORM_LMRV);
 	arrID.Add(IDC_FORM_BMODIFY);
 	arrID.Add(IDC_FORM_BUPDATEDB);
-	arrID.Add(IDC_FORM_LPENTRY);
-	arrID.Add(IDC_FORM_ADDCOMMAND);
 	arrID.Add(IDC_FORM_BLP_QUERY);
 	arrID.Add(IDC_FORM_BDN_QUERY);
 	arrID.Add(IDC_FORM_BRN_QUERY);
@@ -285,13 +291,13 @@ void CARALGISView::OnInitialUpdate()
 
 	arrID.Add(IDC_STATIC_FILTERS);
 	arrID.Add(IDC_STATIC_PTS);
-	arrID.Add(IDC_STATIC_BARRIER);
 	arrID.Add(IDC_BUTTON_ORGINAL);
 	arrID.Add(IDC_BUTTON_FILTER1);
 	arrID.Add(IDC_BUTTON_FILTER2);
 	arrID.Add(IDC_BUTTON_FILTER3);
 	arrID.Add(IDC_BUTTON_PTS_STATUS);
 	arrID.Add(IDC_BUTTON_PERIPHERAL_STATUS);
+	arrID.Add(IDC_STATIC_BARRIER);
 	arrID.Add(IDC_BUTTON_BARRIER_OPEN);
 	arrID.Add(IDC_BUTTON_BARRIER_CLOSE);
 	arrID.Add(IDC_BUTTON_HEATER_ON);
@@ -305,70 +311,12 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetAnchor(_T("Camera_Panel"), ANCHOR_RIGHT);
 	ASSERT(bOk);
 
-	/*bOk = m_resizer.SetAnchor(IDC_FORM_GRPVEHICLE, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SLPI, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SFVI, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SMRV, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SDN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SLP, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SRN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_STATIC_FILTERS, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_STATIC_PTS, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_STATIC_BARRIER, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_ELPI, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_EFVI, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_DN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_ELP, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_ERN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_EBL, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_BMODIFY, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_BUPDATEDB, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ORGINAL, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER1, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER2, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER3, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_PTS_STATUS, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_PERIPHERAL_STATUS, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_OPEN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_CLOSE, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_ON, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_OFF, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_ON, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_OFF, ANCHOR_ALL);
-	ASSERT(bOk);
-*/
 	arrID.RemoveAll();
 
+	arrID.RemoveAll();
 	arrID.Add(IDC_STATIC_PLAKA);
+	arrID.Add(IDC_FORM_LPENTRY); 
+	arrID.Add(IDC_FORM_ADDCOMMAND); 
 
 	bOk = m_resizer.CreatePanel(_T("View_Panel"), &arrID, TRUE);
 	ASSERT(bOk);
@@ -379,81 +327,11 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetAnchor(IDC_STATIC_PLAKA, ANCHOR_LEFT | ANCHOR_TOP);
 	ASSERT(bOk);
 
-	/*bOk = m_resizer.CreateSplitContainer(_T("H_Splitter"), _T("View_Panel"), _T("Info_Panel"));
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetShowSplitterGrip(_T("H_Splitter"), TRUE);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(_T("H_Splitter"), ANCHOR_RIGHT);
-	ASSERT(bOk);*/
-
-
-
-	/*arrID.RemoveAll();
-
-	arrID.Add(IDC_STATIC_PTS);
-	arrID.Add(IDC_BUTTON_PTS_STATUS);
-	arrID.Add(IDC_STATIC_BARRIER);
-	arrID.Add(IDC_BUTTON_BARRIER_CLOSE);
-	arrID.Add(IDC_BUTTON_BARRIER_OPEN);
-	arrID.Add(IDC_BUTTON_PTS_STATUS);
-	arrID.Add(IDC_BUTTON_HEATER_ON);
-	arrID.Add(IDC_BUTTON_HEATER_OFF);
-	arrID.Add(IDC_BUTTON_ALARM_ON);
-	arrID.Add(IDC_BUTTON_ALARM_OFF);
-
-	bOk = m_resizer.CreatePanel(_T("Status_Panel"), &arrID, TRUE);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_STATIC_PTS, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_PTS_STATUS, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_STATIC_BARRIER, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_PERIPHERAL_STATUS, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_OPEN, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_CLOSE, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_ON, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_OFF, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_ON, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_OFF, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_STATIC_FILTERS, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ORGINAL, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER1, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER2, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER3, ANCHOR_RIGHT);
-	ASSERT(bOk);*/
-
 
 	CRect workArea;
 	::SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
+	// boraN code analysis
+	// If the above function fails, check what happens to workArea
 	AfxGetMainWnd()->MoveWindow(workArea.left, workArea.top, workArea.right, workArea.bottom);
 
 
@@ -527,9 +405,32 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 
 	//g_CVImageTest = cv::imread("C:/Users/bora/Desktop/FUZYON-SW-Dev/SW-Projects/uvss-images/new/1600/car-1-handCropped.bmp", cv::IMREAD_COLOR);
 
+
+	cv::Mat dMat3;
+
+
+	if (g_dEndIndex - g_dBeginIndex > 0)
+	{
+		cv::Rect region_of_interest = cv::Rect(0, g_dBeginIndex, g_CVImageTest.cols, g_dEndIndex - g_dBeginIndex);
+
+		dMat3 = g_CVImageTest(region_of_interest);
+
+		//cv::namedWindow("CAR", cv::WINDOW_NORMAL);
+		//cv::imshow("CAR", dMat3);
+		//cv::waitKey(1500);
+	}
+
+	dMat3.copyTo(g_CVImageTest);
+
+	//GetTestImageAsByte();
+
+
 	transpose(g_CVImageTest, dMat1);
 	flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
 	dMat2.copyTo(g_CVImageTest);
+
+	GetTestImageAsByte();
+
 
 
 	if (m_MatToGDITest != NULL)
@@ -538,21 +439,11 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 		m_MatToGDITest = NULL;
 	}
 
-	m_iDisplayTestImageType = 0;
-
 	m_MatToGDITest = new PkMatToGDI(m_TestImgBMP, false);
 	m_MatToGDITest->DrawImg(g_CVImageTest);
 
 	// ali: update the database with the current image
 	// ali: this has to go to the VehiclePassage table
-
-    // code to be deleted when test image
-	// display is stabilized.........
-	// code deletion starts here
-	cv::namedWindow("G�r�nt�XX", cv::WINDOW_NORMAL);
-	cv::imshow("G�r�nt�XX", g_CVImageTest);
-	cv::waitKey(150);
-	// code deletion ends here
 
 	// code to be deleted when dbase handler
 	// thread is added
@@ -593,7 +484,7 @@ afx_msg LRESULT CARALGISView::OnDBaseCarInfoReady(WPARAM wParam, LPARAM lParam)
 	// IMPORTANT !!!
 
 	strncpy_s(g_RefImageFileName, (size_t)(MAX_FILENAME_LENGTH + 1), g_ReferenceFilePath, (size_t)(MAX_FILENAME_LENGTH));
-	strncat_s(g_RefImageFileName, (size_t)(MAX_FILENAME_LENGTH + 1), "car-1-handCropped.bmp", (size_t)(MAX_FILENAME_LENGTH));
+	strncat_s(g_RefImageFileName, (size_t)(MAX_FILENAME_LENGTH + 1), "arac1-colour.bmp", (size_t)(MAX_FILENAME_LENGTH));
 
 
 	g_CVImageRef = cv::imread(g_RefImageFileName, cv::IMREAD_COLOR);
@@ -606,10 +497,10 @@ afx_msg LRESULT CARALGISView::OnDBaseCarInfoReady(WPARAM wParam, LPARAM lParam)
 	// these operations are needed.
 	// delete below code for real system
 	// code deletion starts here
-	cv::Mat dMat1, dMat2;
-	transpose(g_CVImageRef, dMat1);
-	flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
-	dMat2.copyTo(g_CVImageRef);
+	//cv::Mat dMat1, dMat2;
+	//transpose(g_CVImageRef, dMat1);
+	//flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
+	//dMat2.copyTo(g_CVImageRef);
 	// code deletion ends here
 
 
@@ -706,13 +597,17 @@ void CARALGISView::DeletePTSImage()
 	//m_CarPlakaImageStatic.FreeData();
 }
 
-void CARALGISView::UpdatePTSStatus(bool aStatus)
+void CARALGISView::UpdatePTSStatus(int aStatus)
 {
-	if (aStatus == true)
+	if (aStatus == 2)
 	{
 		m_PTS_Status.SetColour(WHITE, GREEN);
 	}
-	else
+	else if (aStatus == 1)
+	{
+		m_PTS_Status.SetColour(WHITE, MAGENTA);
+	}
+	else if (aStatus == 0)
 	{
 		m_PTS_Status.SetColour(WHITE, RED);
 	}
@@ -1127,4 +1022,71 @@ void CARALGISView::OnBnClickedFormBdnQuery()
 
 	message.Format(_T("Surucu adi: %s %s"), dInfoSet.m_dboDriverName, dInfoSet.m_dboDriverLastName);
 	return;
+}
+
+void CARALGISView::GetTestImageAsByte()
+{
+	if (g_ByteImageTest)
+	{
+		delete[] g_ByteImageTest;
+	}
+
+	g_ByteImageSize = (unsigned int)((int)g_CVImageTest.step[0] * (int)g_CVImageTest.rows);
+
+	g_ByteImageTest = new BYTE[g_ByteImageSize];
+
+	memcpy(g_ByteImageTest, g_CVImageTest.data, g_ByteImageSize);
+
+	SetEvent(SendUVSSImageEvent);
+
+
+	////////////
+	//int dHeight;
+	//int dWidth = 2048;
+	//int dBytePP = 3;
+
+	//dHeight = g_ByteImageSize / (dWidth * dBytePP);
+
+
+	//CImage outImage;
+	//outImage.Create(dWidth, -dHeight, dBytePP * 8, 0);
+
+	//int lineSize = dWidth * dBytePP;
+	//if (dBytePP == 1)
+	//{
+	//	// Define the color table
+	//	RGBQUAD* tab = new RGBQUAD[256];
+	//	for (int i = 0; i < 256; ++i)
+	//	{
+	//		tab[i].rgbRed = i;
+	//		tab[i].rgbGreen = i;
+	//		tab[i].rgbBlue = i;
+	//		tab[i].rgbReserved = 0;
+	//	}
+	//	outImage.SetColorTable(0, 256, tab);
+	//	delete[] tab;
+	//}
+
+	//BYTE *pTemp;
+	//void* dst ;
+	//const void* src;
+
+	//pTemp = (BYTE*)g_ByteImageTest;
+
+	//for (int i = 0; i < dWidth; i++)
+	//{
+	//	for (int j = 0; j < dHeight; j++)
+	//	{
+	//		dst = outImage.GetPixelAddress(i, j);
+	//		src = pTemp;
+
+	//		memcpy(dst, src, 3);
+
+
+	//		pTemp = pTemp + 3;
+	//	}
+	//}
+
+	//outImage.Save(L"C:\\Users\\bora\\Desktop\\sil\\111.bmp", Gdiplus::ImageFormatBMP);
+	////////////////////
 }

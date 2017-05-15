@@ -423,7 +423,7 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 
 							// we can handle close operations also
 							else if (NetworkEvents.lNetworkEvents & FD_CLOSE)
-							{
+							{ 
 								TRACE("OdroidCommunicator Thread Socket Closed\n");
 
 								pOdroidCommunicator->m_bClientedAccepted = false;
@@ -631,7 +631,7 @@ BOOL COdroidCommunicator::ControlMessage(BYTE *message)
 		}
 	}
 
-	return retVal;
+	return retVal; 
 }
 
 ////////////////////////////////////////////////////////////////////////////////

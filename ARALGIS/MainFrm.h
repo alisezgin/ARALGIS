@@ -11,6 +11,8 @@
 #include ".\\Database\\HeaderFiles\\CameraDBServer.h"
 #include ".\\ImageFiltering\\ImageFilterProcessing\\HeaderFiles\\ImageFilterProcessing.h"
 #include ".\\miniIni\\Processing\\HeaderFiles\\IniFileProcessing.h"
+#include ".\\VehicleDetection\\HeaderFiles\\VehicleDetection.h"
+
 
 class CMainFrame : public CFrameWnd
 {
@@ -27,11 +29,13 @@ public:
 	COdroidCommunicator    *m_OdroidCommunicator;
 	CCameraDBServer        *m_CameraDatabaseServer;
 	CImageFilterProcessing *m_ImageFilterProcessing;
+	CVehicleDetection      *m_VehicleDetector;
+
 
 protected:  // control bar embedded members
-	CToolBar          m_wndToolBar;
-	CStatusBar        m_wndStatusBar;
-	HANDLE			m_hSemaphore;
+	CToolBar           m_wndToolBar;
+	CStatusBar         m_wndStatusBar;
+	HANDLE			   m_hSemaphore;
 	IniFileProcessing  m_IniFile;
 
 	bool m_IsFirstTime;
@@ -42,6 +46,7 @@ public:
 	static void CALLBACK NotifyProcOdroidComm(LPVOID lpParam, UINT nCode);
 	static void CALLBACK NotifyProcCameraComm(LPVOID lpParam, UINT nCode);
 	static void CALLBACK NotifyProcImageFiltering(LPVOID lpParam, UINT nCode);
+	static void CALLBACK NotifyProcVehicleDetection(LPVOID lpParam, UINT nCode);
 
 	void Activate();
 	HANDLE  CreateOneAppMutex(LPCTSTR lpName);

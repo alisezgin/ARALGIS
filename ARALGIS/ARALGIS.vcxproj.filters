@@ -109,6 +109,15 @@
     <Filter Include="miniIni\Processing\SourceFiles">
       <UniqueIdentifier>{29a956c9-8279-4c04-a0aa-0b92b2b73b0a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="VehicleDetection">
+      <UniqueIdentifier>{656e96ac-9cdb-4eb4-adb0-bc067ae149b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VehicleDetection\HeaderFiles">
+      <UniqueIdentifier>{c3f4204c-5b36-45ea-93b5-bd5dbd103f85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VehicleDetection\SourceFiles">
+      <UniqueIdentifier>{cda50bd8-d717-441a-a9f8-d74f607d4b97}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -219,19 +228,10 @@
     <ClInclude Include="InitGlobalVars.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BitmapDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BitmapDisplay\HeaderFiles\MatBitmapConvert.h">
-      <Filter>BitmapDisplay\HeaderFiles</Filter>
-    </ClInclude>
     <ClInclude Include="BitmapDisplay\HeaderFiles\PkMattoGDI.h">
       <Filter>BitmapDisplay\HeaderFiles</Filter>
     </ClInclude>
     <ClInclude Include="BitmapDisplay\HeaderFiles\SapToGDI.h">
-      <Filter>BitmapDisplay\HeaderFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="BitmapDisplay\HeaderFiles\Showpic.h">
       <Filter>BitmapDisplay\HeaderFiles</Filter>
     </ClInclude>
     <ClInclude Include="ColorFormView.h">
@@ -263,9 +263,6 @@
     </ClInclude>
     <ClInclude Include="ColourButton.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BitmapDisplay\HeaderFiles\ShowpicCV.h">
-      <Filter>BitmapDisplay\HeaderFiles</Filter>
     </ClInclude>
     <ClInclude Include="Database\HeaderFiles\CameraDBServer.h">
       <Filter>Database\HeaderFiles</Filter>
@@ -342,6 +339,9 @@
     <ClInclude Include="Database\HeaderFiles\VehicleSet.h">
       <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
+    <ClInclude Include="VehicleDetection\HeaderFiles\VehicleDetection.h">
+      <Filter>VehicleDetection\HeaderFiles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -377,19 +377,10 @@
     <ClCompile Include="InitGlobalVars.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BitmapDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BitmapDisplay\SourceFiles\MatBitmapConvert.cpp">
-      <Filter>BitmapDisplay\SourceFiles</Filter>
-    </ClCompile>
     <ClCompile Include="BitmapDisplay\SourceFiles\PkMattoGDI.cpp">
       <Filter>BitmapDisplay\SourceFiles</Filter>
     </ClCompile>
     <ClCompile Include="BitmapDisplay\SourceFiles\SapToGDI.cpp">
-      <Filter>BitmapDisplay\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="BitmapDisplay\SourceFiles\Showpic.cpp">
       <Filter>BitmapDisplay\SourceFiles</Filter>
     </ClCompile>
     <ClCompile Include="ColorFormView.cpp">
@@ -458,9 +449,6 @@
     <ClCompile Include="ColourButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BitmapDisplay\SourceFiles\ShowpicCV.cpp">
-      <Filter>BitmapDisplay\SourceFiles</Filter>
-    </ClCompile>
     <ClCompile Include="Database\SourceFiles\CameraDBServer.cpp">
       <Filter>Database\SourceFiles</Filter>
     </ClCompile>
@@ -511,6 +499,9 @@
     </ClCompile>
     <ClCompile Include="Database\SourceFiles\VehicleSet.cpp">
       <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="VehicleDetection\SourceFiles\VehicleDetection.cpp">
+      <Filter>VehicleDetection\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

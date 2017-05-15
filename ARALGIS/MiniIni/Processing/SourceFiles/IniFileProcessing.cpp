@@ -98,9 +98,7 @@ BOOL IniFileProcessing::ReadIniFile()
 	int dImageOnScreen;
 
 	INIFile ini;
-//	CString initFilename = System::Environment::ExpandEnvironmentVariables("ProjectDir");
-//	initFilename += "\\ARALGISConfig.ini";
-	if (!ini.OpenFile("C:\\ali\\github-home\\ARALGIS\\ARALGISConfig.ini"))
+	if (!ini.OpenFile("C:\\Users\\bora\\Desktop\\ARALGISConfig.ini"))
 	{
 		::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasý Bulunamadý.\nProgram Kapanýyor!!!!!",
 			         WARNINGWINDOW_TITLE, MB_ICONSTOP);
@@ -222,7 +220,7 @@ BOOL IniFileProcessing::ReadIniFile()
 	g_CameraWidth = dCameraWidth;
 	g_CameraHeight = dCameraHeight;
 	g_CameraPixelBits = dCameraPixelBits;
-	g_CameraBuffer = dCameraBuffer;
+	g_CameraBufferSize = dCameraBuffer;
 	strncpy_s(g_ConfigFilename, (size_t)(MAX_FILENAME_LENGTH + 1), dCameraConfigFile, (size_t)(MAX_FILENAME_LENGTH));
 
 	strncpy_s(g_Odroid_Port, (size_t)(PORT_BYTE_LEN + 1), cOdroidPort, (size_t)(PORT_BYTE_LEN));

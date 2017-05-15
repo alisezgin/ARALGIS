@@ -5,20 +5,12 @@
 
 #pragma once
 
-#include "BitmapDlg.h"
-#include <array>
-#include <map>
-
-//#include <cv.h>    
-#include "BitmapDlg.h"
+//#include <array>
+//#include <map>
+//#include "opencv2/core/core.hpp"
+//#include ".\\BitmapDisplay\\HeaderFiles\\SapToGDI.h"
 
 
-#include "opencv2/core/core.hpp"
-//#include "opencv2/highgui/highgui.hpp"
-//#include "opencv2/opencv.hpp"
-//#include <opencv2/imgproc/imgproc.hpp>
-
-#include ".\\BitmapDisplay\\HeaderFiles\\SapToGDI.h"
 //#include ".\\Database\\HeaderFiles\\VehicleSet.h"
 
 

@@ -62,6 +62,8 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 {
 	CCameraDataReceiver *pServer = (CCameraDataReceiver*)pParam;
 
+	bool bIsProcessingInProgress = false;
+
 	HANDLE	Handles[14];
 	Handles[0] = pServer->ShutdownEvent;
 	Handles[1] = g_CameraStartDataRecieveEvent;
@@ -84,6 +86,8 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 	// so all of the threads can access the data but I have to put
 	// synchronization material manually
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	// boraN code analysis
+	// If the above function fails, check the code
 
 	for (;;)
 	{
@@ -107,10 +111,17 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 
 		else if (EventCaused == (WAIT_OBJECT_0 + 1)) // Start Data Reception From Camera
 		{
+			if (bIsProcessingInProgress == false)
+			{
+				bIsProcessingInProgress = true;
+
+				g_IntermediateCounter = 0;
+
+				pServer->m_MyCamera.StartDataReception();
+			}
+
 			// reset the event for further processing
 			ResetEvent(g_CameraStartDataRecieveEvent);
-
-			pServer->m_MyCamera.StartDataReception();
 		}
 
 		else if (EventCaused == (WAIT_OBJECT_0 + 2)) // Stop Data Reception From Camera
@@ -150,13 +161,30 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 
 		else if (EventCaused == (WAIT_OBJECT_0 + 11)) // kill timer 
 		{
-			ResetEvent(g_KillTimerEvent);
+			if (bIsProcessingInProgress == true)
+			{
+				bIsProcessingInProgress = false;
 
-			CancelWaitableTimer(pServer->m_hTimer);
+				ResetEvent(g_KillTimerEvent);
 
-			// send image data to Doc class
-			pServer->m_MyCamera.GetCameraDataAsMat();
-			//SetEvent(g_CameraDataReadyEvent);
+				CancelWaitableTimer(pServer->m_hTimer);
+
+				EnterCriticalSection(&g_IntermediateTestImgCS);
+				// send image data to Doc class
+				pServer->m_MyCamera.GetCameraDataAsMat();
+				//SetEvent(g_CameraDataReadyEvent);
+				LeaveCriticalSection(&g_IntermediateTestImgCS);
+			}
+
+			::InterlockedDecrement((long*)&g_carsDetectedByPTSCnt);
+			TRACE("dec g_carsDetectedByPTSCnt %d \n", g_carsDetectedByPTSCnt);
+
+			// boraN code analysis
+			// use Interlocked function below for g_carsDetectedByPTSCnt if check
+			if (g_carsDetectedByPTSCnt > 0)
+			{
+				SetEvent(g_CameraStartDataRecieveEvent);
+			}
 
 		}
 
