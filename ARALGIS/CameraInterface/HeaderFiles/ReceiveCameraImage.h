@@ -43,6 +43,7 @@ public:
 	void SetFrameTime(int aframeTime);
 
 	void GetCameraDataAsMat();
+	void GetCameraIntermediateDataAsMat();
 
 	// Implementation
 protected:

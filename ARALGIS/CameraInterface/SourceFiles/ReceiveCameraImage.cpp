@@ -177,7 +177,7 @@ BOOL CReceiveCameraImage::InitSAPERA(void)
 			}
 		}
 
-		m_Buffers = new SapBufferWithTrash(g_CameraBuffer, m_AcqDevice);
+		m_Buffers = new SapBufferWithTrash(g_CameraBufferSize, m_AcqDevice);
 		m_Xfer = new SapAcqDeviceToBuf(m_AcqDevice, m_Buffers, XferCallback, this);
 	}
 	
@@ -186,7 +186,7 @@ BOOL CReceiveCameraImage::InitSAPERA(void)
 	if (m_bServerAvailable == FALSE)
 	{
 		// Define off-line objects
-		m_Buffers = new SapBuffer(g_CameraBuffer, CAM_SIZE, g_CameraHeight, SapFormatRGB888, SapBuffer::TypeScatterGather); // MAX_BUFFER
+		m_Buffers = new SapBuffer(g_CameraBufferSize, CAM_SIZE, g_CameraHeight, SapFormatRGB888, SapBuffer::TypeScatterGather); // MAX_BUFFER
 
 	} // End if, else.
 
@@ -586,6 +586,11 @@ void CReceiveCameraImage::CheckForLastFrame(void)
 	int AA = m_Buffers->GetIndex();
 	int BB = m_Buffers->GetCount();
 
+	EnterCriticalSection(&g_IntermediateTestImgCS);
+	GetCameraIntermediateDataAsMat();
+	LeaveCriticalSection(&g_IntermediateTestImgCS);
+
+
 	if (m_Buffers->GetIndex() == m_Buffers->GetCount() - 1)
 	{
 		if (m_bRecordOn)
@@ -933,19 +938,30 @@ void CReceiveCameraImage::GetCameraDataAsMat()
 
 	if (inumFrames > 0)
 	{
-		BYTE *pData = new BYTE[size * bytesPerPixel  * inumFrames];
+		BYTE *pData = new BYTE[size * bytesPerPixel  * (inumFrames+1)];
 		if (pData == NULL)
 		{
 			::MessageBox(NULL, _T("Can not allocate memory in GetCameraDataAsMat"), NULL, MB_OK);
 		}
 
-		bufOffset = nNumBuffers - 1 - m_Buffers->GetIndex();
+
+		TRACE("GetCameraDataAsMat bufIndex %d \n", inumFrames);
+
+
+		int QAZ = m_Buffers->GetIndex();
+
+
+		bufOffset = nNumBuffers - 1- m_Buffers->GetIndex();
 		for (i = 0; i < bufOffset; i++)
 			m_Buffers->Next();
 
-		for (i = 0; i < inumFrames; i++)  // g_CameraBuffer
+		int ZAQ = m_Buffers->GetIndex();
+
+		for (i = 0; i < inumFrames+1; i++)  // g_CameraBufferSize
 		{
 			j = k * size * bytesPerPixel;
+
+			TRACE("GetCameraDataAsMat In Loop bufIndex %d \n", m_Buffers->GetIndex());
 
 			success = m_Buffers->Read(0, size, (pData + j));
 
@@ -957,23 +973,113 @@ void CReceiveCameraImage::GetCameraDataAsMat()
 			m_Buffers->Next();
 		}
 
+		int ZZZ = m_Buffers->GetIndex();
+
+
 		// Create a Mat pointing to external memory
 		if (bytesPerPixel == 3)
 		{
-			cv::Mat src(iHeight*inumFrames, iWidth, CV_8UC3, pData);
+			cv::Mat src(iHeight*(inumFrames+1), iWidth, CV_8UC3, pData);
 			src.copyTo(g_CVImageTest);
 		}
 		else if (bytesPerPixel == 1)
 		{
-			cv::Mat src(iHeight*inumFrames, iWidth, CV_8UC1, pData);
+			cv::Mat src(iHeight*(inumFrames+1), iWidth, CV_8UC1, pData);
 			src.copyTo(g_CVImageTest);
 		}
 
 		delete[] pData;
+
+		for (i = 0; i < bufOffset; i++)
+			m_Buffers->Next();
 
 		// below must be send message
 		// in sendmessage, message is immediately processed
 		// so the pLparam, which is window title is still available 
 		m_pView->SendMessage(WM_CAMERA_DATA_READY, 0, m_pLparam);
 	}
+}
+
+
+void CReceiveCameraImage::GetCameraIntermediateDataAsMat()
+{
+	int iWidth = m_Buffers->GetWidth();
+	int iHeight = m_Buffers->GetHeight();
+
+	int size = iWidth * iHeight;
+
+	int bytesPerPixel = m_Buffers->GetBytesPerPixel();
+
+	int i = 0;
+	int offSet = 0;
+	int k = 0;
+	int inumFrames = 0;
+	int bufOffset = 0;
+	BOOL success = FALSE;
+
+
+
+	inumFrames = m_Buffers->GetIndex();
+
+	if ((inumFrames == 23) || (inumFrames == 24))
+	{
+		int ZORRO = 5;
+	}
+
+
+	//if (inumFrames > 0)
+	//{
+		BYTE *pData = new BYTE[size * bytesPerPixel  * 1];
+		if (pData == NULL)
+		{
+			::MessageBox(NULL, _T("Can not allocate memory in GetCameraIntermediateDataAsMat"), NULL, MB_OK);
+		}
+
+		offSet = inumFrames * size * bytesPerPixel;
+
+		int dPrevBufIndex = m_Buffers->GetIndex();
+		TRACE("GetCameraIntermediateDataAsMat bufIndex %d \n", dPrevBufIndex);
+
+		if (dPrevBufIndex == 0)
+		{
+			dPrevBufIndex = g_CameraBufferSize - 1;
+		}
+		else
+		{
+			dPrevBufIndex--;
+		}
+		m_Buffers->SetIndex(dPrevBufIndex);
+
+		
+
+		int QAZ = m_Buffers->GetIndex();
+
+		success = m_Buffers->Read(0, size, pData);
+
+		if (success == FALSE)
+		{
+			::MessageBox(NULL, _T("Can not read buffer in GetCameraIntermediateDataAsMat"), NULL, MB_OK);
+		}
+
+		m_Buffers->Next();
+
+		int ZAQ = m_Buffers->GetIndex();
+
+		// Create a Mat pointing to external memory
+		if (bytesPerPixel == 3)
+		{
+			cv::Mat src(iHeight, iWidth, CV_8UC3, pData);
+			src.copyTo(g_CVImageTestIntermediate[g_IntermediateCounter]);
+		}
+		else if (bytesPerPixel == 1)
+		{
+			cv::Mat src(iHeight, iWidth, CV_8UC1, pData);
+			src.copyTo(g_CVImageTestIntermediate[g_IntermediateCounter]);
+		}
+
+		delete[] pData;
+
+		g_IntermediateCounter++;
+
+		SetEvent(g_IntermediateImageReadyEvent);
 }

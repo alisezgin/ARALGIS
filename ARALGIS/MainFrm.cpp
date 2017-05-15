@@ -44,24 +44,40 @@ CMainFrame::CMainFrame()
 	m_OdroidCommunicator = NULL;
 	m_CameraDatabaseServer = NULL;
 	m_ImageFilterProcessing = NULL;
+	m_VehicleDetector = NULL;
 }
 
 CMainFrame::~CMainFrame()
 {
 	if (m_CameraDataReceiver)
+	{
 		delete m_CameraDataReceiver;
+	}
 
 	if (m_PTSCommunicator)
+	{
 		delete m_PTSCommunicator;
+	}
 
 	if (m_OdroidCommunicator)
+	{
 		delete m_OdroidCommunicator;
+	}
 
 	if (m_CameraDatabaseServer)
+	{
 		delete m_CameraDatabaseServer;
+	}
 
 	if (m_ImageFilterProcessing)
+	{
 		delete m_ImageFilterProcessing;
+	}
+
+	if (m_VehicleDetector)
+	{
+		delete m_VehicleDetector;
+	}
 
 	// Don't forget to release the semaphore
 	if (!ReleaseSemaphore(m_hSemaphore,  // handle to semaphore
@@ -111,6 +127,8 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 
 	CRect workArea;
 	::SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
+	// boraN code analysis
+	// If the above function fails, check what happens to workArea
 
 	cs.x = workArea.left;
 	cs.y = workArea.top;
@@ -155,29 +173,26 @@ void CMainFrame::NotifyProcPTSComm(LPVOID lpParam, UINT nCode)
 			pView->DisplayPTSImage();
 			break;
 
-		case PTS_DELETE_IMAGE:
-			pView->DeletePTSImage();
+		case PTS_DISPLAY_PLAKA:
+			//pView->DisplayPlakaNo();
 			break;
 
 		case PTS_CONNECTION_LOST:
 		{
-			pView->UpdatePTSStatus(false);
-			//::MessageBox(NULL,
-			//	(LPCWSTR)L"PTS Baðlantýsý Kayboldu",
-			//	(LPCWSTR)WARNINGWINDOW_TITLE,
-			//	MB_OK | MB_ICONERROR
-			//	);
+			pView->UpdatePTSStatus(0);
+			break;
+		}
+
+		case PTS_CONNECTION_NOK:
+		{
+			pView->UpdatePTSStatus(1);
+
 			break;
 		}
 
 		case PTS_CONNECTION_OK:
 		{
-			pView->UpdatePTSStatus(true);
-			//::MessageBox(NULL,
-			//	(LPCWSTR)L"PTS Baðlantýsý Kuruldu",
-			//	(LPCWSTR)WARNINGWINDOW_TITLE,
-			//	MB_OK | MB_ICONERROR
-			//	);
+			pView->UpdatePTSStatus(2);
 			break;
 		}
 		default:
@@ -319,6 +334,51 @@ void CMainFrame::NotifyProcImageFiltering(LPVOID lpParam, UINT nCode)
 
 ////////////////////////////////////////////////////////////////////////////////
 // 
+// FUNCTION:	CMainFrame::NotifyProcVehicleDetection
+// 
+// DESCRIPTION:	Handles the notification messages sent by VehicleDetection.
+//              Updates the GUI according to the received message 
+//
+// INPUTS:		
+// 
+// NOTES:	
+// 
+// MODIFICATIONS:
+// 
+// Name				Date		Version		Comments
+// BN              28032017	    1.0			Origin
+// 
+//////////////////////////////////////////////////////////////////////////////// 
+void CMainFrame::NotifyProcVehicleDetection(LPVOID lpParam, UINT nCode)
+{
+	CMainFrame* pFrame = (CMainFrame*)lpParam;
+
+	CARALGISView* pView = static_cast<CARALGISView*>(pFrame->GetActiveView());
+
+	if (pView)
+	{
+		switch (nCode)
+		{
+		case FILTER_PROCESS_FILTER1_READY:
+			//pView->FilterAvailable(1);
+			break;
+
+		case FILTER_PROCESS_FILTER2_READY:
+			//pView->FilterAvailable(2);
+			break;
+
+		case FILTER_PROCESS_FILTER3_READY:
+			//pView->FilterAvailable(3);
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// 
 // FUNCTION:	CMainFrame::Activate
 // 
 // DESCRIPTION:	Starts all of the threads during window creation.
@@ -435,6 +495,20 @@ void CMainFrame::Activate()
 
 				::MessageBox(NULL,
 					(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Filtreleme",
+					(LPCWSTR)WARNINGWINDOW_TITLE,
+					MB_OK | MB_ICONERROR
+					);
+			}
+
+			// start the threads for VehicleDetection
+			m_VehicleDetector = new CVehicleDetection;
+			if (!m_VehicleDetector->Start(NotifyProcVehicleDetection, this))
+			{
+				delete m_VehicleDetector;
+				m_VehicleDetector = NULL;
+
+				::MessageBox(NULL,
+					(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Araç Tespiti",
 					(LPCWSTR)WARNINGWINDOW_TITLE,
 					MB_OK | MB_ICONERROR
 					);

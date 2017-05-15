@@ -16,9 +16,13 @@
 #define THREADEXIT_SUCCESS	  0x1234
 
 #define PTS_DISPLAY_IMAGE      0x0001
-#define PTS_DELETE_IMAGE       0x0002
+#define PTS_DISPLAY_PLAKA      0x0002
 #define PTS_CONNECTION_LOST    0x0003
 #define PTS_CONNECTION_OK	   0x0004
+#define PTS_CONNECTION_NOK	   0x0005
+
+
+#define PTS_IP_ADDRESS_CHAR "127.0.0.1"
 
 
 
@@ -50,15 +54,16 @@ private:
 	unsigned int		    ThreadID;					
 	HANDLE				    ShutdownEvent;
 	int						scPort;
-	SOCKET					ListenSocket;
-	SOCKET					ClientSocket;
+	SOCKET					scSocket;
 	bool				   	bRun;
-	bool					m_bClientedAccepted;
+	bool					m_bIsConnectedToServer;
 
-	void SendTriggerMessage();
+	void SendImageData();
 	void GetImageData(BYTE* imgDataIn, int dataLenIn);
 	void GetPlakaData(BYTE* plakaDataIn);
+	bool SendIDMessage();
 
 	BOOL ControlMessage(BYTE *message);
+
 };
 
