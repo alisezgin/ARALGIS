@@ -1,14 +1,14 @@
-// VehicleSet.h : Declaration of the CVehicleSet
+// DriverInfoSet.h : Declaration of the CDriverInfoSet
 
 #pragma once
 
-// code generated on Tuesday, May 9, 2017, 2:22 PM
+// code generated on Tuesday, May 9, 2017, 11:44 AM
 
-class CVehicleSet : public CRecordset
+class CDriverInfoSet : public CRecordset
 {
 public:
-	CVehicleSet(CDatabase* pDatabase = NULL);
-	DECLARE_DYNAMIC(CVehicleSet)
+	CDriverInfoSet(CDatabase* pDatabase = NULL);
+	DECLARE_DYNAMIC(CDriverInfoSet)
 
 // Field/Param Data
 
@@ -20,16 +20,26 @@ public:
 // (Note: You must use an ODBC driver version that is version 3.5 or greater
 // to support both Unicode and these conversions).
 
-	long	m_VehicleID;
-	CString	m_VehicleLicensePlate;
-	long	m_VehicleType;
-	CString	m_VehicleRegistrationName;
-	CTime	m_VehicleRegistrationDate;
-	CString	m_VehicleRegistrationNumber;
-	CString	m_VehicleLicensePlateImageFile;
-	CString	m_VehicleFrontViewImageFile;
-	CString	m_VehicleChassisBottomReferenceImageFile;
-	CString	m_VehicleChassisBottomLastImageFile;
+	long	m_dboDriverID;
+	CString	m_dboDriverName;
+	CString	m_dboDriverLastName;
+	long  m_dboDriverType;
+	CString	m_dboDriverDriverLicenseIssueCity;
+	CString	m_dboDriverDriverLicenseIssueDistrict;
+	CString	m_dboDriverNatIDNo;
+	CTime	m_dboDriverDateofBirth;
+	CString	m_dboDriverBirthPlace;
+	CString	m_dboDriverNatIDIssueCity;
+	CString	m_dboDriverNatIDIssueDistrict;
+	long	m_dboDriverNatIDVolNo;
+	long	m_dboDriverNatIDRowNo;
+	long	m_dboDriverNatIDLogNo;
+	CString	m_dboDriverFatherName;
+	CString	m_dboDriverMotherName;
+	CString	m_dboDriverBloodType;
+	CString	m_dboDriverIssueAuthority;
+	long	m_dboDriverTypeDTID;
+	CString	m_dboDriverTypeType;
 
 // Overrides
 	// Wizard generated virtual function overrides

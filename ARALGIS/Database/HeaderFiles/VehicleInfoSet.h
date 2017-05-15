@@ -1,14 +1,14 @@
-// VehicleSet.h : Declaration of the CVehicleSet
+// VehicleInfoSet.h : Declaration of the CVehicleInfoSet
 
 #pragma once
 
-// code generated on Tuesday, May 9, 2017, 2:22 PM
+// code generated on Tuesday, May 9, 2017, 11:43 AM
 
-class CVehicleSet : public CRecordset
+class CVehicleInfoSet : public CRecordset
 {
 public:
-	CVehicleSet(CDatabase* pDatabase = NULL);
-	DECLARE_DYNAMIC(CVehicleSet)
+	CVehicleInfoSet(CDatabase* pDatabase = NULL);
+	DECLARE_DYNAMIC(CVehicleInfoSet)
 
 // Field/Param Data
 
@@ -20,16 +20,18 @@ public:
 // (Note: You must use an ODBC driver version that is version 3.5 or greater
 // to support both Unicode and these conversions).
 
-	long	m_VehicleID;
-	CString	m_VehicleLicensePlate;
-	long	m_VehicleType;
-	CString	m_VehicleRegistrationName;
-	CTime	m_VehicleRegistrationDate;
-	CString	m_VehicleRegistrationNumber;
-	CString	m_VehicleLicensePlateImageFile;
-	CString	m_VehicleFrontViewImageFile;
-	CString	m_VehicleChassisBottomReferenceImageFile;
-	CString	m_VehicleChassisBottomLastImageFile;
+	long	m_dboVehicleID;
+	CString	m_dboVehicleLicensePlate;
+	long	m_dboVehicleType;
+	CString	m_dboVehicleRegistrationName;
+	CTime	m_dboVehicleRegistrationDate;
+	CString	m_dboVehicleRegistrationNumber;
+	CString	m_dboVehicleLicensePlateImageFile;
+	CString	m_dboVehicleFrontViewImageFile;
+	CString	m_dboVehicleChassisBottomReferenceImageFile;
+	CString	m_dboVehicleChassisBottomLastImageFile;
+	long	m_dboVehicleTypeVTID;
+	CString	m_dboVehicleTypeType;
 
 // Overrides
 	// Wizard generated virtual function overrides

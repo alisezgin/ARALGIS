@@ -1,14 +1,14 @@
-// VehicleSet.h : Declaration of the CVehicleSet
+// GateSet.h : Declaration of the CGate
 
 #pragma once
 
-// code generated on Tuesday, May 9, 2017, 2:22 PM
+// code generated on Tuesday, May 9, 2017, 10:55 AM
 
-class CVehicleSet : public CRecordset
+class CGateSet : public CRecordset
 {
 public:
-	CVehicleSet(CDatabase* pDatabase = NULL);
-	DECLARE_DYNAMIC(CVehicleSet)
+	CGateSet(CDatabase* pDatabase = NULL);
+	DECLARE_DYNAMIC(CGateSet)
 
 // Field/Param Data
 
@@ -20,16 +20,11 @@ public:
 // (Note: You must use an ODBC driver version that is version 3.5 or greater
 // to support both Unicode and these conversions).
 
-	long	m_VehicleID;
-	CString	m_VehicleLicensePlate;
-	long	m_VehicleType;
-	CString	m_VehicleRegistrationName;
-	CTime	m_VehicleRegistrationDate;
-	CString	m_VehicleRegistrationNumber;
-	CString	m_VehicleLicensePlateImageFile;
-	CString	m_VehicleFrontViewImageFile;
-	CString	m_VehicleChassisBottomReferenceImageFile;
-	CString	m_VehicleChassisBottomLastImageFile;
+	long		m_GateID;
+	CString		m_GateType;
+	CString		m_GatePCName;
+	CString		m_GateIP;
+	CString		m_Notes;
 
 // Overrides
 	// Wizard generated virtual function overrides

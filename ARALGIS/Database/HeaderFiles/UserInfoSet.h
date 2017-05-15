@@ -1,14 +1,14 @@
-// VehicleSet.h : Declaration of the CVehicleSet
+// UserInfoSet.h : Declaration of the CUserInfoSet
 
 #pragma once
 
-// code generated on Tuesday, May 9, 2017, 2:22 PM
+// code generated on Tuesday, May 9, 2017, 11:38 AM
 
-class CVehicleSet : public CRecordset
+class CUserInfoSet : public CRecordset
 {
 public:
-	CVehicleSet(CDatabase* pDatabase = NULL);
-	DECLARE_DYNAMIC(CVehicleSet)
+	CUserInfoSet(CDatabase* pDatabase = NULL);
+	DECLARE_DYNAMIC(CUserInfoSet)
 
 // Field/Param Data
 
@@ -20,16 +20,22 @@ public:
 // (Note: You must use an ODBC driver version that is version 3.5 or greater
 // to support both Unicode and these conversions).
 
-	long	m_VehicleID;
-	CString	m_VehicleLicensePlate;
-	long	m_VehicleType;
-	CString	m_VehicleRegistrationName;
-	CTime	m_VehicleRegistrationDate;
-	CString	m_VehicleRegistrationNumber;
-	CString	m_VehicleLicensePlateImageFile;
-	CString	m_VehicleFrontViewImageFile;
-	CString	m_VehicleChassisBottomReferenceImageFile;
-	CString	m_VehicleChassisBottomLastImageFile;
+	long	m_dboUserID;
+	CString	m_dboUserName;
+	CString	m_dboUserLastName;
+	long	m_dboUserType;
+	CString	m_dboUserNickname;
+	CTime	m_dboUserRegistrationDateTime;
+	CString	m_dboUserPassword;
+	CString	m_dboUserOldPassword;
+	BOOL	m_dboUserIsActive;
+	CTime	m_dboUserExpungeDateTime;
+	long	m_dboUserLogUserID;
+	CString	m_dboUserLogNickname;
+	CTime	m_dboUserLogLoginDateTime;
+	CTime	m_dboUserLogLogoffDateTime;
+	long	m_dboUserTypeUTID;
+	CString	m_dboUserTypeType;
 
 // Overrides
 	// Wizard generated virtual function overrides

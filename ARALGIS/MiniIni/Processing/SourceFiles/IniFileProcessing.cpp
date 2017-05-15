@@ -98,7 +98,9 @@ BOOL IniFileProcessing::ReadIniFile()
 	int dImageOnScreen;
 
 	INIFile ini;
-	if (!ini.OpenFile("C:\\Users\\boran\\Desktop\\ARALGISConfig.ini"))
+//	CString initFilename = System::Environment::ExpandEnvironmentVariables("ProjectDir");
+//	initFilename += "\\ARALGISConfig.ini";
+	if (!ini.OpenFile("C:\\ali\\github-home\\ARALGIS\\ARALGISConfig.ini"))
 	{
 		::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasý Bulunamadý.\nProgram Kapanýyor!!!!!",
 			         WARNINGWINDOW_TITLE, MB_ICONSTOP);

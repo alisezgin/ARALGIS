@@ -2,7 +2,7 @@
 
 #pragma once
 
-// code generated on Tuesday, May 9, 2017, 2:22 PM
+// code generated on Tuesday, April 18, 2017, 3:02 PM
 
 class CVehicleSet : public CRecordset
 {
@@ -20,16 +20,15 @@ public:
 // (Note: You must use an ODBC driver version that is version 3.5 or greater
 // to support both Unicode and these conversions).
 
-	long	m_VehicleID;
-	CString	m_VehicleLicensePlate;
-	long	m_VehicleType;
-	CString	m_VehicleRegistrationName;
-	CTime	m_VehicleRegistrationDate;
-	CString	m_VehicleRegistrationNumber;
-	CString	m_VehicleLicensePlateImageFile;
-	CString	m_VehicleFrontViewImageFile;
-	CString	m_VehicleChassisBottomReferenceImageFile;
-	CString	m_VehicleChassisBottomLastImageFile;
+	LONG		m_VehicleID;
+	CString		m_LicensePlate;
+	CString		m_LicensePlateImage;
+	CString		m_FrontViewImage;
+	CString		m_ChassisBottomImageCurrent;
+	CString		m_ChassisBottomImageRef;
+	CTime		m_MostRecentVisitDate;
+	CString		m_DriverName;
+	BOOL		m_BlackList;
 
 // Overrides
 	// Wizard generated virtual function overrides

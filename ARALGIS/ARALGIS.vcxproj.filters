@@ -273,15 +273,6 @@
     <ClInclude Include="ImageFiltering\ImageFilterProcessing\HeaderFiles\ImageFilterProcessing.h">
       <Filter>ImageFiltering\ImageFilterProcesing\HeaderFiles</Filter>
     </ClInclude>
-    <ClInclude Include="Database\HeaderFiles\UserTableSet.h">
-      <Filter>Database\HeaderFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Database\HeaderFiles\VehicleSet.h">
-      <Filter>Database\HeaderFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Database\HeaderFiles\VehicleView.h">
-      <Filter>Database\HeaderFiles</Filter>
-    </ClInclude>
     <ClInclude Include="VehicleDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -329,6 +320,27 @@
     </ClInclude>
     <ClInclude Include="MiniIni\Processing\HeaderFiles\IniFileProcessing.h">
       <Filter>miniIni\Processing\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\BlackListSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\DriverInfoSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\GateSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\UserInfoSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\VehicleInfoSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\VehiclePassageSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\VehicleSet.h">
+      <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -455,15 +467,6 @@
     <ClCompile Include="ImageFiltering\ImageFilterProcessing\SourceFiles\ImageFilterProcessing.cpp">
       <Filter>ImageFiltering\ImageFilterProcesing\SourceFiles</Filter>
     </ClCompile>
-    <ClCompile Include="Database\SourceFiles\UserTableSet.cpp">
-      <Filter>Database\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="Database\SourceFiles\VehicleSet.cpp">
-      <Filter>Database\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="Database\SourceFiles\VehicleView.cpp">
-      <Filter>Database\SourceFiles</Filter>
-    </ClCompile>
     <ClCompile Include="VehicleDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -487,6 +490,27 @@
     </ClCompile>
     <ClCompile Include="MiniIni\Processing\SourceFiles\IniFileProcessing.cpp">
       <Filter>miniIni\Processing\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\BlackListSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\DriverInfoSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\GateSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\UserInfoSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\VehicleInfoSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\VehiclePassageSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\VehicleSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
