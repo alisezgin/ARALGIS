@@ -146,9 +146,9 @@ public:
 	afx_msg void OnAdd();
 	// ARALGISForm'da arac plaka numarasi kutusu icin
 	CString m_FormELP;
-	long m_FormEUID;
-	long m_FormEGID;
-	long m_FormEDID;
+	CString m_FormEUID;
+	CString m_FormEGID;
+	CString m_FormEDID;
 	// controls the edit box for License Plate Image; eventually will be of type MyPic
 	CString m_FormELPI;
 	// controls the edit box of frontal view image in ARALGISForm; eventually will be of type MyPic

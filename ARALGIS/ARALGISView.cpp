@@ -26,6 +26,8 @@
 #include ".\ImageFiltering\HeaderFiles\cvt.hpp"
 
 #include "VehicleSet.h"
+#include "GateSet.h"
+#include "UserInfoSet.h"
 //#include "VehicleView.h"
 
 #include "VehiclePassageSet.h"
@@ -86,11 +88,11 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 , m_FormEFVI(_T(""))
 //, m_FormECBCI(_T(""))
 //, m_FormECBRI(_T(""))
-, m_FormEDID(-1)
+, m_FormEDID(_T(""))
 , m_FormEDT(0)
 , m_FormEBL{}
-, m_FormEGID(-1)
-, m_FormEUID(-1)
+, m_FormEGID(_T(""))
+, m_FormEUID(_T(""))
 {
 	// TODO: add construction code here
 
@@ -584,8 +586,15 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 
 afx_msg LRESULT CARALGISView::OnDBaseCarInfoReady(WPARAM wParam, LPARAM lParam)
 {
+	// temporary modification to the g_ReferenceFilePath
+	// IMPORTANT !!! 
+	char strRefFilePathTemp[] = "C:\\ali\\github-home\\ARALGIS\\Cars\\ChassisBottom\\";
+	strncpy_s(g_ReferenceFilePath, (size_t)(MAX_FILENAME_LENGTH + 1), strRefFilePathTemp, (size_t)(MAX_FILENAME_LENGTH));
+	// IMPORTANT !!!
+
 	strncpy_s(g_RefImageFileName, (size_t)(MAX_FILENAME_LENGTH + 1), g_ReferenceFilePath, (size_t)(MAX_FILENAME_LENGTH));
 	strncat_s(g_RefImageFileName, (size_t)(MAX_FILENAME_LENGTH + 1), "car-1-handCropped.bmp", (size_t)(MAX_FILENAME_LENGTH));
+
 
 	g_CVImageRef = cv::imread(g_RefImageFileName, cv::IMREAD_COLOR);
 
@@ -1014,13 +1023,53 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	}
 
 	// these should belong to the most recent visit
-//	strLP.Remove(' ');
+	//	strLP.Remove(' ');
 	strLP.MakeUpper();
 	m_FormELP = strLP;
-	m_FormEDID = vPassageSet.m_VehiclePassageDriverID;
 	m_FormEBL.SetCheck(!vPassageSet.m_VehiclePassagePermissionGranted);
-	m_FormEGID = vPassageSet.m_VehiclePassageGateID;
-	m_FormEUID = vPassageSet.m_VehiclePassageUserID;
+	// instead of the cryptic ID's, use the associated names
+	// for each ID to name mapping, the corresponding Recordset has to be formed.
+	// this is rather expensive operation.
+	// for the final release version, modify the design of the database tables.
+	//m_FormEDID = vPassageSet.m_VehiclePassageDriverID;
+	CString tempStrofInt;
+	CDriverInfoSet dInfoSet;
+	CString driverFilter = CString{ _T("[dbo].[Driver].[Type] = [dbo].[DriverType].[DTID] AND [dbo].[Driver].[ID] = '") };
+	tempStrofInt.Format(_T("%ld"), vPassageSet.m_VehiclePassageDriverID);
+	driverFilter += tempStrofInt;
+	driverFilter += CString{ _T("'") };
+	dInfoSet.m_strFilter = driverFilter;
+	dInfoSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	//ASSERT(dInfoSet.GetRecordCount() == 1);
+	m_FormEDID = dInfoSet.m_dboDriverLastName;
+	m_FormEDID += _T(", ");
+	m_FormEDID += dInfoSet.m_dboDriverName;
+
+
+	//m_FormEGID = vPassageSet.m_VehiclePassageGateID;
+	CGateSet gSet;
+	CString gateFilter = CString{ _T("ID = '") };
+	tempStrofInt.Format(_T("%ld"), vPassageSet.m_VehiclePassageGateID);
+	gateFilter += tempStrofInt;
+	gateFilter += CString{ _T("'") };
+	gSet.m_strFilter = gateFilter;
+	gSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	//ASSERT(gSet.GetRecordCount() == 1);
+	m_FormEGID = gSet.m_GateType;
+
+	//m_FormEUID = _T("Veli, Ali");
+	//m_FormEUID = vPassageSet.m_VehiclePassageUserID;
+	CUserInfoSet uInfoSet;
+	CString userFilter = CString{ _T("[User].[ID] = [UserLog].[UserID] AND [User].[Type] = [UserType].[UTID] AND [User].[ID] = '") };
+	tempStrofInt.Format(_T("%ld"), vPassageSet.m_VehiclePassageUserID);
+	userFilter += tempStrofInt;
+	userFilter += CString{ _T("'") };
+	uInfoSet.m_strFilter = userFilter;
+	uInfoSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	//ASSERT(uInfoSet.GetRecordCount() == 1);
+	m_FormEUID = uInfoSet.m_dboUserLastName;
+	m_FormEUID += _T(",");
+	m_FormEUID += uInfoSet.m_dboUserName;
 
 	while (!vPassageSet.IsEOF()) {
 		CTime visitDate = vPassageSet.m_VehiclePassageEntryDateTime;  // vSet.m_MostRecentVisitDate;
@@ -1071,7 +1120,7 @@ void CARALGISView::OnBnClickedFormBdnQuery()
 	dInfoSet.Open(CRecordset::snapshot, nullptr, CRecordset::readOnly);
 	CString message;
 	if (dInfoSet.IsBOF()) {
-		message.Format(_T("Kayit bulunamadi; Surucu no: %ld"), m_FormEDID);
+		message.Format(_T("Kayit bulunamadi; Surucu: %s"), m_FormEDID);
 		MessageBox(message);
 		return;
 	}

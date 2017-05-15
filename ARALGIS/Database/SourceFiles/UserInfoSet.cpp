@@ -41,7 +41,7 @@ CString CUserInfoSet::GetDefaultConnect()
 
 CString CUserInfoSet::GetDefaultSQL()
 {
-	return _T("[dbo].[User],[dbo].[UserType]");
+	return _T("[dbo].[User],[dbo].[UserLog],[dbo].[UserType]");
 }
 
 void CUserInfoSet::DoFieldExchange(CFieldExchange* pFX)
@@ -50,22 +50,22 @@ void CUserInfoSet::DoFieldExchange(CFieldExchange* pFX)
 	// Macros such as RFX_Text() and RFX_Int() are dependent on the
 	// type of the member variable, not the type of the field in the database.
 	// ODBC will try to automatically convert the column value to the requested type
-	RFX_Long(pFX, _T("[dbo].[User].[ID]"), m_dboUserID);
-	RFX_Text(pFX, _T("[dbo].[User].[Name]"), m_dboUserName);
-	RFX_Text(pFX, _T("[dbo].[User].[LastName]"), m_dboUserLastName);
-	RFX_Long(pFX, _T("[dbo].[User].[Type]"), m_dboUserType);
-	RFX_Text(pFX, _T("[dbo].[User].[Nickname]"), m_dboUserNickname);
-	RFX_Date(pFX, _T("[dbo].[User].[RegistrationDateTime]"), m_dboUserRegistrationDateTime);
-	RFX_Text(pFX, _T("[dbo].[User].[Password]"), m_dboUserPassword);
-	RFX_Text(pFX, _T("[dbo].[User].[OldPassword]"), m_dboUserOldPassword);
-	RFX_Bool(pFX, _T("[dbo].[User].[IsActive]"), m_dboUserIsActive);
-	RFX_Date(pFX, _T("[dbo].[User].[ExpungeDateTime]"), m_dboUserExpungeDateTime);
-	RFX_Long(pFX, _T("[dbo].[UserLog].[UserID]"), m_dboUserLogUserID);
-	RFX_Text(pFX, _T("[dbo].[UserLog].[Nickname]"), m_dboUserLogNickname);
-	RFX_Date(pFX, _T("[dbo].[UserLog].[LoginDateTime]"), m_dboUserLogLoginDateTime);
-	RFX_Date(pFX, _T("[dbo].[UserLog].[LogoffDateTime]"), m_dboUserLogLogoffDateTime);
-	RFX_Long(pFX, _T("[dbo].[UserType].[UTID]"), m_dboUserTypeUTID);
-	RFX_Text(pFX, _T("[dbo].[UserType].[Type]"), m_dboUserTypeType);
+	RFX_Long(pFX, _T("[User].[ID]"), m_dboUserID);
+	RFX_Text(pFX, _T("[User].[Name]"), m_dboUserName);
+	RFX_Text(pFX, _T("[User].[LastName]"), m_dboUserLastName);
+	RFX_Long(pFX, _T("[User].[Type]"), m_dboUserType);
+	RFX_Text(pFX, _T("[User].[Nickname]"), m_dboUserNickname);
+	RFX_Date(pFX, _T("[User].[RegistrationDateTime]"), m_dboUserRegistrationDateTime);
+	RFX_Text(pFX, _T("[User].[Password]"), m_dboUserPassword);
+	RFX_Text(pFX, _T("[User].[OldPassword]"), m_dboUserOldPassword);
+	RFX_Bool(pFX, _T("[User].[IsActive]"), m_dboUserIsActive);
+	RFX_Date(pFX, _T("[User].[ExpungeDateTime]"), m_dboUserExpungeDateTime);
+	RFX_Long(pFX, _T("[UserLog].[UserID]"), m_dboUserLogUserID);
+	RFX_Text(pFX, _T("[UserLog].[Nickname]"), m_dboUserLogNickname);
+	RFX_Date(pFX, _T("[UserLog].[LoginDateTime]"), m_dboUserLogLoginDateTime);
+	RFX_Date(pFX, _T("[UserLog].[LogoffDateTime]"), m_dboUserLogLogoffDateTime);
+	RFX_Long(pFX, _T("[UserType].[UTID]"), m_dboUserTypeUTID);
+	RFX_Text(pFX, _T("[UserType].[Type]"), m_dboUserTypeType);
 }
 /////////////////////////////////////////////////////////////////////////////
 // CVehicleInfoSet diagnostics

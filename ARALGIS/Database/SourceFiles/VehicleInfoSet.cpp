@@ -50,18 +50,18 @@ void CVehicleInfoSet::DoFieldExchange(CFieldExchange* pFX)
 // Macros such as RFX_Text() and RFX_Int() are dependent on the
 // type of the member variable, not the type of the field in the database.
 // ODBC will try to automatically convert the column value to the requested type
-	RFX_Long(pFX, _T("[dbo].[Vehicle].[ID]"), m_dboVehicleID);
-	RFX_Text(pFX, _T("[dbo].[Vehicle].[LicensePlate]"), m_dboVehicleLicensePlate);
-	RFX_Long(pFX, _T("[dbo].[Vehicle].[Type]"), m_dboVehicleType);
-	RFX_Text(pFX, _T("[dbo].[Vehicle].[RegistrationName]"), m_dboVehicleRegistrationName);
-	RFX_Date(pFX, _T("[dbo].[Vehicle].[RegistrationDate]"), m_dboVehicleRegistrationDate);
-	RFX_Text(pFX, _T("[dbo].[Vehicle].[RegistrationNumber]"), m_dboVehicleRegistrationNumber);
-	RFX_Text(pFX, _T("[dbo].[Vehicle].[LicensePlateImageFile]"), m_dboVehicleLicensePlateImageFile);
-	RFX_Text(pFX, _T("[dbo].[Vehicle].[FrontViewImageFile]"), m_dboVehicleFrontViewImageFile);
-	RFX_Text(pFX, _T("[dbo].[Vehicle].[ChassisBottomReferenceImageFile]"), m_dboVehicleChassisBottomReferenceImageFile);
-	RFX_Text(pFX, _T("[dbo].[Vehicle].[ChassisBottomLastImageFile]"), m_dboVehicleChassisBottomLastImageFile);
-	RFX_Long(pFX, _T("[dbo].[VehicleType].[VTID]"), m_dboVehicleTypeVTID);
-	RFX_Text(pFX, _T("[dbo].[VehicleType].[Type]"), m_dboVehicleTypeType);
+	RFX_Long(pFX, _T("[Vehicle].[ID]"), m_dboVehicleID);
+	RFX_Text(pFX, _T("[Vehicle].[LicensePlate]"), m_dboVehicleLicensePlate);
+	RFX_Long(pFX, _T("[Vehicle].[Type]"), m_dboVehicleType);
+	RFX_Text(pFX, _T("[Vehicle].[RegistrationName]"), m_dboVehicleRegistrationName);
+	RFX_Date(pFX, _T("[Vehicle].[RegistrationDate]"), m_dboVehicleRegistrationDate);
+	RFX_Text(pFX, _T("[Vehicle].[RegistrationNumber]"), m_dboVehicleRegistrationNumber);
+	RFX_Text(pFX, _T("[Vehicle].[LicensePlateImageFile]"), m_dboVehicleLicensePlateImageFile);
+	RFX_Text(pFX, _T("[Vehicle].[FrontViewImageFile]"), m_dboVehicleFrontViewImageFile);
+	RFX_Text(pFX, _T("[Vehicle].[ChassisBottomReferenceImageFile]"), m_dboVehicleChassisBottomReferenceImageFile);
+	RFX_Text(pFX, _T("[Vehicle].[ChassisBottomLastImageFile]"), m_dboVehicleChassisBottomLastImageFile);
+	RFX_Long(pFX, _T("[VehicleType].[VTID]"), m_dboVehicleTypeVTID);
+	RFX_Text(pFX, _T("[VehicleType].[Type]"), m_dboVehicleTypeType);
 
 }
 /////////////////////////////////////////////////////////////////////////////
