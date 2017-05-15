@@ -264,8 +264,6 @@ void CARALGISView::OnInitialUpdate()
 	arrID.Add(IDC_FORM_LMRV);
 	arrID.Add(IDC_FORM_BMODIFY);
 	arrID.Add(IDC_FORM_BUPDATEDB);
-	arrID.Add(IDC_FORM_LPENTRY);
-	arrID.Add(IDC_FORM_ADDCOMMAND);
 	arrID.Add(IDC_FORM_BLP_QUERY);
 	arrID.Add(IDC_FORM_BDN_QUERY);
 	arrID.Add(IDC_FORM_BRN_QUERY);
@@ -282,14 +280,12 @@ void CARALGISView::OnInitialUpdate()
 
 	arrID.Add(IDC_STATIC_FILTERS);
 	arrID.Add(IDC_STATIC_PTS);
-	arrID.Add(IDC_STATIC_BARRIER);
 	arrID.Add(IDC_BUTTON_ORGINAL);
 	arrID.Add(IDC_BUTTON_FILTER1);
 	arrID.Add(IDC_BUTTON_FILTER2);
 	arrID.Add(IDC_BUTTON_FILTER3);
 	arrID.Add(IDC_BUTTON_PTS_STATUS);
 	arrID.Add(IDC_BUTTON_PERIPHERAL_STATUS);
-	arrID.Add(IDC_STATIC_PTS);
 	arrID.Add(IDC_STATIC_BARRIER);
 	arrID.Add(IDC_BUTTON_BARRIER_OPEN);
 	arrID.Add(IDC_BUTTON_BARRIER_CLOSE);
@@ -304,67 +300,6 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetAnchor(_T("Camera_Panel"), ANCHOR_RIGHT);
 	ASSERT(bOk);
 
-	/*bOk = m_resizer.SetAnchor(IDC_FORM_GRPVEHICLE, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SLPI, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SFVI, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SMRV, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SDN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SLP, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SRN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_STATIC_FILTERS, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_STATIC_PTS, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_STATIC_BARRIER, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_ELPI, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_EFVI, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_DN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_ELP, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_ERN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_EBL, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_BMODIFY, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_BUPDATEDB, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ORGINAL, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER1, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER2, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER3, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_PTS_STATUS, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_PERIPHERAL_STATUS, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_OPEN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_CLOSE, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_ON, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_OFF, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_ON, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_OFF, ANCHOR_ALL);
-	ASSERT(bOk);
-*/
 	arrID.RemoveAll();
 
 	arrID.RemoveAll();
@@ -380,78 +315,6 @@ void CARALGISView::OnInitialUpdate()
 
 	bOk = m_resizer.SetAnchor(IDC_STATIC_PLAKA, ANCHOR_LEFT | ANCHOR_TOP);
 	ASSERT(bOk);
-
-	/*bOk = m_resizer.CreateSplitContainer(_T("H_Splitter"), _T("View_Panel"), _T("Info_Panel"));
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetShowSplitterGrip(_T("H_Splitter"), TRUE);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(_T("H_Splitter"), ANCHOR_RIGHT);
-	ASSERT(bOk);*/
-
-
-
-	/*arrID.RemoveAll();
-
-	arrID.Add(IDC_STATIC_PTS);
-	arrID.Add(IDC_BUTTON_PTS_STATUS);
-	arrID.Add(IDC_STATIC_BARRIER);
-	arrID.Add(IDC_BUTTON_BARRIER_CLOSE);
-	arrID.Add(IDC_BUTTON_BARRIER_OPEN);
-	arrID.Add(IDC_BUTTON_PTS_STATUS);
-	arrID.Add(IDC_BUTTON_HEATER_ON);
-	arrID.Add(IDC_BUTTON_HEATER_OFF);
-	arrID.Add(IDC_BUTTON_ALARM_ON);
-	arrID.Add(IDC_BUTTON_ALARM_OFF);
-
-	bOk = m_resizer.CreatePanel(_T("Status_Panel"), &arrID, TRUE);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_STATIC_PTS, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_PTS_STATUS, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_STATIC_BARRIER, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_PERIPHERAL_STATUS, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_OPEN, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_CLOSE, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_ON, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_OFF, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_ON, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_OFF, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_STATIC_FILTERS, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ORGINAL, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER1, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER2, ANCHOR_RIGHT);
-	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER3, ANCHOR_RIGHT);
-	ASSERT(bOk);*/
 
 
 	CRect workArea;
@@ -551,8 +414,8 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
     // code to be deleted when test image
 	// display is stabilized.........
 	// code deletion starts here
-	cv::namedWindow("G�r�nt�XX", cv::WINDOW_NORMAL);
-	cv::imshow("G�r�nt�XX", g_CVImageTest);
+	cv::namedWindow("GörüntüXX", cv::WINDOW_NORMAL);
+	cv::imshow("GörüntüXX", g_CVImageTest);
 	cv::waitKey(150);
 	// code deletion ends here
 
@@ -589,7 +452,7 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 afx_msg LRESULT CARALGISView::OnDBaseCarInfoReady(WPARAM wParam, LPARAM lParam)
 {
 	strncpy_s(g_RefImageFileName, (size_t)(MAX_FILENAME_LENGTH + 1), g_ReferenceFilePath, (size_t)(MAX_FILENAME_LENGTH));
-	strncat_s(g_RefImageFileName, (size_t)(MAX_FILENAME_LENGTH + 1), "car-1-handCropped.bmp", (size_t)(MAX_FILENAME_LENGTH));
+	strncat_s(g_RefImageFileName, (size_t)(MAX_FILENAME_LENGTH + 1), "arac1-colour.bmp", (size_t)(MAX_FILENAME_LENGTH));
 
 	g_CVImageRef = cv::imread(g_RefImageFileName, cv::IMREAD_COLOR);
 
@@ -601,10 +464,10 @@ afx_msg LRESULT CARALGISView::OnDBaseCarInfoReady(WPARAM wParam, LPARAM lParam)
 	// these operations are needed.
 	// delete below code for real system
 	// code deletion starts here
-	cv::Mat dMat1, dMat2;
-	transpose(g_CVImageRef, dMat1);
-	flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
-	dMat2.copyTo(g_CVImageRef);
+	//cv::Mat dMat1, dMat2;
+	//transpose(g_CVImageRef, dMat1);
+	//flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
+	//dMat2.copyTo(g_CVImageRef);
 	// code deletion ends here
 
 

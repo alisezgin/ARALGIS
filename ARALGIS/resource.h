@@ -94,7 +94,6 @@
 #define IDC_FORM_SUID                   1049
 #define IDC_BUTTON1                     1063
 #define IDC_STATIC_BN1                  1060
-#define IDC_BUTTON_ORGINAL              1061
 #define IDC_STATIC_BN2                  1062
 #define IDC_FORM_BDN_QUERY              1050
 #define IDC_BUTTON_ORGINAL              1051
