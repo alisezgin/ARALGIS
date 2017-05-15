@@ -863,6 +863,10 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	vPassageSet.m_strSort = _T("EntryDateTime DESC");
 
 	m_FormEDT = CTime::GetCurrentTime();
+
+	// before executing the query;
+	// it may be beneficial to bound the resulting record set
+	// vPassageSet.SetRowsetSize() = RECENT_VISIT_COUNT;
 	vPassageSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
 	if (vPassageSet.IsBOF()) {
 		MessageBox(CString{ _T("Kayit bulunamadi; plaka no: ") } +strLP);
@@ -881,7 +885,7 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	strLP.MakeUpper();
 	m_FormELP = strLP;
 	m_FormEDID = vPassageSet.m_VehiclePassageDriverID;
-	m_FormEBL.SetCheck(vPassageSet.m_VehiclePassagePermissionGranted);
+	m_FormEBL.SetCheck(!vPassageSet.m_VehiclePassagePermissionGranted);
 	m_FormEGID = vPassageSet.m_VehiclePassageGateID;
 	m_FormEUID = vPassageSet.m_VehiclePassageUserID;
 
@@ -895,6 +899,24 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	// textual information done.
 	// now, update the relevant images: FrontalView, ChassisBottomRef, ChassisBottomCur
 	CVehicleSet vSet;
+	vSet.m_strFilter = filter;
+	vSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	if (vSet.IsBOF()) {
+		// this should never happen.
+		// if a record for a license plate exists in the VehiclePassage table, 
+		// then there must be (exactly) one entry in the Vehicle table.
+		MessageBox(CString{ _T("Kayitli arac bulunamadi. Plaka: ") }+strLP);
+	}
+	// checking the assertion above: exactly one record must match the license plate
+	ASSERT(vSet.GetRecordCount() == 1);
+
+	// retrieve the reference filename to display the reference image
+	// the other image files, frontal and test, are to be formed during the database update.
+	CString strRefFilename = vSet.m_VehicleChassisBottomReferenceImageFile;
+	
+	// TODO: display the contents of strRefFilename
+	MessageBox(CString{ _T("The filename for Reference image: ") }+strRefFilename);
+
 
 	UpdateData(FALSE);
 	// m_FormListBox.AddString(strLP);
