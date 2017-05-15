@@ -1,14 +1,14 @@
-// VehicleSet.h : Declaration of the CVehicleSet
+// VehiclePassageSet.h : Declaration of the CVehiclePassageSet
 
 #pragma once
 
-// code generated on Tuesday, May 9, 2017, 2:22 PM
+// code generated on Tuesday, May 9, 2017, 11:56 AM
 
-class CVehicleSet : public CRecordset
+class CVehiclePassageSet : public CRecordset
 {
 public:
-	CVehicleSet(CDatabase* pDatabase = NULL);
-	DECLARE_DYNAMIC(CVehicleSet)
+	CVehiclePassageSet(CDatabase* pDatabase = NULL);
+	DECLARE_DYNAMIC(CVehiclePassageSet)
 
 // Field/Param Data
 
@@ -20,16 +20,14 @@ public:
 // (Note: You must use an ODBC driver version that is version 3.5 or greater
 // to support both Unicode and these conversions).
 
-	long	m_VehicleID;
-	CString	m_VehicleLicensePlate;
-	long	m_VehicleType;
-	CString	m_VehicleRegistrationName;
-	CTime	m_VehicleRegistrationDate;
-	CString	m_VehicleRegistrationNumber;
-	CString	m_VehicleLicensePlateImageFile;
-	CString	m_VehicleFrontViewImageFile;
-	CString	m_VehicleChassisBottomReferenceImageFile;
-	CString	m_VehicleChassisBottomLastImageFile;
+	long	m_VehiclePassageVehicleID;
+	CString	m_VehiclePassageLicensePlate;
+	CTime	m_VehiclePassageEntryDateTime;
+	CTime	m_VehiclePassageExitDateTime;
+	long	m_VehiclePassageUserID;
+	long	m_VehiclePassageGateID;
+	long	m_VehiclePassageDriverID;
+	BOOL	m_VehiclePassagePermissionGranted;
 
 // Overrides
 	// Wizard generated virtual function overrides

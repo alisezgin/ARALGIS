@@ -99,6 +99,7 @@ BOOL IniFileProcessing::ReadIniFile()
 
 	INIFile ini;
 	if (!ini.OpenFile("C:\\Users\\bora\\Desktop\\ARALGISConfig.ini"))
+
 	{
 		::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasý Bulunamadý.\nProgram Kapanýyor!!!!!",
 			         WARNINGWINDOW_TITLE, MB_ICONSTOP);

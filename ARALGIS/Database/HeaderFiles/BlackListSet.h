@@ -1,14 +1,14 @@
-// VehicleSet.h : Declaration of the CVehicleSet
+// BlackListSet.h : Declaration of the CBlackListSet
 
 #pragma once
 
-// code generated on Tuesday, May 9, 2017, 2:22 PM
+// code generated on Tuesday, May 9, 2017, 11:35 AM
 
-class CVehicleSet : public CRecordset
+class CBlackListSet : public CRecordset
 {
 public:
-	CVehicleSet(CDatabase* pDatabase = NULL);
-	DECLARE_DYNAMIC(CVehicleSet)
+	CBlackListSet(CDatabase* pDatabase = NULL);
+	DECLARE_DYNAMIC(CBlackListSet)
 
 // Field/Param Data
 
@@ -20,16 +20,11 @@ public:
 // (Note: You must use an ODBC driver version that is version 3.5 or greater
 // to support both Unicode and these conversions).
 
-	long	m_VehicleID;
-	CString	m_VehicleLicensePlate;
-	long	m_VehicleType;
-	CString	m_VehicleRegistrationName;
-	CTime	m_VehicleRegistrationDate;
-	CString	m_VehicleRegistrationNumber;
-	CString	m_VehicleLicensePlateImageFile;
-	CString	m_VehicleFrontViewImageFile;
-	CString	m_VehicleChassisBottomReferenceImageFile;
-	CString	m_VehicleChassisBottomLastImageFile;
+	long	m_BlackListID;
+	CString	m_BlackListLicensePlate;
+	CTime	m_BlackListInclusionDate;
+	CTime	m_BlackListExclusionDate;
+	CString	m_BlackListExplanation;
 
 // Overrides
 	// Wizard generated virtual function overrides

@@ -26,9 +26,12 @@
 #include ".\ImageFiltering\HeaderFiles\cvt.hpp"
 
 #include "VehicleSet.h"
-#include "VehicleView.h"
+//#include "VehicleView.h"
+
+#include "VehiclePassageSet.h"
 #include "VehicleDlg.h"
 
+#include "DriverInfoSet.h"
 
 
 //#include ".\\BitmapDisplay\\HeaderFiles\\PkMattoGDI.h"
@@ -66,10 +69,11 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_BN_CLICKED(IDC_BUTTON_FILTER1, &CARALGISView::OnBnClickedButtonFilter1)
 	ON_BN_CLICKED(IDC_BUTTON_FILTER2, &CARALGISView::OnBnClickedButtonFilter2)
 	ON_BN_CLICKED(IDC_BUTTON_FILTER3, &CARALGISView::OnBnClickedButtonFilter3)
-	ON_LBN_SELCHANGE(IDC_FORM_LISTBOX, &CARALGISView::OnLbnSelchangeList2)
+	ON_LBN_SELCHANGE(IDC_FORM_LMRV, &CARALGISView::OnLbnSelchangeList2)
 	ON_BN_CLICKED(IDC_FORM_ADDCOMMAND, &CARALGISView::OnAdd)
 	ON_BN_CLICKED(IDC_FORM_BMODIFY, &CARALGISView::OnGuncelle)
 	ON_BN_CLICKED(IDC_BUTTON_ORGINAL, &CARALGISView::OnBnClickedButtonOrginal)
+	ON_BN_CLICKED(IDC_FORM_BDN_QUERY, &CARALGISView::OnBnClickedFormBdnQuery)
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -82,10 +86,11 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 , m_FormEFVI(_T(""))
 //, m_FormECBCI(_T(""))
 //, m_FormECBRI(_T(""))
-, m_FormEDN(_T(""))
+, m_FormEDID(-1)
 , m_FormEDT(0)
 , m_FormEBL{}
-, m_FormERN(_T(""))
+, m_FormEGID(-1)
+, m_FormEUID(-1)
 {
 	// TODO: add construction code here
 
@@ -136,15 +141,16 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_HEATER_OFF, m_HeterStopBtn);
 	DDX_Control(pDX, IDC_BUTTON_ALARM_ON, m_AlarmStartBtn);
 	DDX_Control(pDX, IDC_BUTTON_ALARM_OFF, m_AlarmStop);
-	DDX_Control(pDX, IDC_FORM_LISTBOX, m_FormListBox);
+	DDX_Control(pDX, IDC_FORM_LMRV, m_FormListBox);
 	DDX_Text(pDX, IDC_FORM_LPENTRY, m_FormLPEntry);
-	DDX_Text(pDX, IDC_FORM_ELP, m_FormELP);
-	DDX_Text(pDX, IDC_FORM_ELPI, m_FormELPI);
-	DDX_Text(pDX, IDC_FORM_EFVI, m_FormEFVI);
+	//DDX_Text(pDX, IDC_FORM_ELPI, m_FormELPI);
+	//DDX_Text(pDX, IDC_FORM_EFVI, m_FormEFVI);
 	//DDX_Text(pDX, IDC_FORM_ECBCI, m_FormECBCI);
 	//DDX_Text(pDX, IDC_FORM_ECBRI, m_FormECBRI);
-	DDX_Text(pDX, IDC_FORM_DN, m_FormEDN);
-	DDX_Text(pDX, IDC_FORM_ERN, m_FormERN);
+	DDX_Text(pDX, IDC_FORM_ELP, m_FormELP);
+	DDX_Text(pDX, IDC_FORM_EDID, m_FormEDID);
+	DDX_Text(pDX, IDC_FORM_EUID, m_FormEUID);
+	DDX_Text(pDX, IDC_FORM_EGID, m_FormEGID);
 	DDX_Control(pDX, IDC_FORM_EBL, m_FormEBL);
 	DDX_Control(pDX, IDC_BUTTON_FILTER1, m_ButtonFilter1);
 	DDX_Control(pDX, IDC_BUTTON_FILTER2, m_ButtonFilter2);
@@ -241,29 +247,42 @@ void CARALGISView::OnInitialUpdate()
 
 	arrID.RemoveAll();
 	arrID.Add(IDC_FORM_GRPVEHICLE);
-	arrID.Add(IDC_FORM_SLPI);
-	arrID.Add(IDC_FORM_SFVI);
+	/*arrID.Add(IDC_FORM_SLPI);
+	arrID.Add(IDC_FORM_SFVI);*/
 	arrID.Add(IDC_FORM_SMRV);
-	arrID.Add(IDC_FORM_SDN);
 	arrID.Add(IDC_FORM_SLP);
-	arrID.Add(IDC_FORM_SRN);
-	arrID.Add(IDC_FORM_ELPI);
-	arrID.Add(IDC_FORM_EFVI);
-	arrID.Add(IDC_FORM_DN);
-	arrID.Add(IDC_FORM_LISTBOX); /// boraN
+	arrID.Add(IDC_FORM_SUID);
+	arrID.Add(IDC_FORM_SGID);
+	arrID.Add(IDC_FORM_SDID);
+	/*arrID.Add(IDC_FORM_ELPI);
+	arrID.Add(IDC_FORM_EFVI);*/
 	arrID.Add(IDC_FORM_ELP);
-	arrID.Add(IDC_FORM_ERN);
+	arrID.Add(IDC_FORM_EUID);
+	arrID.Add(IDC_FORM_EGID);
+	arrID.Add(IDC_FORM_EDID);
 	arrID.Add(IDC_FORM_EBL);
+	arrID.Add(IDC_FORM_LMRV);
 	arrID.Add(IDC_FORM_BMODIFY);
 	arrID.Add(IDC_FORM_BUPDATEDB);
-	bOk = m_resizer.CreatePanel(_T("Ali_Panel"), &arrID, TRUE);
+	arrID.Add(IDC_FORM_LPENTRY);
+	arrID.Add(IDC_FORM_ADDCOMMAND);
+	arrID.Add(IDC_FORM_BLP_QUERY);
+	arrID.Add(IDC_FORM_BDN_QUERY);
+	arrID.Add(IDC_FORM_BRN_QUERY);
+	arrID.Add(IDC_FORM_BGN_QUERY);
+
+
+	bOk = m_resizer.CreatePanel(_T("Info_Panel"), &arrID, TRUE);
 	ASSERT(bOk);
 
-	bOk = m_resizer.SetAnchor(_T("Ali_Panel"), ANCHOR_HORIZONTALLY_CENTERED);
+	bOk = m_resizer.SetAnchor(_T("Info_Panel"), ANCHOR_HORIZONTALLY_CENTERED);
 	ASSERT(bOk);
-
+	
 	arrID.RemoveAll();
+
 	arrID.Add(IDC_STATIC_FILTERS);
+	arrID.Add(IDC_STATIC_PTS);
+	arrID.Add(IDC_STATIC_BARRIER);
 	arrID.Add(IDC_BUTTON_ORGINAL);
 	arrID.Add(IDC_BUTTON_FILTER1);
 	arrID.Add(IDC_BUTTON_FILTER2);
@@ -278,42 +297,75 @@ void CARALGISView::OnInitialUpdate()
 	arrID.Add(IDC_BUTTON_HEATER_OFF);
 	arrID.Add(IDC_BUTTON_ALARM_ON);
 	arrID.Add(IDC_BUTTON_ALARM_OFF);
-	bOk = m_resizer.CreatePanel(_T("Bora_Panel"), &arrID, TRUE);
+
+	bOk = m_resizer.CreatePanel(_T("Camera_Panel"), &arrID, TRUE);
 	ASSERT(bOk);
 
-	bOk = m_resizer.SetAnchor(_T("Bora_Panel"), ANCHOR_RIGHT);
+	bOk = m_resizer.SetAnchor(_T("Camera_Panel"), ANCHOR_RIGHT);
 	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_STATIC_FILTERS, ANCHOR_RIGHT);
-	//ASSERT(bOk);
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_ORGINAL, ANCHOR_RIGHT);
-	//ASSERT(bOk);
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER1, ANCHOR_RIGHT);
-	//ASSERT(bOk);
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER2, ANCHOR_RIGHT);
-	//ASSERT(bOk);
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER3, ANCHOR_RIGHT);
-	//ASSERT(bOk);
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_PTS_STATUS,  ANCHOR_RIGHT);
-	//ASSERT(bOk);
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_PERIPHERAL_STATUS,  ANCHOR_RIGHT);
-	//ASSERT(bOk);
-	//bOk = m_resizer.SetAnchor(IDC_STATIC_PTS, ANCHOR_RIGHT);
-	//ASSERT(bOk);
-	//bOk = m_resizer.SetAnchor(IDC_STATIC_BARRIER, ANCHOR_RIGHT);
-	//ASSERT(bOk);
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_OPEN,  ANCHOR_RIGHT);
-	//ASSERT(bOk);
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_CLOSE,  ANCHOR_RIGHT);
-	//ASSERT(bOk);
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_ON,  ANCHOR_RIGHT);
-	//ASSERT(bOk);
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_OFF, ANCHOR_RIGHT);
-	//ASSERT(bOk);
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_ON,  ANCHOR_RIGHT);
-	//ASSERT(bOk);
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_OFF, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	/*bOk = m_resizer.SetAnchor(IDC_FORM_GRPVEHICLE, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_FORM_SLPI, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_FORM_SFVI, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_FORM_SMRV, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_FORM_SDN, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_FORM_SLP, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_FORM_SRN, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_STATIC_FILTERS, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_STATIC_PTS, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_STATIC_BARRIER, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_FORM_ELPI, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_FORM_EFVI, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_FORM_DN, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_FORM_ELP, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_FORM_ERN, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_FORM_EBL, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_FORM_BMODIFY, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_FORM_BUPDATEDB, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_ORGINAL, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER1, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER2, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER3, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_PTS_STATUS, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_PERIPHERAL_STATUS, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_OPEN, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_CLOSE, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_ON, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_OFF, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_ON, ANCHOR_ALL);
+	ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_OFF, ANCHOR_ALL);
+	ASSERT(bOk);
+*/
+	arrID.RemoveAll();
 
 	arrID.RemoveAll();
 	arrID.Add(IDC_STATIC_PLAKA);
@@ -322,91 +374,84 @@ void CARALGISView::OnInitialUpdate()
 
 	bOk = m_resizer.CreatePanel(_T("View_Panel"), &arrID, TRUE);
 	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_STATIC_PLAKA, ANCHOR_HORIZONTALLY);
+
+	bOk = m_resizer.SetAnchor(_T("View_Panel"), ANCHOR_LEFT);
 	ASSERT(bOk);
 
-	//bOk = m_resizer.CreateSplitContainer(_T("Splitter_V1"), _T("Ali_Panel"), _T("Bora_Panel"));
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_STATIC_PLAKA, ANCHOR_LEFT | ANCHOR_TOP);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetShowSplitterGrip(_T("Splitter_V1"), TRUE);
-	//ASSERT(bOk);
+	/*bOk = m_resizer.CreateSplitContainer(_T("H_Splitter"), _T("View_Panel"), _T("Info_Panel"));
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(_T("Splitter_V1"), ANCHOR_ALL);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetShowSplitterGrip(_T("H_Splitter"), TRUE);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.CreateSplitContainer(_T("Splitter_V2"), _T("View_Panel"), _T("Splitter_V1") );
-	//ASSERT(bOk);
-
-	//bOk = m_resizer.SetShowSplitterGrip(_T("Splitter_V2"), TRUE);
-	//ASSERT(bOk);
-
-	//bOk = m_resizer.SetAnchor(_T("Splitter_V2"), ANCHOR_ALL);
-	//ASSERT(bOk);
-	
+	bOk = m_resizer.SetAnchor(_T("H_Splitter"), ANCHOR_RIGHT);
+	ASSERT(bOk);*/
 
 
-	//arrID.RemoveAll();
 
-	//arrID.Add(IDC_STATIC_PTS);
-	//arrID.Add(IDC_BUTTON_PTS_STATUS);
-	//arrID.Add(IDC_STATIC_BARRIER);
-	//arrID.Add(IDC_BUTTON_BARRIER_CLOSE);
-	//arrID.Add(IDC_BUTTON_BARRIER_OPEN);
-	//arrID.Add(IDC_BUTTON_PTS_STATUS);
-	//arrID.Add(IDC_BUTTON_HEATER_ON);
-	//arrID.Add(IDC_BUTTON_HEATER_OFF);
-	//arrID.Add(IDC_BUTTON_ALARM_ON);
-	//arrID.Add(IDC_BUTTON_ALARM_OFF);
+	/*arrID.RemoveAll();
 
-	//bOk = m_resizer.CreatePanel(_T("Status_Panel"), &arrID, TRUE);
-	//ASSERT(bOk);
+	arrID.Add(IDC_STATIC_PTS);
+	arrID.Add(IDC_BUTTON_PTS_STATUS);
+	arrID.Add(IDC_STATIC_BARRIER);
+	arrID.Add(IDC_BUTTON_BARRIER_CLOSE);
+	arrID.Add(IDC_BUTTON_BARRIER_OPEN);
+	arrID.Add(IDC_BUTTON_PTS_STATUS);
+	arrID.Add(IDC_BUTTON_HEATER_ON);
+	arrID.Add(IDC_BUTTON_HEATER_OFF);
+	arrID.Add(IDC_BUTTON_ALARM_ON);
+	arrID.Add(IDC_BUTTON_ALARM_OFF);
 
-	// ali: following commented out as new panels created above take care of business
-	
-	//bOk = m_resizer.SetAnchor(IDC_STATIC_PTS, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.CreatePanel(_T("Status_Panel"), &arrID, TRUE);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_PTS_STATUS, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_STATIC_PTS, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_STATIC_BARRIER, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_PTS_STATUS, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_PERIPHERAL_STATUS, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_STATIC_BARRIER, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_OPEN, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_PERIPHERAL_STATUS, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_CLOSE, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_OPEN, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_ON, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_CLOSE, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_OFF, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_ON, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_ON, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_OFF, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_OFF, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_ON, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_STATIC_FILTERS, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_OFF, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_ORGINAL, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_STATIC_FILTERS, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER1, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_ORGINAL, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER2, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER1, ANCHOR_RIGHT);
+	ASSERT(bOk);
 
-	//bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER3, ANCHOR_RIGHT);
-	//ASSERT(bOk);
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER2, ANCHOR_RIGHT);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER3, ANCHOR_RIGHT);
+	ASSERT(bOk);*/
 
 
 	CRect workArea;
@@ -499,6 +544,9 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 
 	m_MatToGDITest = new PkMatToGDI(m_TestImgBMP, false);
 	m_MatToGDITest->DrawImg(g_CVImageTest);
+
+	// ali: update the database with the current image
+	// ali: this has to go to the VehiclePassage table
 
     // code to be deleted when test image
 	// display is stabilized.........
@@ -900,42 +948,42 @@ void CARALGISView::OnGuncelle()
 {
 	// TODO: Add your control notification handler code here
 	// it should open a dialog for row entry into the Vehicle database
-	CVehicleDlg vDlg{ m_FormEDT, m_FormEDN, m_FormELP, 
-		m_FormEBL.GetCheck(), m_FormERN };
-	if (vDlg.DoModal() == IDOK) {
-		m_FormEBL.SetCheck(vDlg.getBL());
-		m_FormEDN = vDlg.getDN();
-		//m_FormEDT = vDlg.getDT();
-		m_FormELP = vDlg.getLP();
-		m_FormERN = vDlg.getRN();
-
-//		MessageBox(_T("You pressed OK; the database will be updated"));
-	}
-	else {
-//		MessageBox(_T("You pressed CANCEL; the database will not be updated"));
-	}
+//	CVehicleDlg vDlg{ m_FormEDT, m_FormEDN, m_FormELP, 
+//		m_FormEBL.GetCheck(), m_FormERN };
+//	if (vDlg.DoModal() == IDOK) {
+//		m_FormEBL.SetCheck(vDlg.getBL());
+//		m_FormEDN = vDlg.getDN();
+//		//m_FormEDT = vDlg.getDT();
+//		m_FormELP = vDlg.getLP();
+//		m_FormERN = vDlg.getRN();
+//
+////		MessageBox(_T("You pressed OK; the database will be updated"));
+//	}
+//	else {
+////		MessageBox(_T("You pressed CANCEL; the database will not be updated"));
+//	}
 
 	UpdateData(FALSE);
-	CVehicleSet vSet;
-	if (!vSet.Open()) {
-		MessageBox(_T("Recordset is not open!"));
-		return;
-	}
-
-	vSet.AddNew();
-
-	//vSet.m_VehicleID = 0;
-	//vSet.m_LicensePlate = m_FormELP;
-	//vSet.m_LicensePlateImage = m_FormELPI; // _T("some file");
-	//vSet.m_DriverName = m_FormEDN; // _T("Abuzer Negezer");
-	//vSet.m_ChassisBottomImageCurrent = m_FormECBCI; // _T("UpSkirtNow.jpg");
-	//vSet.m_ChassisBottomImageRef = m_FormECBRI; // _T("UpSkirtVintage.jpg");
-	//vSet.m_FrontViewImage = m_FormEFVI; // _T("Cleavage.jpg");
-	//vSet.m_MostRecentVisitDate = CTime::GetCurrentTime(); // CTime{ 2016, 12, 30, 22, 58, 0 };
-	//if (!vSet.Update()) {
-	//	MessageBox(_T("Record not added"));
+	//CVehicleSet vSet;
+	//if (!vSet.Open()) {
+	//	MessageBox(_T("Recordset is not open!"));
 	//	return;
 	//}
+
+	//vSet.AddNew();
+
+	/*vSet.m_VehicleID = 0;
+	vSet.m_LicensePlate = m_FormELP;
+	vSet.m_LicensePlateImage = m_FormELPI; // _T("some file");
+	vSet.m_DriverName = m_FormEDN; // _T("Abuzer Negezer");
+	vSet.m_ChassisBottomImageCurrent = m_FormECBCI; // _T("UpSkirtNow.jpg");
+	vSet.m_ChassisBottomImageRef = m_FormECBRI; // _T("UpSkirtVintage.jpg");
+	vSet.m_FrontViewImage = m_FormEFVI; // _T("Cleavage.jpg");
+	vSet.m_MostRecentVisitDate = CTime::GetCurrentTime(); // CTime{ 2016, 12, 30, 22, 58, 0 };
+	if (!vSet.Update()) {
+		MessageBox(_T("Record not added"));
+		return;
+	}*/
 }
 
 
@@ -945,25 +993,22 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	m_FormListBox.ResetContent();
 
 	// find all visits of the given LP
-	CVehicleSet vSet;
+	CVehiclePassageSet vPassageSet;
 	CString filter = CString{ _T("LicensePlate = '") } +strLP;
 	filter += CString{ _T("'") };
-	vSet.m_strFilter = filter;
-	vSet.m_strSort = _T("MostRecentVisitDate DESC");
+	vPassageSet.m_strFilter = filter;
+	vPassageSet.m_strSort = _T("EntryDateTime DESC");
 
 	m_FormEDT = CTime::GetCurrentTime();
-	vSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
-	if (vSet.IsBOF()) {
+	vPassageSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	if (vPassageSet.IsBOF()) {
 		MessageBox(CString{ _T("Kayit bulunamadi; plaka no: ") } +strLP);
 		m_FormListBox.AddString(LPCTSTR{ CString{ _T("Kayit yok") } });
-		m_FormELPI = _T("Kayit yok");
 		m_FormELP = _T("Kayit yok");
-		m_FormEFVI = _T("Kayit yok");
-		//m_FormECBCI = _T("Kayit yok");
-		//m_FormECBRI = _T("Kayit yok");
-		m_FormEDN = _T("Kayit yok");
-		m_FormERN = _T("Kayit yok");
+		m_FormEDNID = -1; // _T("Kayit yok");
 		m_FormEBL.SetCheck(BST_INDETERMINATE);
+		m_FormEGN = -1; // _T("Kayit yok");
+		m_FormEGateKeeperID = -1; // _T("Kayit yok");
 		UpdateData(FALSE);
 		return;
 	}
@@ -972,22 +1017,47 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 //	strLP.Remove(' ');
 	strLP.MakeUpper();
 	m_FormELP = strLP;
-	m_FormELPI = vSet.m_LicensePlateImage;
-	m_FormEFVI = vSet.m_FrontViewImage;
-	//m_FormECBCI = vSet.m_ChassisBottomImageCurrent;
-	//m_FormECBRI = vSet.m_ChassisBottomImageRef;
-	m_FormEDN = vSet.m_DriverName;
-	m_FormERN = _T("readDB");
-	//m_FormEBL.SetCheck(vSet.m_BlackList? BST_CHECKED : BST_UNCHECKED);
+	m_FormEDID = vPassageSet.m_VehiclePassageDriverID;
+	m_FormEBL.SetCheck(vPassageSet.m_VehiclePassagePermissionGranted);
+	m_FormEGID = vPassageSet.m_VehiclePassageGateID;
+	m_FormEUID = vPassageSet.m_VehiclePassageUserID;
 
-	while (!vSet.IsEOF()) {
-		CTime visitDate = vSet.m_MostRecentVisitDate;
+	while (!vPassageSet.IsEOF()) {
+		CTime visitDate = vPassageSet.m_VehiclePassageEntryDateTime;  // vSet.m_MostRecentVisitDate;
 //		MessageBox(visitDate.Format("%d/%m/%Y %X"));
 		m_FormListBox.AddString(visitDate.Format("%d/%m/%Y %X"));
-		vSet.MoveNext();
+		vPassageSet.MoveNext();
 	}
+
+	// textual information done.
+	// now, update the relevant images: FrontalView, ChassisBottomRef, ChassisBottomCur
+	CVehicleSet vSet;
 
 	UpdateData(FALSE);
 	// m_FormListBox.AddString(strLP);
 
+}
+
+
+void CARALGISView::OnBnClickedFormBdnQuery()
+{
+	// TODO: Add your control notification handler code here
+	CDriverInfoSet dInfoSet;
+	/*CString strID; 
+	strID.Format(_T("%ld"), m_FormEDID);
+	CString filter = CString{ _T("[Driver].[ID] = '") } +strID;
+	filter += CString{ _T("'") };
+
+	dInfoSet.m_strFilter = filter;*/
+
+	dInfoSet.Open(CRecordset::snapshot, nullptr, CRecordset::readOnly);
+	CString message;
+	if (dInfoSet.IsBOF()) {
+		message.Format(_T("Kayit bulunamadi; Surucu no: %ld"), m_FormEDID);
+		MessageBox(message);
+		return;
+	}
+
+	message.Format(_T("Surucu adi: %s %s"), dInfoSet.m_dboDriverName, dInfoSet.m_dboDriverLastName);
+	return;
 }

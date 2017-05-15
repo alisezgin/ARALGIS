@@ -146,6 +146,9 @@ public:
 	afx_msg void OnAdd();
 	// ARALGISForm'da arac plaka numarasi kutusu icin
 	CString m_FormELP;
+	long m_FormEUID;
+	long m_FormEGID;
+	long m_FormEDID;
 	// controls the edit box for License Plate Image; eventually will be of type MyPic
 	CString m_FormELPI;
 	// controls the edit box of frontal view image in ARALGISForm; eventually will be of type MyPic
@@ -156,9 +159,9 @@ public:
 	//CString m_FormECBRI;
 	afx_msg void OnGuncelle();
 	// holds the driver name for the current record
-	CString m_FormEDN;
+	// CString m_FormEDN;
 	// holds the registration number for the current record
-	CString m_FormERN;
+	// CString m_FormERN;
 protected:
 	// called to update the vehicle info boxes upon the retrieval of a new license plate number
 	void OnLPUpdateInfo(CString);
@@ -172,6 +175,13 @@ public:
 	CButton m_ButtonFilter3;
 	CButton m_ButtonOrgImage;
 	afx_msg void OnBnClickedButtonOrginal();
+	// holds the ID of a driver
+	long m_FormEDNID;
+	// holds the gate number of vehicle entry
+	long m_FormEGN;
+	// holds the ID of the current gate keeper
+	long m_FormEGateKeeperID;
+	afx_msg void OnBnClickedFormBdnQuery();
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp
