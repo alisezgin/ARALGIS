@@ -219,13 +219,13 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetAnchor(IDC_BMP_REFERENCE, ANCHOR_ALL);
 	ASSERT(bOk);
 
-	bOk = m_resizer.CreateSplitContainer(_T("Splitter"), _T("Test_Panel"), _T("Ref_Panel"));
+	bOk = m_resizer.CreateSplitContainer(_T("Splitter_H"), _T("Test_Panel"), _T("Ref_Panel"));
 	ASSERT(bOk);
 
-	bOk = m_resizer.SetShowSplitterGrip(_T("Splitter"), TRUE);
+	bOk = m_resizer.SetShowSplitterGrip(_T("Splitter_H"), TRUE);
 	ASSERT(bOk);
 
-	bOk = m_resizer.SetAnchor(_T("Splitter"), ANCHOR_ALL);
+	bOk = m_resizer.SetAnchor(_T("Splitter_H"), ANCHOR_ALL);
 	ASSERT(bOk);
 
 	CSize size(0, 200); // cy member will be ignored
@@ -236,11 +236,10 @@ void CARALGISView::OnInitialUpdate()
 	bOk = m_resizer.SetMinimumSize(_T("Ref_Panel"), size2);
 	ASSERT(bOk);
 
-
+	
 	// ali: anchoring stuff
 
 	arrID.RemoveAll();
-
 	arrID.Add(IDC_FORM_GRPVEHICLE);
 	arrID.Add(IDC_FORM_SLPI);
 	arrID.Add(IDC_FORM_SFVI);
@@ -248,113 +247,102 @@ void CARALGISView::OnInitialUpdate()
 	arrID.Add(IDC_FORM_SDN);
 	arrID.Add(IDC_FORM_SLP);
 	arrID.Add(IDC_FORM_SRN);
-	arrID.Add(IDC_STATIC_FILTERS);
-	arrID.Add(IDC_STATIC_PTS);
-	arrID.Add(IDC_STATIC_BARRIER);
 	arrID.Add(IDC_FORM_ELPI);
 	arrID.Add(IDC_FORM_EFVI);
 	arrID.Add(IDC_FORM_DN);
+	arrID.Add(IDC_FORM_LISTBOX); /// boraN
 	arrID.Add(IDC_FORM_ELP);
 	arrID.Add(IDC_FORM_ERN);
 	arrID.Add(IDC_FORM_EBL);
 	arrID.Add(IDC_FORM_BMODIFY);
 	arrID.Add(IDC_FORM_BUPDATEDB);
+	bOk = m_resizer.CreatePanel(_T("Ali_Panel"), &arrID, TRUE);
+	ASSERT(bOk);
+
+	bOk = m_resizer.SetAnchor(_T("Ali_Panel"), ANCHOR_HORIZONTALLY_CENTERED);
+	ASSERT(bOk);
+
+	arrID.RemoveAll();
+	arrID.Add(IDC_STATIC_FILTERS);
 	arrID.Add(IDC_BUTTON_ORGINAL);
 	arrID.Add(IDC_BUTTON_FILTER1);
 	arrID.Add(IDC_BUTTON_FILTER2);
 	arrID.Add(IDC_BUTTON_FILTER3);
 	arrID.Add(IDC_BUTTON_PTS_STATUS);
 	arrID.Add(IDC_BUTTON_PERIPHERAL_STATUS);
+	arrID.Add(IDC_STATIC_PTS);
+	arrID.Add(IDC_STATIC_BARRIER);
 	arrID.Add(IDC_BUTTON_BARRIER_OPEN);
 	arrID.Add(IDC_BUTTON_BARRIER_CLOSE);
 	arrID.Add(IDC_BUTTON_HEATER_ON);
 	arrID.Add(IDC_BUTTON_HEATER_OFF);
 	arrID.Add(IDC_BUTTON_ALARM_ON);
 	arrID.Add(IDC_BUTTON_ALARM_OFF);
-
-	bOk = m_resizer.CreatePanel(_T("Info_Panel"), &arrID, TRUE);
+	bOk = m_resizer.CreatePanel(_T("Bora_Panel"), &arrID, TRUE);
 	ASSERT(bOk);
 
-	bOk = m_resizer.SetAnchor(IDC_FORM_GRPVEHICLE, ANCHOR_ALL);
+	bOk = m_resizer.SetAnchor(_T("Bora_Panel"), ANCHOR_RIGHT);
 	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SLPI, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SFVI, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SMRV, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SDN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SLP, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_SRN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_STATIC_FILTERS, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_STATIC_PTS, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_STATIC_BARRIER, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_ELPI, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_EFVI, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_DN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_ELP, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_ERN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_EBL, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_BMODIFY, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_FORM_BUPDATEDB, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ORGINAL, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER1, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER2, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER3, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_PTS_STATUS, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_PERIPHERAL_STATUS, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_OPEN, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_CLOSE, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_ON, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_OFF, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_ON, ANCHOR_ALL);
-	ASSERT(bOk);
-	bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_OFF, ANCHOR_ALL);
-	ASSERT(bOk);
+
+	//bOk = m_resizer.SetAnchor(IDC_STATIC_FILTERS, ANCHOR_RIGHT);
+	//ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(IDC_BUTTON_ORGINAL, ANCHOR_RIGHT);
+	//ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER1, ANCHOR_RIGHT);
+	//ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER2, ANCHOR_RIGHT);
+	//ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(IDC_BUTTON_FILTER3, ANCHOR_RIGHT);
+	//ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(IDC_BUTTON_PTS_STATUS,  ANCHOR_RIGHT);
+	//ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(IDC_BUTTON_PERIPHERAL_STATUS,  ANCHOR_RIGHT);
+	//ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(IDC_STATIC_PTS, ANCHOR_RIGHT);
+	//ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(IDC_STATIC_BARRIER, ANCHOR_RIGHT);
+	//ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_OPEN,  ANCHOR_RIGHT);
+	//ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(IDC_BUTTON_BARRIER_CLOSE,  ANCHOR_RIGHT);
+	//ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_ON,  ANCHOR_RIGHT);
+	//ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(IDC_BUTTON_HEATER_OFF, ANCHOR_RIGHT);
+	//ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_ON,  ANCHOR_RIGHT);
+	//ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(IDC_BUTTON_ALARM_OFF, ANCHOR_RIGHT);
+	//ASSERT(bOk);
 
 	arrID.RemoveAll();
-
 	arrID.Add(IDC_STATIC_PLAKA);
+	arrID.Add(IDC_FORM_LPENTRY); 
+	arrID.Add(IDC_FORM_ADDCOMMAND); 
 
 	bOk = m_resizer.CreatePanel(_T("View_Panel"), &arrID, TRUE);
 	ASSERT(bOk);
-
-	bOk = m_resizer.SetAnchor(IDC_STATIC_PLAKA, ANCHOR_ALL);
+	bOk = m_resizer.SetAnchor(IDC_STATIC_PLAKA, ANCHOR_HORIZONTALLY);
 	ASSERT(bOk);
 
-	bOk = m_resizer.CreateSplitContainer(_T("H_Splitter"), _T("View_Panel"), _T("Info_Panel"));
-	ASSERT(bOk);
+	//bOk = m_resizer.CreateSplitContainer(_T("Splitter_V1"), _T("Ali_Panel"), _T("Bora_Panel"));
+	//ASSERT(bOk);
 
-	bOk = m_resizer.SetShowSplitterGrip(_T("H_Splitter"), TRUE);
-	ASSERT(bOk);
+	//bOk = m_resizer.SetShowSplitterGrip(_T("Splitter_V1"), TRUE);
+	//ASSERT(bOk);
 
-	bOk = m_resizer.SetAnchor(_T("H_Splitter"), ANCHOR_ALL);
-	ASSERT(bOk);
+	//bOk = m_resizer.SetAnchor(_T("Splitter_V1"), ANCHOR_ALL);
+	//ASSERT(bOk);
 
+	//bOk = m_resizer.CreateSplitContainer(_T("Splitter_V2"), _T("View_Panel"), _T("Splitter_V1") );
+	//ASSERT(bOk);
+
+	//bOk = m_resizer.SetShowSplitterGrip(_T("Splitter_V2"), TRUE);
+	//ASSERT(bOk);
+
+	//bOk = m_resizer.SetAnchor(_T("Splitter_V2"), ANCHOR_ALL);
+	//ASSERT(bOk);
+	
 
 
 	//arrID.RemoveAll();

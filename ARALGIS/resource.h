@@ -87,7 +87,9 @@
 #define IDC_FORM_SLP                    1048
 #define IDC_FORM_SRN                    1049
 #define IDC_BUTTON1                     1050
+#define IDC_STATIC_BN1                  1050
 #define IDC_BUTTON_ORGINAL              1051
+#define IDC_STATIC_BN2                  1052
 #define ID_KAMERA_KONFIG32771           32771
 #define ID_KAMERA_KAY32772              32772
 #define ID_KAMERA_RESIMG32773           32773
@@ -143,7 +145,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        313
 #define _APS_NEXT_COMMAND_VALUE         32810
-#define _APS_NEXT_CONTROL_VALUE         1050
+#define _APS_NEXT_CONTROL_VALUE         1053
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif
