@@ -74,6 +74,8 @@ BOOL CVehicleDetection::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
 	m_pFrame = pFrame;
 	m_pNotifyProc = pNotifyProc;
 
+	bRun = TRUE;
+
 	ShutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	ProcessingFinishedEvent = CreateEvent(NULL, TRUE, TRUE, NULL); /// created as Set, 3rd argument is TRUE !!!!!!!!
@@ -111,8 +113,6 @@ BOOL CVehicleDetection::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
 	}
 
 	TRACE("ThreadCameraInterface ThreadID %x ...\n", ThreadIDCI);
-
-	bRun = TRUE;
 
 	return TRUE;
 }

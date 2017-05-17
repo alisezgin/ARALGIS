@@ -538,18 +538,16 @@ void CARALGISView::OnDisplayOpenCV()
 	SetEvent(g_DisplayOpenCVEvent);
 }
 
-
-
-
-void CARALGISView::DisplayPTSImage()
+void CARALGISView::DisplayPlakaNo()
 {
-	// TODO: Add your command handler code here
-	m_CarPlakaImageStatic.Load(g_CarPlakaImage, (size_t)g_CarPlakaImageLenght);
 
+	// TODO: Add your command handler code here
 	CString aCString;
 	CString bCString = CString(_T("         "));
 
 	aCString = g_PlakaNoChars;
+
+	OnLPUpdateInfo(aCString);
 
 	CFont font;
 	VERIFY(font.CreateFont(
@@ -586,6 +584,15 @@ void CARALGISView::DisplayPTSImage()
 	dc.SelectObject(def_font);
 
 	font.DeleteObject();
+	
+}
+
+
+
+void CARALGISView::DisplayPTSImage()
+{
+	// TODO: Add your command handler code here
+	m_CarPlakaImageStatic.Load(g_CarPlakaImage, (size_t)g_CarPlakaImageLenght);
 
 	SetTimerDisplay();
 }

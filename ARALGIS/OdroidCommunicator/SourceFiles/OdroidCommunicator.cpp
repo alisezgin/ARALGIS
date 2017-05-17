@@ -59,6 +59,8 @@ BOOL COdroidCommunicator::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
 	m_pNotifyProc = pNotifyProc;
 	m_pFrame = pFrame;
 
+	bRun = TRUE;
+
 	ShutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	// Launch OdroidCommunicator Thread
@@ -92,8 +94,6 @@ BOOL COdroidCommunicator::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
 	}
 
 	TRACE("OdroidCommThread ThreadID %x ...\n", ThreadID);
-
-	bRun = TRUE;
 
 	return TRUE;
 }

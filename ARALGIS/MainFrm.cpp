@@ -174,7 +174,7 @@ void CMainFrame::NotifyProcPTSComm(LPVOID lpParam, UINT nCode)
 			break;
 
 		case PTS_DISPLAY_PLAKA:
-			//pView->DisplayPlakaNo();
+			pView->DisplayPlakaNo();
 			break;
 
 		case PTS_CONNECTION_LOST:
