@@ -342,6 +342,9 @@
     <ClInclude Include="VehicleDetection\HeaderFiles\VehicleDetection.h">
       <Filter>VehicleDetection\HeaderFiles</Filter>
     </ClInclude>
+    <ClInclude Include="DBUpdateAckDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -502,6 +505,9 @@
     </ClCompile>
     <ClCompile Include="VehicleDetection\SourceFiles\VehicleDetection.cpp">
       <Filter>VehicleDetection\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="DBUpdateAckDlg.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

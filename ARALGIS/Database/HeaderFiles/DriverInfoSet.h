@@ -27,7 +27,8 @@ public:
 	CString	m_dboDriverDriverLicenseIssueCity;
 	CString	m_dboDriverDriverLicenseIssueDistrict;
 	CString	m_dboDriverNatIDNo;
-	CTime	m_dboDriverDateofBirth;
+	COleDateTime m_dboDriverDateofBirth;
+	// CTime	m_dboDriverDateofBirth;
 	CString	m_dboDriverBirthPlace;
 	CString	m_dboDriverNatIDIssueCity;
 	CString	m_dboDriverNatIDIssueDistrict;

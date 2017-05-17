@@ -176,13 +176,17 @@ public:
 	CButton m_ButtonFilter3;
 	CButton m_ButtonOrgImage;
 	afx_msg void OnBnClickedButtonOrginal();
+	// holds the ID of the passing vehicle
+	long m_VID;
 	// holds the ID of a driver
-	long m_FormEDNID;
+	long m_DID;
 	// holds the gate number of vehicle entry
-	long m_FormEGN;
+	long m_GID;
 	// holds the ID of the current gate keeper
-	long m_FormEGateKeeperID;
+	long m_UID;
 	afx_msg void OnBnClickedFormBdnQuery();
+	afx_msg void OnBnClickedFormBupdatedb();
+
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

@@ -57,26 +57,26 @@ void CDriverInfoSet::DoFieldExchange(CFieldExchange* pFX)
 	// Macros such as RFX_Text() and RFX_Int() are dependent on the
 	// type of the member variable, not the type of the field in the database.
 	// ODBC will try to automatically convert the column value to the requested type
-	RFX_Long(pFX, _T("[dbo].[Driver].[ID]"), m_dboDriverID);
-	RFX_Text(pFX, _T("[dbo].[Driver].[Name]"), m_dboDriverName);
-	RFX_Text(pFX, _T("[dbo].[Driver].[LastName]"), m_dboDriverLastName);
-	RFX_Long(pFX, _T("[dbo].[Driver].[Type]"), m_dboDriverType);
-	RFX_Text(pFX, _T("[dbo].[Driver].[DriverLicenseIssueCity]"), m_dboDriverDriverLicenseIssueCity);
-	RFX_Text(pFX, _T("[dbo].[Driver].[DriverLicenseIssueDistrict]"), m_dboDriverDriverLicenseIssueDistrict);
-	RFX_Text(pFX, _T("[dbo].[Driver].[NatIDNo]"), m_dboDriverNatIDNo);
-	RFX_Date(pFX, _T("[dbo].[Driver].[DateofBirth]"), m_dboDriverDateofBirth);
-	RFX_Text(pFX, _T("[dbo].[Driver].[BirthPlace]"), m_dboDriverBirthPlace);
-	RFX_Text(pFX, _T("[dbo].[Driver].[NatIDIssueCity]"), m_dboDriverNatIDIssueCity);
-	RFX_Text(pFX, _T("[dbo].[Driver].[NatIDIssueDistrict]"), m_dboDriverNatIDIssueDistrict);
-	RFX_Long(pFX, _T("[dbo].[Driver].[NatIDVolNo]"), m_dboDriverNatIDVolNo);
-	RFX_Long(pFX, _T("[dbo].[Driver].[NatIDRowNo]"), m_dboDriverNatIDRowNo);
-	RFX_Long(pFX, _T("[dbo].[Driver].[NatIDLogNo]"), m_dboDriverNatIDLogNo);
-	RFX_Text(pFX, _T("[dbo].[Driver].[FatherName]"), m_dboDriverFatherName);
-	RFX_Text(pFX, _T("[dbo].[Driver].[MotherName]"), m_dboDriverMotherName);
-	RFX_Text(pFX, _T("[dbo].[Driver].[BloodType]"), m_dboDriverBloodType);
-	RFX_Text(pFX, _T("[dbo].[Driver].[IssueAuthority]"), m_dboDriverIssueAuthority);
-	RFX_Long(pFX, _T("[dbo].[DriverType].[DTID]"), m_dboDriverTypeDTID);
-	RFX_Text(pFX, _T("[dbo].[DriverType].[Type]"), m_dboDriverTypeType);
+	RFX_Long(pFX, _T("[Driver].[ID]"), m_dboDriverID);
+	RFX_Text(pFX, _T("[Driver].[Name]"), m_dboDriverName);
+	RFX_Text(pFX, _T("[Driver].[LastName]"), m_dboDriverLastName);
+	RFX_Long(pFX, _T("[Driver].[Type]"), m_dboDriverType);
+	RFX_Text(pFX, _T("[Driver].[DriverLicenseIssueCity]"), m_dboDriverDriverLicenseIssueCity);
+	RFX_Text(pFX, _T("[Driver].[DriverLicenseIssueDistrict]"), m_dboDriverDriverLicenseIssueDistrict);
+	RFX_Text(pFX, _T("[Driver].[NatIDNo]"), m_dboDriverNatIDNo);
+	RFX_Date(pFX, _T("[Driver].[DateofBirth]"), m_dboDriverDateofBirth);
+	RFX_Text(pFX, _T("[Driver].[BirthPlace]"), m_dboDriverBirthPlace);
+	RFX_Text(pFX, _T("[Driver].[NatIDIssueCity]"), m_dboDriverNatIDIssueCity);
+	RFX_Text(pFX, _T("[Driver].[NatIDIssueDistrict]"), m_dboDriverNatIDIssueDistrict);
+	RFX_Long(pFX, _T("[Driver].[NatIDVolNo]"), m_dboDriverNatIDVolNo);
+	RFX_Long(pFX, _T("[Driver].[NatIDRowNo]"), m_dboDriverNatIDRowNo);
+	RFX_Long(pFX, _T("[Driver].[NatIDLogNo]"), m_dboDriverNatIDLogNo);
+	RFX_Text(pFX, _T("[Driver].[FatherName]"), m_dboDriverFatherName);
+	RFX_Text(pFX, _T("[Driver].[MotherName]"), m_dboDriverMotherName);
+	RFX_Text(pFX, _T("[Driver].[BloodType]"), m_dboDriverBloodType);
+	RFX_Text(pFX, _T("[Driver].[IssueAuthority]"), m_dboDriverIssueAuthority);
+	RFX_Long(pFX, _T("[DriverType].[DTID]"), m_dboDriverTypeDTID);
+	RFX_Text(pFX, _T("[DriverType].[Type]"), m_dboDriverTypeType);
 }
 /////////////////////////////////////////////////////////////////////////////
 // CVehicleInfoSet diagnostics

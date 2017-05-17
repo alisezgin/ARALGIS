@@ -22,6 +22,8 @@
 #define ID_VIEW_APPLOOK_WINDOWS_7       219
 #define IDD_BITMAP_DLG                  310
 #define IDD_CAMERASTR_DLG               311
+#define IDD_D                           313
+#define IDD_DB_MODIFY_ACK               313
 #define IDD_VEHICLE_DIALOG              314
 #define IDD_VEHICLE_DIALOG_VIEW         314
 #define IDD_VEHICLE_DIALOG1             315
@@ -92,15 +94,15 @@
 #define IDC_FORM_SLP                    1048
 #define IDC_FORM_SRN                    1049
 #define IDC_FORM_SUID                   1049
-#define IDC_BUTTON1                     1063
-#define IDC_STATIC_BN1                  1060
-#define IDC_STATIC_BN2                  1062
 #define IDC_FORM_BDN_QUERY              1050
 #define IDC_BUTTON_ORGINAL              1051
 #define IDC_FORM_BLP_QUERY              1052
 #define IDC_FORM_BRN_QUERY              1053
 #define IDC_FORM_SGID                   1054
 #define IDC_FORM_BGN_QUERY              1055
+#define IDC_STATIC_BN1                  1060
+#define IDC_STATIC_BN2                  1062
+#define IDC_BUTTON1                     1063
 #define ID_KAMERA_KONFIG32771           32771
 #define ID_KAMERA_KAY32772              32772
 #define ID_KAMERA_RESIMG32773           32773
@@ -154,7 +156,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        313
+#define _APS_NEXT_RESOURCE_VALUE        314
 #define _APS_NEXT_COMMAND_VALUE         32810
 #define _APS_NEXT_CONTROL_VALUE         1053
 #define _APS_NEXT_SYMED_VALUE           310

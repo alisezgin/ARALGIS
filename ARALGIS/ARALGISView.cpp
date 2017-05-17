@@ -30,6 +30,8 @@
 
 #include "DriverInfoSet.h"
 
+#include "DBUpdateAckDlg.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -68,6 +70,7 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_BN_CLICKED(IDC_FORM_BMODIFY, &CARALGISView::OnGuncelle)
 	ON_BN_CLICKED(IDC_BUTTON_ORGINAL, &CARALGISView::OnBnClickedButtonOrginal)
 	ON_BN_CLICKED(IDC_FORM_BDN_QUERY, &CARALGISView::OnBnClickedFormBdnQuery)
+	ON_BN_CLICKED(IDC_FORM_BUPDATEDB, &CARALGISView::OnBnClickedFormBupdatedb)
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -154,10 +157,6 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_ALARM_OFF, m_AlarmStop);
 	DDX_Control(pDX, IDC_FORM_LMRV, m_FormListBox);
 	DDX_Text(pDX, IDC_FORM_LPENTRY, m_FormLPEntry);
-	//DDX_Text(pDX, IDC_FORM_ELPI, m_FormELPI);
-	//DDX_Text(pDX, IDC_FORM_EFVI, m_FormEFVI);
-	//DDX_Text(pDX, IDC_FORM_ECBCI, m_FormECBCI);
-	//DDX_Text(pDX, IDC_FORM_ECBRI, m_FormECBRI);
 	DDX_Text(pDX, IDC_FORM_ELP, m_FormELP);
 	DDX_Text(pDX, IDC_FORM_EDID, m_FormEDID);
 	DDX_Text(pDX, IDC_FORM_EUID, m_FormEUID);
@@ -892,8 +891,8 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 {
 	m_FormListBox.ResetContent();
 
-	// find all visits of the given LP
 	CVehiclePassageSet vPassageSet;
+	// find all visits of the given LP
 	CString filter = CString{ _T("LicensePlate = '") } +strLP;
 	filter += CString{ _T("'") };
 	vPassageSet.m_strFilter = filter;
@@ -909,10 +908,14 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 		MessageBox(CString{ _T("Kayit bulunamadi; plaka no: ") } +strLP);
 		m_FormListBox.AddString(LPCTSTR{ CString{ _T("Kayit yok") } });
 		m_FormELP = _T("Kayit yok");
-		m_FormEDNID = -1; // _T("Kayit yok");
+		m_FormEUID = _T("Kayit yok");
+		m_FormEGID = _T("Kayit yok");
+		m_FormEDID = _T("Kayit yok");
 		m_FormEBL.SetCheck(BST_INDETERMINATE);
-		m_FormEGN = -1; // _T("Kayit yok");
-		m_FormEGateKeeperID = -1; // _T("Kayit yok");
+		m_VID = -1;
+		m_DID = -1; // _T("Kayit yok");
+		m_GID = -1; // _T("Kayit yok");
+		m_UID = -1; // _T("Kayit yok");
 		UpdateData(FALSE);
 		return;
 	}
@@ -922,6 +925,11 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	strLP.MakeUpper();
 	m_FormELP = strLP;
 	m_FormEBL.SetCheck(!vPassageSet.m_VehiclePassagePermissionGranted);
+
+	// since there is an existing record; m_VID >= 0
+	m_VID = vPassageSet.m_VehiclePassageVehicleID;
+	ASSERT(m_VID >= 0);
+
 	// instead of the cryptic ID's, use the associated names
 	// for each ID to name mapping, the corresponding Recordset has to be formed.
 	// this is rather expensive operation.
@@ -939,6 +947,7 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	m_FormEDID = dInfoSet.m_dboDriverLastName;
 	m_FormEDID += _T(", ");
 	m_FormEDID += dInfoSet.m_dboDriverName;
+	m_DID = dInfoSet.m_dboDriverID;
 
 
 	//m_FormEGID = vPassageSet.m_VehiclePassageGateID;
@@ -951,6 +960,7 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	gSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
 	//ASSERT(gSet.GetRecordCount() == 1);
 	m_FormEGID = gSet.m_GateType;
+	m_GID = gSet.m_GateID;
 
 	//m_FormEUID = _T("Veli, Ali");
 	//m_FormEUID = vPassageSet.m_VehiclePassageUserID;
@@ -965,6 +975,7 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	m_FormEUID = uInfoSet.m_dboUserLastName;
 	m_FormEUID += _T(",");
 	m_FormEUID += uInfoSet.m_dboUserName;
+	m_UID = uInfoSet.m_dboUserID;
 
 	while (!vPassageSet.IsEOF()) {
 		CTime visitDate = vPassageSet.m_VehiclePassageEntryDateTime;  // vSet.m_MostRecentVisitDate;
@@ -992,7 +1003,7 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	CString strRefFilename = vSet.m_VehicleChassisBottomReferenceImageFile;
 	
 	// TODO: display the contents of strRefFilename
-	MessageBox(CString{ _T("The filename for Reference image: ") }+strRefFilename);
+	// MessageBox(CString{ _T("The filename for Reference image: ") }+strRefFilename);
 
 
 	UpdateData(FALSE);
@@ -1039,54 +1050,48 @@ void CARALGISView::GetTestImageAsByte()
 
 	SetEvent(SendUVSSImageEvent);
 
-
-	////////////
-	//int dHeight;
-	//int dWidth = 2048;
-	//int dBytePP = 3;
-
-	//dHeight = g_ByteImageSize / (dWidth * dBytePP);
+}
 
 
-	//CImage outImage;
-	//outImage.Create(dWidth, -dHeight, dBytePP * 8, 0);
+void CARALGISView::OnBnClickedFormBupdatedb()
+{
+	// TODO: Add your control notification handler code here
+	// Things to do here:
+	// 1. Copy the contents of the test image as a file into the relevant directory.
+	// 2. Copy the contents of the frontal image as a file into the relevant directory.
+	// 3. Read the contents of the value boxes and
+	//  i) if a record with the given license plate does not exist, create a new record or,
+	//  ii) if a record with the the given license plate does exist, update the existing record.
+	// [Optional] Ask for a second time whether the update is to be made (an additional dialog box)
+	// before starting all these modifications.
+	
+	CDBUpdateAckDlg dUpAck;
 
-	//int lineSize = dWidth * dBytePP;
-	//if (dBytePP == 1)
-	//{
-	//	// Define the color table
-	//	RGBQUAD* tab = new RGBQUAD[256];
-	//	for (int i = 0; i < 256; ++i)
-	//	{
-	//		tab[i].rgbRed = i;
-	//		tab[i].rgbGreen = i;
-	//		tab[i].rgbBlue = i;
-	//		tab[i].rgbReserved = 0;
-	//	}
-	//	outImage.SetColorTable(0, 256, tab);
-	//	delete[] tab;
-	//}
+	if (dUpAck.DoModal() == IDOK) { // Update operations
+		CVehiclePassageSet vPassageSet;
+		vPassageSet.Open(CRecordset::dynamic, nullptr, CRecordset::none);
 
-	//BYTE *pTemp;
-	//void* dst ;
-	//const void* src;
+		// no modification of existing rows in the VehiclePassage table;
+		// always add a new row.
+		vPassageSet.AddNew();
 
-	//pTemp = (BYTE*)g_ByteImageTest;
+		vPassageSet.m_VehiclePassageLicensePlate = m_FormELP;
+		vPassageSet.m_VehiclePassageEntryDateTime = m_FormEDT;
+		vPassageSet.m_VehiclePassageUserID = m_UID;
+		vPassageSet.m_VehiclePassageGateID = m_GID;
+		vPassageSet.m_VehiclePassageDriverID = m_DID;
+		vPassageSet.m_VehiclePassagePermissionGranted = !m_FormEBL.GetCheck();
 
-	//for (int i = 0; i < dWidth; i++)
-	//{
-	//	for (int j = 0; j < dHeight; j++)
-	//	{
-	//		dst = outImage.GetPixelAddress(i, j);
-	//		src = pTemp;
+		CString msg = _T("These will be used by AddNew():");
+		CString paramStr;
+		paramStr.Format(_T("\nLicense Plate= %s,\nDriver ID= %ld,\nGate ID= %ld,\nGate Keeper ID= %ld,\nApproved= %d.\n"), m_FormELP, m_DID, m_GID, m_UID, !m_FormEBL.GetCheck());
 
-	//		memcpy(dst, src, 3);
+		// MessageBox(msg + paramStr);
 
-
-	//		pTemp = pTemp + 3;
-	//	}
-	//}
-
-	//outImage.Save(L"C:\\Users\\bora\\Desktop\\sil\\111.bmp", Gdiplus::ImageFormatBMP);
-	////////////////////
+		vPassageSet.Update();
+	}
+	else {
+		// nothing to do (yet)
+		return;
+	}
 }
