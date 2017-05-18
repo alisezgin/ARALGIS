@@ -1040,9 +1040,26 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	// retrieve the reference filename to display the reference image
 	// the other image files, frontal and test, are to be formed during the database update.
 	CString strRefFilename = vSet.m_VehicleChassisBottomReferenceImageFile;
+
+	CString fullPathName = CString{ _T("C:\\ali\\github-home\\ARALGIS\\Cars\\ChassisBottom\\") } +strRefFilename;
+	
+	const size_t newsizew = (fullPathName.GetLength() + 1) * 2;
+	char *charfilename = new char[newsizew];
+	size_t convertedCharsw = 0;
+	wcstombs_s(&convertedCharsw, charfilename, newsizew, fullPathName, newsizew);
 	
 	// TODO: display the contents of strRefFilename
 	// MessageBox(CString{ _T("The filename for Reference image: ") }+strRefFilename);
+
+	g_CVImageRef = cv::imread(charfilename, cv::IMREAD_COLOR);
+	
+	if (m_MatToGDIRef != nullptr){
+		delete m_MatToGDIRef;
+		m_MatToGDIRef = nullptr;
+	}
+
+	m_MatToGDIRef = new PkMatToGDI(m_RefImgBMP, false);
+	m_MatToGDIRef->DrawImg(g_CVImageRef);
 
 
 	UpdateData(FALSE);
