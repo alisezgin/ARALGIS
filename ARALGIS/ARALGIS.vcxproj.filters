@@ -345,6 +345,12 @@
     <ClInclude Include="DBUpdateAckDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\DriverSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="DriverAckDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -507,6 +513,12 @@
       <Filter>VehicleDetection\SourceFiles</Filter>
     </ClCompile>
     <ClCompile Include="DBUpdateAckDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\DriverSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="DriverAckDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

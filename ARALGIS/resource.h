@@ -22,12 +22,14 @@
 #define ID_VIEW_APPLOOK_WINDOWS_7       219
 #define IDD_BITMAP_DLG                  310
 #define IDD_CAMERASTR_DLG               311
-#define IDD_D                           313
 #define IDD_DB_MODIFY_ACK               313
 #define IDD_VEHICLE_DIALOG              314
 #define IDD_VEHICLE_DIALOG_VIEW         314
 #define IDD_VEHICLE_DIALOG1             315
 #define IDD_VEHICLE_DLG                 315
+#define IDD_DLG_DRIVER                  316
+#define IDD_DB_MODIFY_ACK1              317
+#define IDD_DB_NEWDRIVER                317
 #define IDC_BITMAP                      1000
 #define IDC_GRP_TEST                    1006
 #define IDC_GRP_REF                     1007
@@ -43,6 +45,7 @@
 #define IDC_VEHICLE_ID                  1015
 #define IDC_FORM_ELP                    1015
 #define IDC_VEHICLE_DN                  1015
+#define IDC_DLG_DNAME                   1015
 #define IDC_BUTTON_BARRIER_OPEN         1016
 #define IDC_VEHICLE_LP                  1016
 #define IDC_BUTTON_BARRIER_CLOSE        1017
@@ -98,11 +101,16 @@
 #define IDC_BUTTON_ORGINAL              1051
 #define IDC_FORM_BLP_QUERY              1052
 #define IDC_FORM_BRN_QUERY              1053
+#define IDC_DLG_DLASTNAME               1053
 #define IDC_FORM_SGID                   1054
+#define IDC_DLG_DTYPE                   1054
 #define IDC_FORM_BGN_QUERY              1055
+#define IDC_DLG_DDRIVERLICENSECITY      1055
+#define IDC_DLG_DDRIVERLICENSEDISTRICT  1056
 #define IDC_STATIC_BN1                  1060
 #define IDC_STATIC_BN2                  1062
 #define IDC_BUTTON1                     1063
+#define IDC_FORM_BARA                   1063
 #define ID_KAMERA_KONFIG32771           32771
 #define ID_KAMERA_KAY32772              32772
 #define ID_KAMERA_RESIMG32773           32773
@@ -156,9 +164,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        314
+#define _APS_NEXT_RESOURCE_VALUE        317
 #define _APS_NEXT_COMMAND_VALUE         32810
-#define _APS_NEXT_CONTROL_VALUE         1053
+#define _APS_NEXT_CONTROL_VALUE         1057
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

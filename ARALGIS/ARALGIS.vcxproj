@@ -238,12 +238,14 @@
     <ClInclude Include="Database\HeaderFiles\BlackListSet.h" />
     <ClInclude Include="Database\HeaderFiles\CameraDBServer.h" />
     <ClInclude Include="Database\HeaderFiles\DriverInfoSet.h" />
+    <ClInclude Include="Database\HeaderFiles\DriverSet.h" />
     <ClInclude Include="Database\HeaderFiles\GateSet.h" />
     <ClInclude Include="Database\HeaderFiles\UserInfoSet.h" />
     <ClInclude Include="Database\HeaderFiles\VehicleInfoSet.h" />
     <ClInclude Include="Database\HeaderFiles\VehiclePassageSet.h" />
     <ClInclude Include="Database\HeaderFiles\VehicleSet.h" />
     <ClInclude Include="DBUpdateAckDlg.h" />
+    <ClInclude Include="DriverAckDlg.h" />
     <ClInclude Include="ImageFiltering\HeaderFiles\cvt.hpp" />
     <ClInclude Include="ImageFiltering\HeaderFiles\Includes.h" />
     <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-image.hpp" />
@@ -292,12 +294,14 @@
     <ClCompile Include="Database\SourceFiles\BlackListSet.cpp" />
     <ClCompile Include="Database\SourceFiles\CameraDBServer.cpp" />
     <ClCompile Include="Database\SourceFiles\DriverInfoSet.cpp" />
+    <ClCompile Include="Database\SourceFiles\DriverSet.cpp" />
     <ClCompile Include="Database\SourceFiles\GateSet.cpp" />
     <ClCompile Include="Database\SourceFiles\UserInfoSet.cpp" />
     <ClCompile Include="Database\SourceFiles\VehicleInfoSet.cpp" />
     <ClCompile Include="Database\SourceFiles\VehiclePassageSet.cpp" />
     <ClCompile Include="Database\SourceFiles\VehicleSet.cpp" />
     <ClCompile Include="DBUpdateAckDlg.cpp" />
+    <ClCompile Include="DriverAckDlg.cpp" />
     <ClCompile Include="ImageFiltering\ImageFilterProcessing\SourceFiles\ImageFilterProcessing.cpp" />
     <ClCompile Include="ImageFiltering\SourceFiles\CelikTjahjadi2012.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
