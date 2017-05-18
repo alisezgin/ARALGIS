@@ -29,8 +29,12 @@
 #include "VehicleDlg.h"
 
 #include "DriverInfoSet.h"
+#include "DriverSet.h"
 
 #include "DBUpdateAckDlg.h"
+#include "DriverAckDlg.h"
+
+#include <sstream>
 
 
 #ifdef _DEBUG
@@ -66,11 +70,12 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_BN_CLICKED(IDC_BUTTON_FILTER2, &CARALGISView::OnBnClickedButtonFilter2)
 	ON_BN_CLICKED(IDC_BUTTON_FILTER3, &CARALGISView::OnBnClickedButtonFilter3)
 	ON_LBN_SELCHANGE(IDC_FORM_LMRV, &CARALGISView::OnLbnSelchangeList2)
-	ON_BN_CLICKED(IDC_FORM_ADDCOMMAND, &CARALGISView::OnAdd)
 	ON_BN_CLICKED(IDC_FORM_BMODIFY, &CARALGISView::OnGuncelle)
 	ON_BN_CLICKED(IDC_BUTTON_ORGINAL, &CARALGISView::OnBnClickedButtonOrginal)
 	ON_BN_CLICKED(IDC_FORM_BDN_QUERY, &CARALGISView::OnBnClickedFormBdnQuery)
 	ON_BN_CLICKED(IDC_FORM_BUPDATEDB, &CARALGISView::OnBnClickedFormBupdatedb)
+	ON_EN_KILLFOCUS(IDC_FORM_EDID, &CARALGISView::OnEnKillfocusFormEdid)
+	ON_BN_CLICKED(IDC_FORM_BARA, &CARALGISView::OnAdd)
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -315,7 +320,7 @@ void CARALGISView::OnInitialUpdate()
 	arrID.RemoveAll();
 	arrID.Add(IDC_STATIC_PLAKA);
 	arrID.Add(IDC_FORM_LPENTRY); 
-	arrID.Add(IDC_FORM_ADDCOMMAND); 
+	arrID.Add(IDC_FORM_BARA); 
 
 	bOk = m_resizer.CreatePanel(_T("View_Panel"), &arrID, TRUE);
 	ASSERT(bOk);
@@ -1095,3 +1100,78 @@ void CARALGISView::OnBnClickedFormBupdatedb()
 		return;
 	}
 }
+
+
+
+void CARALGISView::OnEnKillfocusFormEdid()
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	m_FormEDID.Remove(' ');
+	auto commaPos = m_FormEDID.Find(_T(","));
+	CString strLastName = m_FormEDID.Left(commaPos);
+	CString strFirstName = m_FormEDID.Right(m_FormEDID.GetLength() - commaPos - 1);
+
+	if (strFirstName == _T("") && strLastName == _T("")) {
+		return;
+	} else if (strFirstName == _T("") || strLastName == _T("")) {
+		MessageBox(_T("Isim Hatasi."));
+		return;
+	}
+
+	//CDriverInfoSet dInfoSet;
+	//CString driverFilter = CString{ _T("[dbo].[Driver].[Type] = [dbo].[DriverType].[DTID] AND [dbo].[Driver].[Name] = '") };
+	//driverFilter += strFirstName;
+	//driverFilter += CString{ _T("' AND [dbo].[Driver].[LastName] ='") };
+	//driverFilter += strLastName;
+	//driverFilter += CString{ _T("'") };
+	//dInfoSet.m_strFilter = driverFilter;
+	//dInfoSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	//ASSERT(dInfoSet.GetRecordCount() == 1);
+
+	CDriverSet dSet;
+
+	CString filter{ _T("[Name] = '") };
+	filter += strFirstName;
+	filter += _T("' AND [LastName] = '");
+	filter += strLastName;
+	filter += _T("'");
+
+	dSet.m_strFilter = filter;
+
+	dSet.Open(CRecordset::dynamic, nullptr, CRecordset::none);
+
+	if (dSet.GetRecordCount() == 0) {
+		MessageBox(_T("Bu sofor sistemde kayitli degil"));
+	} 
+	else // clean up spaces, reset driver ID
+	{
+		m_FormEDID = dSet.m_LastName;
+		m_FormEDID += _T(", ");
+		m_FormEDID += dSet.m_Name;
+		m_DID = dSet.m_ID;
+		return;
+	}
+
+
+	// new driver; for now, just insert name and last name
+	// first make sure that this is the intention of the user
+	CDriverAckDlg dAckDlg;
+	if (dAckDlg.DoModal() == IDCANCEL)
+		return;
+
+	// ack'ed. now can modify the Driver table
+	dSet.AddNew();
+
+	dSet.m_Name = strFirstName;
+	dSet.m_LastName = strLastName;
+	dSet.m_Type = 1;
+
+	dSet.Update();
+
+	dSet.m_strFilter = filter;
+	dSet.Requery();
+
+	m_DID = dSet.m_ID;
+}
+

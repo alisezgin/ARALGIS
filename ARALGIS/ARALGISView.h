@@ -187,6 +187,7 @@ public:
 	afx_msg void OnBnClickedFormBdnQuery();
 	afx_msg void OnBnClickedFormBupdatedb();
 
+	afx_msg void OnEnKillfocusFormEdid();
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp
