@@ -95,6 +95,8 @@ BOOL CPTSCommunicator::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
 	m_pNotifyProc	= pNotifyProc;
 	m_pFrame	    = pFrame;
 
+	bRun = TRUE;
+
 	ShutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	// Launch PTSCommunicator Thread
@@ -128,8 +130,6 @@ BOOL CPTSCommunicator::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
 	}
 
 	TRACE("PTSCommThread ThreadID %x ...\n", ThreadID);
-
-	bRun = TRUE;
 
 	return TRUE;
 }

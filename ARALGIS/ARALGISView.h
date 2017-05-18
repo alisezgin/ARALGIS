@@ -59,6 +59,7 @@ public:
 #endif
 
 	void DisplayPTSImage();
+	void DisplayPlakaNo();
 	void DeletePTSImage();
 	void SetTimerDisplay();
 

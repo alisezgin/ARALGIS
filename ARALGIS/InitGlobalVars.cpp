@@ -27,7 +27,6 @@
 void InitializeGlobalVars()
 {
 
-	TimerNormalizer = (int)(1000 / TIMER_PERIOD_IN_MS);
 	g_carsDetectedByPTSCnt = 0;
 
 	InitializeCriticalSection(&g_IntermediateTestImgCS);

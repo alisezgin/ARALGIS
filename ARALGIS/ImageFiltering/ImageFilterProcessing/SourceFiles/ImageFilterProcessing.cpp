@@ -76,6 +76,8 @@ BOOL CImageFilterProcessing::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
 	m_pFrame = pFrame;
 	m_pNotifyProc = pNotifyProc;
 
+	bRun = TRUE;
+
 	ShutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	// Launch Filter-1 Processing Thread
@@ -127,9 +129,6 @@ BOOL CImageFilterProcessing::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
 	}
 
 	TRACE("ThreadFilter3Processing ThreadID %x ...\n", ThreadID3);
-
-
-	bRun = TRUE;
 
 	return TRUE;
 }
