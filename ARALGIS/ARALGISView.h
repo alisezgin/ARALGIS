@@ -124,7 +124,7 @@ public:
 	afx_msg void OnBnClickedButtonHeaterOff();
 	afx_msg void OnBnClickedButtonAlarmOn();
 	afx_msg void OnBnClickedButtonAlarmOff();
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	//afx_msg void OnTimer(UINT_PTR nIDEvent);
 
 protected:
 	CClrButton m_PTS_Status;
@@ -187,7 +187,6 @@ public:
 	long m_UID;
 	afx_msg void OnBnClickedFormBdnQuery();
 	afx_msg void OnBnClickedFormBupdatedb();
-
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

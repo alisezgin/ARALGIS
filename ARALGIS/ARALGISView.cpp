@@ -59,7 +59,7 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_BN_CLICKED(IDC_BUTTON_HEATER_OFF, &CARALGISView::OnBnClickedButtonHeaterOff)
 	ON_BN_CLICKED(IDC_BUTTON_ALARM_ON, &CARALGISView::OnBnClickedButtonAlarmOn)
 	ON_BN_CLICKED(IDC_BUTTON_ALARM_OFF, &CARALGISView::OnBnClickedButtonAlarmOff)
-	ON_WM_TIMER()
+	//ON_WM_TIMER()
 	ON_WM_PAINT()
 	ON_WM_ERASEBKGND()
 	ON_BN_CLICKED(IDC_BUTTON_FILTER1, &CARALGISView::OnBnClickedButtonFilter1)
@@ -512,6 +512,23 @@ afx_msg LRESULT CARALGISView::OnDBaseCarInfoReady(WPARAM wParam, LPARAM lParam)
 	m_MatToGDIRef = new PkMatToGDI(m_RefImgBMP, false);
 	m_MatToGDIRef->DrawImg(g_CVImageRef);
 
+
+	// TODO: Add your command handler code here
+	CString aCString;
+	CString bCString = CString(_T("         "));
+
+
+	char AAA[9];
+	for (int i = 0; i < 8; i++)
+	{
+		AAA[i] = g_PlakaNoChars[i];
+	}
+	AAA[8] = '\0';
+
+	aCString = AAA;
+
+	OnLPUpdateInfo(aCString);
+
 	return 0;
 }
 
@@ -545,9 +562,21 @@ void CARALGISView::DisplayPlakaNo()
 	CString aCString;
 	CString bCString = CString(_T("         "));
 
-	aCString = g_PlakaNoChars;
 
-	OnLPUpdateInfo(aCString);
+	char AAA[9];
+	for (int i = 0; i < 8; i++)
+	{
+		AAA[i] = g_PlakaNoChars[i];
+	}
+	AAA[8] = '\0';
+
+	aCString = AAA;
+
+	//OnLPUpdateInfo(aCString);
+
+
+
+
 
 	CFont font;
 	VERIFY(font.CreateFont(
@@ -584,9 +613,7 @@ void CARALGISView::DisplayPlakaNo()
 	dc.SelectObject(def_font);
 
 	font.DeleteObject();
-	
 }
-
 
 
 void CARALGISView::DisplayPTSImage()
@@ -707,21 +734,21 @@ void CARALGISView::SetTimerDisplay()
 	SetTimer(DISPLAY_TIMER_ID, TIMER_PERIOD_IN_MS, NULL);
 }
 
-void CARALGISView::OnTimer(UINT_PTR nIDEvent)
-{
-	if (nIDEvent == DISPLAY_TIMER_ID)
-	{
-		m_TimerSecondCounter++;
-
-		if (m_TimerSecondCounter == PLAKA_TIME_ON_SCREEN)
-		{
-			// do something
-			DeletePTSImage();
-			KillTimer(DISPLAY_TIMER_ID);
-		}
-	} // End if.
-	CColorFormView::OnTimer(nIDEvent);
-}
+//void CARALGISView::OnTimer(UINT_PTR nIDEvent)
+//{
+//	if (nIDEvent == DISPLAY_TIMER_ID)
+//	{
+//		m_TimerSecondCounter++;
+//
+//		if (m_TimerSecondCounter == PLAKA_TIME_ON_SCREEN)
+//		{
+//			// do something
+//			DeletePTSImage();
+//			KillTimer(DISPLAY_TIMER_ID);
+//		}
+//	} // End if.
+//	CColorFormView::OnTimer(nIDEvent);
+//}
 
 
 

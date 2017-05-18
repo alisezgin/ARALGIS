@@ -105,6 +105,10 @@ extern HANDLE g_IntermediateImageReadyEvent;
 
 // Critical Section to protect intermediate test Images
 extern CRITICAL_SECTION g_IntermediateTestImgCS;
+
+// Critical Section to protect intermediate test Images
+extern CRITICAL_SECTION g_BoraCS;
+
 ///////////////////////////////////////////////////////////
 ////////// GLOBAL CRITICAL SECTIONs start here ////////////
 

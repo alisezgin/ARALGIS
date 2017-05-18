@@ -111,6 +111,7 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 
 		else if (EventCaused == (WAIT_OBJECT_0 + 1)) // Start Data Reception From Camera
 		{
+			Sleep(60000);
 			if (bIsProcessingInProgress == false)
 			{
 				bIsProcessingInProgress = true;

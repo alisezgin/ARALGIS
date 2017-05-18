@@ -9,6 +9,10 @@
 #define WM_CAMERA_DATA_READY    (WM_USER + 4)
 #define WM_DBASE_CAR_INFO_READY (WM_USER + 5)
 
+#define WM_FILTER               (WM_USER + 6)
+#define WM_FILTER               (WM_USER + 6)
+
+
 
 #define MAX_DIR_PATH_LENGTH (256)
 #define MAX_FILENAME_LENGTH (512)

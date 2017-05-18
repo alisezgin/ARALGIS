@@ -698,7 +698,7 @@ void CReceiveCameraImage::StartDataReception(void)
 	// online operation upto here
 	else
 	{
-		///// delete these lines 
+		/// delete these lines 
 		CLoadSaveDlg dlg(NULL, m_Buffers, TRUE, TRUE);
 		if (dlg.DoModal() == IDOK)
 		{
