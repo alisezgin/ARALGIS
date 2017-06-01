@@ -123,8 +123,8 @@ public:
 
 		if (width*height < 256 * 256)
 		{
-			TRACE("WARNING: small image\n");
-			TRACE("++++++++ dynamic selection of bin width has not yet been implemented\n");
+			printf("WARNING: small image\n");
+			printf("++++++++ dynamic selection of bin width has not yet been implemented\n");
 		}
 
 		long int N = input.cols * input.rows;
@@ -175,7 +175,7 @@ public:
 		{
 			pk = find_start(hist, MAX_HIST);
 			hist[pk] = 0;
-			TRACE("deleting largest bin: %d\n", pk);
+			printf("deleting largest bin: %d\n", pk);
 		}
 
 		iCounter++; //5
@@ -192,9 +192,9 @@ public:
 		d2 = fi - pk;
 		if ((d1 < 0) || (d2 < 0))
 		{
-			TRACE("ERROR: histogram peak in strange location\n");
-			TRACE("ST %d  PK %d  FI %d\n", st, pk, fi);
-			TRACE("D %d %d\n", d1, d2);
+			fprintf(stderr, "ERROR: histogram peak in strange location\n");
+			printf("ST %d  PK %d  FI %d\n", st, pk, fi);
+			printf("D %d %d\n", d1, d2);
 			exit(-1);
 		}
 
@@ -202,7 +202,7 @@ public:
 			if (d1 > d2)
 			{
 				do_invert = TRUE;
-				TRACE("inverting histogram\n");
+				printf("inverting histogram\n");
 			}
 
 		/* invert image - actually just invert histogram */
@@ -233,8 +233,8 @@ public:
 
 		if (ratio > 10)
 		{
-			TRACE("WARNING: ratio of largest to second largest histogram bin = %f\n", ratio);
-			TRACE("++++++++ maybe you should delete the largest histogram bin using the -D option\n");
+			printf("WARNING: ratio of largest to second largest histogram bin = %f\n", ratio);
+			printf("++++++++ maybe you should delete the largest histogram bin using the -D option\n");
 		}
 
 		if (big_peak)
@@ -250,7 +250,7 @@ public:
 			st = 0;
 		}
 
-		TRACE("starting from peak at position %d\n", st);
+		printf("starting from peak at position %d\n", st);
 
 		if (cumulative)
 		{
@@ -268,7 +268,7 @@ public:
 			thresh = 255 - thresh;
 		}
 
-		TRACE("ROSIN thresholding at %d (= %d)\n", thresh, thresh*divide);
+		printf("ROSIN thresholding at %d (= %d)\n", thresh, thresh*divide);
 
 		return thresh;
 	}
@@ -305,7 +305,7 @@ public:
 		//for (int i = 0; i < MAX_HIST; i++)
 		//{
 		//	out[i] = (int)b_hist[i];
-		//	TRACE("\n HIST %d %d %d", i, out[i], (int)b_hist[i]);
+		//	printf("\n HIST %d %d %d", i, out[i], (int)b_hist[i]);
 
 		//}
 
@@ -318,10 +318,10 @@ public:
 
 		// Iterate image
 
-		//TRACE("\n\n");
+		//printf("\n\n");
 		//for (int i = 0; i < MAX_HIST; i++)
 		//{
-		//	TRACE("\n HIST %d %f", i, out1[i]);
+		//	printf("\n HIST %d %f", i, out1[i]);
 
 		//}
 
@@ -355,7 +355,7 @@ public:
 	{
 		long int N = input.cols * input.rows;
 
-		TRACE("ROSIN Threshold is: %d\n", threshold);
+		printf("ROSIN Threshold is: %d\n", threshold);
 
 		// Modify output image
 
@@ -495,7 +495,7 @@ public:
 
 		if (end <= 0)
 		{
-			TRACE("ERROR: empty histogram\n");
+			fprintf(stderr, "ERROR: empty histogram\n");
 		}
 
 		for (i = st; i <= no_pts; i++) 
@@ -522,14 +522,14 @@ public:
 		x2 = X[st]; y2 = Y[st];
 		xi = (x1 + m*(m*x2 + y1 - y2)) / (1 + SQR(m));
 		yi = (m*x1 - m*x2 + SQR(m)*y1 + y2) / (1 + SQR(m));
-		TRACE("intersection point %f %f\n", xi, yi);
+		printf("intersection point %f %f\n", xi, yi);
 
 		return thresh;
 	}
 
 	
 
-	void ComputeRosinThreshold(cv::Mat& inputImg)
+	void ComputeRosinThreshold(cv::Mat& inputImg, cv::Mat *outImage)
 	{
 
 		// Input image properties
@@ -571,7 +571,9 @@ public:
 		//cv::morphologyEx(thresholdedImg, dstTmp, cv::MORPH_OPEN, elementOpen);
 		//cv::morphologyEx(dstTmp, dst, cv::MORPH_CLOSE, elementClose);
 
-#ifdef  DISPLAY_IMAGES_THRESHOLD
+		*outImage = dst.clone();
+
+#ifdef  DISPLAY_IMAGES_THRESHOLD_OPENED
 		cv::namedWindow("ROSIN THRESHOLDED SAM OPENED", cv::WINDOW_NORMAL);
 		cv::imshow("ROSIN THRESHOLDED SAM OPENED", dst);
 		cv::waitKey(0);
@@ -586,7 +588,7 @@ public:
 		long int N = imageTrackbar.cols * imageTrackbar.rows;
 
 
-		TRACE("Threshold is: %d\n", thresholdSelected);
+		printf("Threshold is: %d\n", thresholdSelected);
 
 		// Modify output image
 

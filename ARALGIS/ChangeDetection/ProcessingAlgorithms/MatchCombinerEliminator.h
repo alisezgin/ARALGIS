@@ -55,20 +55,27 @@ public:
 
 	MatchCombinerEliminator() {}
 
-	void combineEliminateMatches(	cv::Mat& imgReference,
-									cv::Mat& imgTest,
-									std::vector<cv::DMatch> matchesSURF,
-									std::vector<cv::KeyPoint> keypointsRefSURF,
-									std::vector<cv::KeyPoint> keypointsTestSURF,
-									std::vector<cv::DMatch> matchesSIFT,
-									std::vector<cv::KeyPoint> keypointsRefSIFT,
-									std::vector<cv::KeyPoint> keypointsTestSIFT,
-									cv::Point2f offset,
-									std::vector<cv::DMatch>* matchesCombinedCleaned,
-									std::vector<cv::KeyPoint>* keypointsRefCombinedCleaned,
-									std::vector<cv::KeyPoint>* keypointsTestCombinedCleaned,
-									int aDisplayCnt = 0,
-									int aThreshSelect = 0)
+
+	void combineEliminateMatches(cv::Mat& imgReference,
+		cv::Mat& imgTest,
+		std::vector<cv::DMatch> matchesSURF,
+		std::vector<cv::KeyPoint> keypointsRefSURF,
+		std::vector<cv::KeyPoint> keypointsTestSURF,
+		std::vector<cv::DMatch> matchesORB,
+		std::vector<cv::KeyPoint> keypointsRefORB,
+		std::vector<cv::KeyPoint> keypointsTestORB,
+		std::vector<cv::DMatch> matchesSTAR,
+		std::vector<cv::KeyPoint> keypointsRefSTAR,
+		std::vector<cv::KeyPoint> keypointsTestSTAR,
+		std::vector<cv::DMatch> matchesFAST,
+		std::vector<cv::KeyPoint> keypointsRefFAST,
+		std::vector<cv::KeyPoint> keypointsTestFAST,
+		cv::Point2f offset,
+		std::vector<cv::DMatch>* matchesCombinedCleaned,
+		std::vector<cv::KeyPoint>* keypointsRefCombinedCleaned,
+		std::vector<cv::KeyPoint>* keypointsTestCombinedCleaned,
+		int aDisplayCnt = 0,
+		int aThreshSelect = 0)
 
 	{
 		std::vector<cv::DMatch> matchesCombined;
@@ -81,7 +88,7 @@ public:
 
 		m_ThreshSelect = aThreshSelect;
 
-		m_DspCnt = (aDisplayCnt*5) + 1;
+		m_DspCnt = (aDisplayCnt * 5) + 1;
 
 		m_count = 0;
 		m_featCnt = 0;
@@ -101,34 +108,76 @@ public:
 			k++;
 		}
 #ifdef  DISPLAY_PRINTS_DEBUG
-		std::TRACE("\n processMatches # of METHOD-1 Keypoints %d", k);
+		std::printf("\n processMatches # of METHOD-1 Keypoints %d", k);
 #endif
-
-		//calculateOriginalPlaceSIFT(keypointsRefSIFT, keypointsTestSIFT);
 
 		int i = 0;
 
-		// combine matches and nd keypoints of SIFT in the common variables
-		// Now SURF and SIFT parameters are combines
-		for (std::vector<cv::DMatch>::iterator matchIterator = matchesSIFT.begin();
-			matchIterator != matchesSIFT.end();
+		// combine matches and nd keypoints of ORB in the common variables
+		for (std::vector<cv::DMatch>::iterator matchIterator = matchesORB.begin();
+			matchIterator != matchesORB.end();
 			++matchIterator)
 		{
 			matchesCombined.push_back(cv::DMatch(k, k,
 				(*matchIterator).distance));
 
-			keypoints1.push_back(keypointsRefSIFT[matchesSIFT[i].trainIdx]);
-			keypoints2.push_back(keypointsTestSIFT[matchesSIFT[i].queryIdx]);
+			keypoints1.push_back(keypointsRefORB[matchesORB[i].trainIdx]);
+			keypoints2.push_back(keypointsTestORB[matchesORB[i].queryIdx]);
 			k++;
 			i++;
 		}
 		// end of combination
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-		std::TRACE("\n processMatches # of METHOD-2 Keypoints %d", i);
-		std::TRACE("\n processMatches # of TOTAL Keypoints %d\n", k);
+		std::printf("\n processMatches # of METHOD-2 Keypoints %d", i);
 #endif
 
+
+
+		///////////////
+
+		i = 0;
+		// put matches and keypoints of STAR in the common variables
+		for (std::vector<cv::DMatch>::iterator matchIterator = matchesSTAR.begin();
+			matchIterator != matchesSTAR.end();
+			++matchIterator)
+		{
+			matchesCombined.push_back(cv::DMatch(k, k,
+				(*matchIterator).distance));
+
+			keypoints1.push_back(keypointsRefSTAR[matchesSTAR[i].trainIdx]);
+			keypoints2.push_back(keypointsTestSTAR[matchesSTAR[i].queryIdx]);
+			k++;
+			i++;
+		}
+#ifdef  DISPLAY_PRINTS_DEBUG
+		std::printf("\n processMatches # of METHOD-3 Keypoints %d", i);
+#endif
+
+		i = 0;
+
+		// combine matches and nd keypoints of FAST in the common variables
+		for (std::vector<cv::DMatch>::iterator matchIterator = matchesFAST.begin();
+			matchIterator != matchesFAST.end();
+			++matchIterator)
+		{
+			matchesCombined.push_back(cv::DMatch(k, k,
+				(*matchIterator).distance));
+
+			keypoints1.push_back(keypointsRefFAST[matchesFAST[i].trainIdx]);
+			keypoints2.push_back(keypointsTestFAST[matchesFAST[i].queryIdx]);
+			k++;
+			i++;
+		}
+		// end of combination
+
+#ifdef  DISPLAY_PRINTS_DEBUG
+		std::printf("\n processMatches # of METHOD-4 Keypoints %d", i);
+		std::printf("\n processMatches # of TOTAL Keypoints %d\n", k);
+#endif
+		std::printf("\n processMatches # of TOTAL Keypoints %d\n", k);
+
+		/////////////
 
 #ifdef  DISPLAY_IMAGES_DEBUG_FINAL_PROCESS
 		char title[1000];
@@ -148,40 +197,58 @@ public:
 		m_matchesCombinedCleaned = matchesCombined;
 		m_keypointsRefCombinedCleaned = keypoints1;
 		m_keypointsTestCombinedCleaned = keypoints2;
-		
-		double aMean, aStdDev;
-
-		if (m_matchesCombinedCleaned.size() > 30)
-		{
-			m_loopCounter = 0;
-			CalculateSlopeMeanAndStdDev(m_matchesCombinedCleaned, m_keypointsRefCombinedCleaned, m_keypointsTestCombinedCleaned, offset, &aMean, &aStdDev);
-			m_DspCnt++;
-			m_loopCounter++;
-			CalculateSlopeMeanAndStdDev(m_matchesCombinedCleaned, m_keypointsRefCombinedCleaned, m_keypointsTestCombinedCleaned, offset, &aMean, &aStdDev);
-
-			eliminateSmallResponseRecurringKeypoints();
-		}
-
-		if (m_matchesCombinedCleaned.size() < 20)
-		{
-			m_matchesCombinedCleaned = matchesCombined;
-			m_keypointsRefCombinedCleaned = keypoints1;
-			m_keypointsTestCombinedCleaned = keypoints2;
-		}
-
-
-		//findExtremumPoints();
-
-		matchesCombinedCleaned->erase(matchesCombinedCleaned->begin(), matchesCombinedCleaned->end());
-		keypointsRefCombinedCleaned->erase(keypointsRefCombinedCleaned->begin(), keypointsRefCombinedCleaned->end());
-		keypointsTestCombinedCleaned->erase(keypointsTestCombinedCleaned->begin(), keypointsTestCombinedCleaned->end());
 
 		*matchesCombinedCleaned = m_matchesCombinedCleaned;
 		*keypointsRefCombinedCleaned = m_keypointsRefCombinedCleaned;
 		*keypointsTestCombinedCleaned = m_keypointsTestCombinedCleaned;
 
+		double aMean, aStdDev;
+
+		int KKK = (int)m_matchesCombinedCleaned.size();
+		int KKKprev = KKK;
+
+
+		while (KKK > 100)
+		{
+			if (m_matchesCombinedCleaned.size() > 30)
+			{
+				m_loopCounter = 0;
+				CalculateSlopeMeanAndStdDev(m_matchesCombinedCleaned, m_keypointsRefCombinedCleaned, m_keypointsTestCombinedCleaned, offset, &aMean, &aStdDev);
+				m_DspCnt++;
+				m_loopCounter++;
+				CalculateSlopeMeanAndStdDev(m_matchesCombinedCleaned, m_keypointsRefCombinedCleaned, m_keypointsTestCombinedCleaned, offset, &aMean, &aStdDev);
+
+				eliminateSmallResponseRecurringKeypoints();
+			}
+
+			if (m_matchesCombinedCleaned.size() < 20)
+			{
+				m_matchesCombinedCleaned = matchesCombined;
+				m_keypointsRefCombinedCleaned = keypoints1;
+				m_keypointsTestCombinedCleaned = keypoints2;
+			}
+
+
+			//findExtremumPoints();
+
+			matchesCombinedCleaned->erase(matchesCombinedCleaned->begin(), matchesCombinedCleaned->end());
+			keypointsRefCombinedCleaned->erase(keypointsRefCombinedCleaned->begin(), keypointsRefCombinedCleaned->end());
+			keypointsTestCombinedCleaned->erase(keypointsTestCombinedCleaned->begin(), keypointsTestCombinedCleaned->end());
+
+			*matchesCombinedCleaned = m_matchesCombinedCleaned;
+			*keypointsRefCombinedCleaned = m_keypointsRefCombinedCleaned;
+			*keypointsTestCombinedCleaned = m_keypointsTestCombinedCleaned;
+
+			KKKprev = KKK;
+			KKK = (int)m_matchesCombinedCleaned.size();
+			if (KKKprev - KKK < 10)
+				KKK = 99;
+	}
+
+		std::printf("\n AFTERRRRRRRR of TOTAL Keypoints %d\n", matchesCombinedCleaned->size());
+
 #ifdef PRINT_DEBUG_FP
-		TRACE("\nRemaining %d Points in FINAL Response-Recurrence Processing!!!!\n", matchesCombinedCleaned->size());
+		printf("\nRemaining %d Points in FINAL Response-Recurrence Processing!!!!\n", matchesCombinedCleaned->size());
 #endif
 
 #ifdef  DISPLAY_IMAGES_DEBUG_FINAL_PROCESS
@@ -226,7 +293,7 @@ public:
 		int k = 0;
 
 #ifdef PRINT_DEBUG_FP
-		TRACE("\n");
+		printf("\n");
 #endif
 
 		float aThreshold;
@@ -245,9 +312,9 @@ public:
 		{
 #ifdef PRINT_DEBUG_FP
 			if (shallDeleteIndex[i] == false)
-				TRACE("\nI %d KEPT", i);
+				printf("\nI %d KEPT", i);
 			else 
-				TRACE("\nI %d DELETED", i);
+				printf("\nI %d DELETED", i);
 #endif
 
 			isBreak = false;
@@ -265,18 +332,18 @@ public:
 					Point2 = m_keypointsRefCombinedCleaned[matchIterator1->trainIdx].pt;
 					dResponse2 = m_keypointsRefCombinedCleaned[matchIterator1->trainIdx].response;
 
-					//TRACE("\n KP1 X %.1f  Y %.1f KP2 X %.1f Y %.1f RESP1 %f RESP2 %f", Point1.x, Point1.y, Point2.x, Point2.y, dResponse1, dResponse2);
+					//printf("\n KP1 X %.1f  Y %.1f KP2 X %.1f Y %.1f RESP1 %f RESP2 %f", Point1.x, Point1.y, Point2.x, Point2.y, dResponse1, dResponse2);
 					if (((float)fabs(Point1.x - Point2.x) <= aThreshold) &&
 						((float)fabs(Point1.y - Point2.y) <= aThreshold) &&
 						(dResponse1 >= dResponse2))
 					{
 #ifdef PRINT_DEBUG_FP
-						TRACE("\n%d %d  DELETING NEXT KP1 X %.1f  Y %.1f KP2 X %.1f Y %.1f RESP1 %f RESP2 %f", i, i + j + 1, Point1.x, Point1.y, Point2.x, Point2.y, dResponse1, dResponse2);
+						printf("\n%d %d  DELETING NEXT KP1 X %.1f  Y %.1f KP2 X %.1f Y %.1f RESP1 %f RESP2 %f", i, i + j + 1, Point1.x, Point1.y, Point2.x, Point2.y, dResponse1, dResponse2);
 #endif
 						shallDeleteIndex[i + j + 1] = true;
 						k++;
 
-						//TRACE("J %d ",j);
+						//printf("J %d ",j);
 
 						//isBreak = true;
 					}
@@ -285,16 +352,16 @@ public:
 							(dResponse1 <= dResponse2))
 					{
 #ifdef PRINT_DEBUG_FP
-						TRACE("\n%d %d  DELETING CURRENT KP1 X %.1f  Y %.1f KP2 X %.1f Y %.1f RESP1 %f RESP2 %f", i, i + j + 1, Point1.x, Point1.y, Point2.x, Point2.y, dResponse1, dResponse2);
+						printf("\n%d %d  DELETING CURRENT KP1 X %.1f  Y %.1f KP2 X %.1f Y %.1f RESP1 %f RESP2 %f", i, i + j + 1, Point1.x, Point1.y, Point2.x, Point2.y, dResponse1, dResponse2);
 #endif
 						shallDeleteIndex[i] = true;
 						k++;
 
-						//TRACE("J %d ",j);
+						//printf("J %d ",j);
 
 						isBreak = true;
 					}
-					//TRACE("%d ",j);
+					//printf("%d ",j);
 					j++;
 
 					if (isBreak)
@@ -310,7 +377,7 @@ public:
 
 		}
 
-		//TRACE("\n For Reference KPs Found %d Same Points\n", k);
+		//printf("\n For Reference KPs Found %d Same Points\n", k);
 
 		i = 0;
 		j = 0;
@@ -325,7 +392,7 @@ public:
 		k = 0;
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-		TRACE("\n");
+		printf("\n");
 #endif
 		for (std::vector<cv::DMatch>::iterator matchIterator = m_matchesCombinedCleaned.begin();
 			matchIterator != m_matchesCombinedCleaned.end();
@@ -349,8 +416,8 @@ public:
 		}
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-		TRACE("\nDeleted %d Points in FINAL Response-Recurrence Processing!!!!", k);
-		TRACE("\nRemaining %d Points in FINAL Response-Recurrence Processing!!!!\n", j);
+		printf("\nDeleted %d Points in FINAL Response-Recurrence Processing!!!!", k);
+		printf("\nRemaining %d Points in FINAL Response-Recurrence Processing!!!!\n", j);
 
 #endif
 
@@ -363,18 +430,18 @@ public:
 		m_keypointsTestCombinedCleaned = keypointsTestCombinedCleanedTmp;
 
 
-#ifdef  DISPLAY_IMAGES_DEBUG_FINAL_PROCESS
-		char title1[1000];
-		strcpy_s(title1, "MATCHES After FINAL Response-Recurrence Processing ");
-		char sNum[20];
-		//itoa((m_count - 1), sNum, 10);
-		_itoa_s(m_DisplayCnt, sNum, sizeof(sNum), 10);
-		strcat_s(title1, sNum);
-		DisplayMatches matchDisplayer;
-		matchDisplayer.setSeqDisplay(false); ///// bORAAAAAAAAAAAAAAAAAAAA
-		matchDisplayer.displayMatchesProcessor(m_imgRef, m_imgTest, m_matchesCombinedCleaned,
-			m_keypointsRefCombinedCleaned, m_keypointsTestCombinedCleaned, title1);
-#endif
+//#ifdef  DISPLAY_IMAGES_DEBUG_FINAL_PROCESS
+//		char title1[1000];
+//		strcpy_s(title1, "MATCHES After FINAL Response-Recurrence Processing ");
+//		char sNum[20];
+//		//itoa((m_count - 1), sNum, 10);
+//		_itoa_s(m_DisplayCnt, sNum, sizeof(sNum), 10);
+//		strcat_s(title1, sNum);
+//		DisplayMatches matchDisplayer;
+//		matchDisplayer.setSeqDisplay(false); ///// bORAAAAAAAAAAAAAAAAAAAA
+//		matchDisplayer.displayMatchesProcessor(m_imgRef, m_imgTest, m_matchesCombinedCleaned,
+//			m_keypointsRefCombinedCleaned, m_keypointsTestCombinedCleaned, title1);
+//#endif
 
 	}
 
@@ -403,7 +470,7 @@ public:
 			matchIterator != m_matchesCombinedCleaned.end();
 			++matchIterator)
 		{
-			//TRACE("\n Index %d LOOP_CNT %d", matchIterator->trainIdx, m_matchesCombinedCleaned.size());
+			//printf("\n Index %d LOOP_CNT %d", matchIterator->trainIdx, m_matchesCombinedCleaned.size());
 			assert(matchIterator->trainIdx < (int) m_matchesCombinedCleaned.size() + 1);
 			dYPoint = m_keypointsRefCombinedCleaned[matchIterator->trainIdx].pt.y;
 			tmpPair.first = i;
@@ -463,25 +530,25 @@ public:
 
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-		//k = 0;
-		//for (std::vector<cv::DMatch>::iterator matchIterator = matchesCombinedCleanedTmp.begin();
-		//	matchIterator != matchesCombinedCleanedTmp.end();
-		//	++matchIterator)
-		//{
-		//	TRACE("\n KP1 %d X %.5f  Y %.5f", k, keypointsRefCombinedCleanedTmp[k].pt.x, keypointsRefCombinedCleanedTmp[k].pt.y);
-		//	k++;
-		//}
-		//k = 0;
-		//for (std::vector<cv::DMatch>::iterator matchIterator = matchesCombinedCleanedTmp.begin();
-		//	matchIterator != matchesCombinedCleanedTmp.end();
-		//	++matchIterator)
-		//{
-		//	TRACE("\n KP2 %d X %.5f  Y %.5f", k, keypointsTestCombinedCleanedTmp[k].pt.x, keypointsTestCombinedCleanedTmp[k].pt.y);
-		//	k++;
-		//}
+		k = 0;
+		for (std::vector<cv::DMatch>::iterator matchIterator = matchesCombinedCleanedTmp.begin();
+			matchIterator != matchesCombinedCleanedTmp.end();
+			++matchIterator)
+		{
+			printf("\n KP1 %d X %.5f  Y %.5f", k, keypointsRefCombinedCleanedTmp[k].pt.x, keypointsRefCombinedCleanedTmp[k].pt.y);
+			k++;
+		}
+		k = 0;
+		for (std::vector<cv::DMatch>::iterator matchIterator = matchesCombinedCleanedTmp.begin();
+			matchIterator != matchesCombinedCleanedTmp.end();
+			++matchIterator)
+		{
+			printf("\n KP2 %d X %.5f  Y %.5f", k, keypointsTestCombinedCleanedTmp[k].pt.x, keypointsTestCombinedCleanedTmp[k].pt.y);
+			k++;
+		}
 #endif
 
-#ifdef  DISPLAY_IMAGES_DEBUG_FINAL
+#ifdef  DISPLAY_IMAGES_DEBUG_FINAL_BORA
 		char title1[1000];
 		strcpy_s(title1, "MATCHES After RESPONSE Processing ");
 		char sNum[20];
@@ -545,12 +612,12 @@ public:
 			try
 			{
 				slope = (float)calculateSlope(Point1, Point2, offset);
-				//std::TRACE("\nFeature %d Slope %.5f", i, slope);
+				//std::printf("\nFeature %d Slope %.5f", i, slope);
 			}
 			catch (const std::invalid_argument& e)
 			{
 				// do stuff with exception... 
-				TRACE("\nException in slope calculation\n");
+				std::printf("\nException in slope calculation\n");
 			}
 
 			slopes.push_back(slope);
@@ -585,7 +652,7 @@ public:
 		// end of standart deviation calculation
 
 #ifdef DISPLAY_PRINTS_DEBUG
-		std::TRACE("\nstarting Slope MEAN %.5f STDEV %.5f", fMean, fStDev);
+		std::printf("\nstarting Slope MEAN %.5f STDEV %.5f", fMean, fStDev);
 #endif
 
 		// create temporary variables
@@ -613,7 +680,7 @@ public:
 			double dDiff = fabs(inputSlopes[i] - fMean);
 
 #ifdef DISPLAY_PRINTS_DEBUG
-			//std::TRACE("\nFEATURE %d SLOPE %.5f DIFFERENCE %.5f THRESHOLd %.5f", i, inputSlopes[i], dDiff, aThrsh);
+			//std::printf("\nFEATURE %d SLOPE %.5f DIFFERENCE %.5f THRESHOLd %.5f", i, inputSlopes[i], dDiff, aThrsh);
 #endif
 			if (dDiff <= aThrsh)
 			{
@@ -630,7 +697,7 @@ public:
 		}
 
 #ifdef DISPLAY_PRINTS_DEBUG
-		std::TRACE("\n%d Features will be used for SLOPE Calculation", k);
+		std::printf("\n%d Features will be used for SLOPE Calculation", k);
 #endif
 
 #ifdef  DISPLAY_IMAGES_DEBUG_FINAL
@@ -655,27 +722,6 @@ public:
 		m_matchesCombinedCleaned = matchesCombinedCleaned;
 		m_keypointsRefCombinedCleaned = keypointsRefCombinedCleaned;
 		m_keypointsTestCombinedCleaned = keypointsTestCombinedCleaned;
-
-//		// calculate the refined mean value of slopes
-//		double sum1 = std::accumulate(inputSlopes1.begin(), inputSlopes1.end(), 0.0);
-//		double fMean1 = sum1 / inputSlopes1.size();
-//		// end of mean calculation
-//
-//		// calculate the refined standart deviation value of slopes
-//		std::vector<double> diff1(inputSlopes1.size());
-//		std::transform(inputSlopes1.begin(), inputSlopes1.end(), diff1.begin(),
-//			std::bind2nd(std::minus<double>(), fMean1));
-//
-//		double sq_sum1 = std::inner_product(diff1.begin(), diff1.end(), diff1.begin(), 0.0);
-//		double fStDev1 = std::sqrt(sq_sum1 / inputSlopes1.size());
-//		// end of standart deviation calculation
-//
-//		*aMean = fMean1;
-//		*aStdDev = fStDev1;
-//
-//#ifdef DISPLAY_PRINTS_DEBUG
-//		std::TRACE("\nFINAL Slope MEAN %.5f STDEV %.5f", fMean1, fStDev1);
-//#endif
 	}
 
 };

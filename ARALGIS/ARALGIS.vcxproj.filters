@@ -231,9 +231,6 @@
     <ClInclude Include="BitmapDisplay\HeaderFiles\PkMattoGDI.h">
       <Filter>BitmapDisplay\HeaderFiles</Filter>
     </ClInclude>
-    <ClInclude Include="BitmapDisplay\HeaderFiles\SapToGDI.h">
-      <Filter>BitmapDisplay\HeaderFiles</Filter>
-    </ClInclude>
     <ClInclude Include="ColorFormView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -351,6 +348,12 @@
     <ClInclude Include="DriverAckDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BitmapDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\ImagePartitionSelect.h">
+      <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -387,9 +390,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BitmapDisplay\SourceFiles\PkMattoGDI.cpp">
-      <Filter>BitmapDisplay\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="BitmapDisplay\SourceFiles\SapToGDI.cpp">
       <Filter>BitmapDisplay\SourceFiles</Filter>
     </ClCompile>
     <ClCompile Include="ColorFormView.cpp">
@@ -521,6 +521,9 @@
     <ClCompile Include="DriverAckDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BitmapDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ARALGIS.rc">
@@ -540,6 +543,27 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\Toolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\sil\UTARİT.gif">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\sil\UTARİT.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\sil\utarit.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\sil\UTARIT.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\UTARIT.BMP">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

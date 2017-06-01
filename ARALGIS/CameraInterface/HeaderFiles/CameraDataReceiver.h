@@ -4,11 +4,6 @@
 #include "Constants.h"
 #include "ReceiveCameraImage.h"
 
-#define SET_TIMER_PERIOD_CAMERA      0x0001
-#define KILL_TIMER_CAMERA            0x0002
-
-typedef void (CALLBACK* SCNOTIFYPROC)(LPVOID, UINT nCode);
-
 class CMainFrame;
 
 class CCameraDataReceiver
@@ -18,11 +13,10 @@ public:
 	virtual ~CCameraDataReceiver();
 
 public:
-	SCNOTIFYPROC  m_pNotifyProc;
 	CMainFrame*	  m_pFrame;
 
 	bool Shutdown();
-	bool Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame);
+	bool Start(CMainFrame* pFrame);
 
 	CReceiveCameraImage m_MyCamera;
 

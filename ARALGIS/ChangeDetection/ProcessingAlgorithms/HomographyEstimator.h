@@ -46,7 +46,7 @@ public:
 
 		if (matches.size() < minNumberMatchesAllowed)
 		{
-			TRACE("\nrefineMatchesWithHomography exiting due to error .....\n");
+			printf("\nrefineMatchesWithHomography exiting due to error .....\n");
 			return false;
 		}
 
@@ -76,7 +76,7 @@ public:
 				inliers.push_back(matches[i]);
 		}
 
-		//TRACE("\nAFTER HOMO MATCHES %d\n", matches.size());
+		//printf("\nAFTER HOMO MATCHES %d\n", matches.size());
 
 		matches.swap(inliers);
 		return (matches.size() >= minNumberMatchesAllowed);
@@ -144,7 +144,7 @@ public:
 		}
 		else
 		{
-			TRACE("\n\nHOMOGRAPHY ESTIMATOR Not enough points to estimate homography\n");
+			printf("\n\nHOMOGRAPHY ESTIMATOR Not enough points to estimate homography\n");
 			exit(0);
 		}
 

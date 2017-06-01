@@ -7,10 +7,17 @@
 PkMatToGDI::PkMatToGDI(CWnd* ctrl, bool autofit)
 {
 	Init(ctrl, autofit);
+
+	m_internalImg = NULL;
 }
 
 PkMatToGDI::~PkMatToGDI()
 {
+	if (m_internalImg != NULL)
+	{
+		delete m_internalImg;
+		m_internalImg = NULL;
+	}
 }
 
 
@@ -113,12 +120,24 @@ bool PkMatToGDI::DrawImg(const cv::Mat &img)
 	{
 		// Adding needed columns on the right (max 3 px)
 
+		if (m_internalImg != NULL)
+		{
+			delete m_internalImg;
+			m_internalImg = NULL;
+		}
+
 		m_internalImg = new cv::Mat;
-		*m_internalImg = cv::Mat::zeros(img.size(), CV_8U);
+		//*m_internalImg = cv::Mat::zeros(img.size(), CV_8U);
+		*m_internalImg = cv::Mat::zeros(cv::Size(img.cols + padding, img.rows), img.type());
 
 		// we use internal image to reuse the memory. Avoid to alloc new memory at each call due to img size changes rarely
 		cv::copyMakeBorder(img, *m_internalImg, 0, 0, 0, padding, cv::BORDER_CONSTANT, 0);
-		m_internalImg->copyTo(tempimg);
+
+
+		//m_internalImg->copyTo(tempimg);
+		tempimg.create(img.size(), img.type());
+		tempimg =  m_internalImg->clone();
+		
 		//tempimg = m_internalImg;
 		// ignore (do not shows) the just added border
 		//img_w = tempimg.cols;
@@ -126,11 +145,14 @@ bool PkMatToGDI::DrawImg(const cv::Mat &img)
 		if (m_internalImg != NULL)
 		{
 			delete m_internalImg;
+			m_internalImg = NULL;
 		}
 	}
 	else
 	{
-		tempimg = img;
+		//tempimg = img;
+		tempimg.create(img.size(), img.type());
+		tempimg = img.clone();
 	}
 
 
@@ -192,9 +214,17 @@ bool PkMatToGDI::DrawImg(const cv::Mat &img)
 
 	//copy and stretch the image
 	int numLines = StretchDIBits(hDC,
-		m_destRectCv.x, m_destRectCv.y, m_destRectCv.width, m_destRectCv.height,
-		0, 0, img_w, img_h,
-		tempimg.data, bmi, DIB_RGB_COLORS, SRCCOPY);
+								 m_destRectCv.x, 
+								 m_destRectCv.y, 
+								 m_destRectCv.width, 
+								 m_destRectCv.height,
+								 0, 0, 
+								 img_w, 
+								 img_h,
+								 tempimg.data, 
+								 bmi, 
+								 DIB_RGB_COLORS, 
+								 SRCCOPY);
 
 	if (numLines == 0)
 		return false;

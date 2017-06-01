@@ -45,7 +45,7 @@ COdroidCommunicator::~COdroidCommunicator()
 // BN            26082003	1.0			Origin
 // 
 ////////////////////////////////////////////////////////////////////////////////
-BOOL COdroidCommunicator::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
+BOOL COdroidCommunicator::Start(CMainFrame* pFrame)
 {
 	if (bRun)
 	{
@@ -56,7 +56,6 @@ BOOL COdroidCommunicator::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
 
 	TRACE("Odroid CommunicatorThread Starting ...\n");
 
-	m_pNotifyProc = pNotifyProc;
 	m_pFrame = pFrame;
 
 	bRun = TRUE;
@@ -163,6 +162,10 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 	int result;
 
 	TRACE("Odroid Communicator Thread Started\n");
+
+	CView * pView = pOdroidCommunicator->m_pFrame->GetActiveView();
+	LPARAM pLparam;
+	pLparam = reinterpret_cast<LPARAM>("ARALGIS");
 
 	struct addrinfo* resultAddr = NULL;
 	struct addrinfo hints;
@@ -319,7 +322,7 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 						return THREADEXIT_SUCCESS;
 					}
 					pOdroidCommunicator->m_bClientedAccepted = true;
-					pOdroidCommunicator->m_pNotifyProc((LPVOID)pOdroidCommunicator->m_pFrame, ODROID_CONNECTION_OK);
+					pView->SendMessage(ODROID_CONNECTION_OK, 0, pLparam);
 
 
 
@@ -428,7 +431,7 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 
 								pOdroidCommunicator->m_bClientedAccepted = false;
 
-								pOdroidCommunicator->m_pNotifyProc((LPVOID)pOdroidCommunicator->m_pFrame, ODROID_CONNECTION_LOST);
+								pView->SendMessage(ODROID_CONNECTION_LOST, 0, pLparam);
 
 							} // FD_CLOSE
 						} // network event

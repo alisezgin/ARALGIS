@@ -11,12 +11,6 @@
 
 #define THREADEXIT_SUCCESS	  0x1234
 
-#define FILTER_PROCESS_FILTER1_READY    0x0001
-#define FILTER_PROCESS_FILTER2_READY    0x0002
-#define FILTER_PROCESS_FILTER3_READY    0x0003
-
-typedef void (CALLBACK* SCNOTIFYPROC)(LPVOID, UINT nCode);
-
 class CMainFrame;
 
 class CVehicleDetection
@@ -27,10 +21,9 @@ public:
 
 
 public:
-	SCNOTIFYPROC  m_pNotifyProc;
 	CMainFrame*	  m_pFrame;
 
-	BOOL Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame);
+	BOOL Start(CMainFrame* pFrame);
 	BOOL Shutdown();
 
 private:

@@ -78,7 +78,7 @@ public:
 
 		tick3 = cv::getTickCount();
 
-		TRACE("\nImage1 KeyPoint %.3f secs Descriptor %.3f TOTaL TIME %.3f\n",
+		printf("\nImage1 KeyPoint %.3f secs Descriptor %.3f TOTaL TIME %.3f\n",
 			((tick2 - tick1) / cv::getTickFrequency()), ((tick3 - tick2) / cv::getTickFrequency()), ((tick3 - tick1) / cv::getTickFrequency()));
 
 		tick1 = cv::getTickCount();
@@ -91,7 +91,7 @@ public:
 
 		tick3 = cv::getTickCount();
 
-		TRACE("\nImage2 KeyPoint %.3f secs Descriptor %.3f TOTaL TIME %.3f\n",
+		printf("\nImage2 KeyPoint %.3f secs Descriptor %.3f TOTaL TIME %.3f\n",
 			((tick2 - tick1) / cv::getTickFrequency()), ((tick3 - tick2) / cv::getTickFrequency()), ((tick3 - tick1) / cv::getTickFrequency()));
 
 		// 2. Match the two image descriptors
@@ -102,8 +102,8 @@ public:
 		// based on k nearest neighbours (with k=2)
 		std::vector<std::vector<cv::DMatch>> matches1;
 
-		TRACE("\n starting 1st KNN");
-		TRACE("\n Keypoint Sizes %d %d", keypoints1.size(), keypoints2.size());
+		printf("\n starting 1st KNN");
+		printf("\n Keypoint Sizes %d %d", keypoints1.size(), keypoints2.size());
 		// void DescriptorMatcher::knnMatch(const Mat& queryDescriptors, const Mat& trainDescriptors, 
 		//                                  vector<vector<DMatch>>& matches, int k, 
 		//                                  const Mat& mask=Mat(), bool compactResult=false )
@@ -111,7 +111,7 @@ public:
 		matcher.knnMatch(descriptors2, descriptors1, matches1, 2); // vector of matches (up to 2 per entry)
 																   // return 2 nearest neighbours
 
-		TRACE("\n starting 2nd KNN");
+		printf("\n starting 2nd KNN");
 
 		// from image 2 to image 1
 		// based on k nearest neighbours (with k=2)
@@ -120,11 +120,11 @@ public:
 		matcher.knnMatch(descriptors1, descriptors2, matches2, // vector of matches (up to 2 per entry)
 			                                               2); // return 2 nearest neighbours
 
-		TRACE("\n KNN finshed\n");
+		printf("\n KNN finshed\n");
 
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-		TRACE("Initial Num Matches1 %d Num Matches2 %d \n\n", matches1.size(), matches2.size());
+		printf("Initial Num Matches1 %d Num Matches2 %d \n\n", matches1.size(), matches2.size());
 #endif
 
 		/// New code to get all of the data
@@ -177,7 +177,7 @@ public:
 		int removed2 = ratioTest(matches2);
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-		TRACE("After Ratio Test Num Matches1 %d Num Matches2 %d RM1 %d RM2 %d\n\n", matches1.size() - removed1, matches2.size() - removed2, removed1, removed2);
+		printf("After Ratio Test Num Matches1 %d Num Matches2 %d RM1 %d RM2 %d\n\n", matches1.size() - removed1, matches2.size() - removed2, removed1, removed2);
 #endif
 
 		/////////////   bora 2 ###############################
@@ -198,7 +198,7 @@ public:
 		symmetryTest(matches1, matches2, matchesOut); //matchesOut // symMatches
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-		TRACE("After Symetry Test Num Matches1 %d \n\n", matchesOut.size()); //symMatches
+		printf("After Symetry Test Num Matches1 %d \n\n", matchesOut.size()); //symMatches
 #endif
 
 		/////////////   bora 3 ###############################

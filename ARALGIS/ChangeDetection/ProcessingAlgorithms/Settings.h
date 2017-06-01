@@ -3,7 +3,7 @@
 
 // definition of the included processes
 //#define PREPROCESS_RESIZE_IMAGES
-#define PREPROCESS_SCALEDOWN_IMAGES
+//#define PREPROCESS_SCALEDOWN_IMAGES
 #define PREPROCESS_HISTO_EQUALIZE  // need this
 //#define PREPROCESS_HISTO_MATCH
 //#define PREPROCESS_GAUSS_BLUR
@@ -12,12 +12,12 @@
 #define DIFF_MEAN
 #define DIFF_GRAY
 
-#define INCLUDE_FAST
+//#define INCLUDE_FAST
 #define INCLUDE_STAR
 #define INCLUDE_SURF
 #define INCLUDE_ORB
 ////// end of included processes
- 
+
 // definition of debug display images
 //#define DISPLAY_IMAGES_DEBUG 
 
@@ -71,8 +71,8 @@
 
 #define RECURRING_THRESHOLD (15.0)
 
-#define RECURRING_THRESHOLD_0 (10)  //25
-#define RECURRING_THRESHOLD_1 (5)  // 50
+#define RECURRING_THRESHOLD_0 (100)  //25
+#define RECURRING_THRESHOLD_1 (50)  // 50
 
 #define ANGLE_DIFFERENCE_THRESHOLD (10)
 
@@ -84,11 +84,14 @@
 
 #define DISTANCE_FINAL_THRESHOLD (50)
 
-#define SLOPE_STD_MULTIPLIER_1 (2)
-#define SLOPE_STD_MULTIPLIER_2 (1)
+#define SLOPE_STD_MULTIPLIER_1 (3)
+#define SLOPE_STD_MULTIPLIER_2 (2)
 
-#define HOMOGRAPHY_REPROJECT_THRESHOLD (5)
+#define HOMOGRAPHY_REPROJECT_THRESHOLD (50)
 
 #define MAX_CLUSTERS (3)
+//#define USE_ALL_KEYPOINTS
+#define USE_CLUSTER_CLEAN
+#define USE_CLUSTERING
 
-#define OVERLAP_VALUE_HIGHER (0)
+#define DISPLAY_IMAGES_DEBUG_BORA

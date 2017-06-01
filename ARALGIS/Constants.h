@@ -4,11 +4,32 @@
 #define MAX_PROG_INSTANCE (1)
 
 #define WM_UPDATE_CONTROLS      (WM_USER + 1)  // User message for updating controls
+
 #define WM_BIMPDLG_CLOSED       (WM_USER + 2)
 #define WM_BIMPDLG_DESTROYED    (WM_USER + 3)
-#define WM_CAMERA_DATA_READY    (WM_USER + 4)
-#define WM_DBASE_CAR_INFO_READY (WM_USER + 5)
 
+#define WM_FILTER1_READY		(WM_USER + 4)
+#define WM_FILTER2_READY		(WM_USER + 5)
+#define WM_FILTER3_READY		(WM_USER + 6)
+
+#define WM_FILTER4_READY		(WM_USER + 7)
+#define WM_FILTER5_READY		(WM_USER + 8)
+#define WM_FILTER6_READY		(WM_USER + 9)
+
+#define PTS_DISPLAY_IMAGE       (WM_USER + 10)
+#define PTS_DISPLAY_PLAKA       (WM_USER + 11)
+#define PTS_CONNECTION_LOST     (WM_USER + 12)
+#define PTS_CONNECTION_OK	    (WM_USER + 13)
+#define PTS_CONNECTION_NOK	    (WM_USER + 14)
+
+#define ODROID_CONNECTION_LOST  (WM_USER + 15)
+#define ODROID_CONNECTION_OK    (WM_USER + 16)
+
+
+#define WM_CAMERA_DATA_READY    (WM_USER + 17)
+#define WM_DBASE_CAR_INFO_READY (WM_USER + 18)
+
+#define WM_CHANGEDETECT_FINISHED (WM_USER + 19)
 
 #define MAX_DIR_PATH_LENGTH (256)
 #define MAX_FILENAME_LENGTH (512)
@@ -31,6 +52,7 @@
 #define CAM_MAX_BUFFER   (90)
 
 #define PORT_BYTE_LEN  (4)
+#define IP_BYTE_LEN (15)
 
 // ARALGIS TCP PORTS
 #define ARALGIS_ODROID_TCP_PORT_CHAR ("1001")

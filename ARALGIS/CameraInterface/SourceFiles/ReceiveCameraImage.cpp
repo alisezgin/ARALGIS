@@ -86,9 +86,6 @@ void CReceiveCameraImage::AcqCallback(SapAcqCallbackInfo *pInfo)
 	CReceiveCameraImage *pDlg = (CReceiveCameraImage *)pInfo->GetContext();
 
 	pDlg->m_nFramesLost++;
-
-	// Refresh controls
-	//SetEvent(g_CameraUpdateControlsEvent);
 }
 
 //==============================================================================
@@ -105,13 +102,6 @@ void CReceiveCameraImage::XferCallback(SapXferCallbackInfo *pInfo)
 
 	// Check if last frame is reached
 	pDlg->CheckForLastFrame();
-
-	if (((pDlg->m_Buffers->GetIndex() + 1) % pDlg->m_nFramesPerCallback) == 0 ||
-		pDlg->m_Buffers->GetIndex() == pDlg->m_Buffers->GetCount() - 1)
-	{
-		// Refresh controls
-		//SetEvent(g_CameraUpdateControlsEvent);
-	}
 } // End of the CGigESeqGrabDemoDlg::XferCallback method.
 
 
@@ -186,7 +176,14 @@ BOOL CReceiveCameraImage::InitSAPERA(void)
 	if (m_bServerAvailable == FALSE)
 	{
 		// Define off-line objects
-		m_Buffers = new SapBuffer(g_CameraBufferSize, CAM_SIZE, g_CameraHeight, SapFormatRGB888, SapBuffer::TypeScatterGather); // MAX_BUFFER
+		if (g_CameraPixelBits == 24)
+		{
+			m_Buffers = new SapBuffer(g_CameraBufferSize, CAM_SIZE, g_CameraHeight, SapFormatRGB888, SapBuffer::TypeScatterGather); // MAX_BUFFER
+		}
+		else
+		{
+			m_Buffers = new SapBuffer(g_CameraBufferSize, CAM_SIZE, g_CameraHeight, SapFormatUint8, SapBuffer::TypeScatterGather); // MAX_BUFFER
+		}
 
 	} // End if, else.
 
@@ -606,8 +603,6 @@ void CReceiveCameraImage::CheckForLastFrame(void)
 			SetEvent(g_CameraStopDataRecieveEvent); 
 		} // End if.
 
-		//SetEvent(g_CameraUpdateControlsEvent);
-
 	} // End if. 
 } // End of the CReceiveCameraImage::CheckForLastFrame method.
 
@@ -625,9 +620,6 @@ void CReceiveCameraImage::OnWaitableTimer()
 	// Check if last frame is reached
 	CheckForLastFrame();
 
-	// Refresh controls
-	//SetEvent(g_CameraUpdateControlsEvent);
-
 } // End of the CReceiveCameraImage::OnTimer method.
 
 //==============================================================================
@@ -643,9 +635,6 @@ void CReceiveCameraImage::OnTimerCamera()
 
 	// Check if last frame is reached
 	CheckForLastFrame();
-
-	// Refresh controls
-	//SetEvent(g_CameraUpdateControlsEvent);
 
 } // End of the CReceiveCameraImage::OnTimer method.
 
@@ -680,6 +669,14 @@ void CReceiveCameraImage::StartDataReception(void)
 	// ??????????????
 	// ?????????
 
+	//for (int i = 0; i <= NUM_INTERMEDIATE_TEST_IMAGE; i++)
+	//{
+	//	if (g_CVImageTestIntermediate[i].rows != 0 || g_CVImageTestIntermediate[i].cols != 0)
+	//	{
+	//		g_CVImageTestIntermediate[i].release();
+	//	}
+	//}
+
 	// these lines are for online operation
 	// starting from here
 	m_nFramesLost = 0;
@@ -698,7 +695,7 @@ void CReceiveCameraImage::StartDataReception(void)
 	// online operation upto here
 	else
 	{
-		///// delete these lines 
+		/// delete these lines 
 		CLoadSaveDlg dlg(NULL, m_Buffers, TRUE, TRUE);
 		if (dlg.DoModal() == IDOK)
 		{
@@ -723,9 +720,6 @@ void CReceiveCameraImage::StartDataReception(void)
 	{
 		SetEvent(g_SetTimerFrameRateEvent);
 	}
-
-
-	//SetEvent(g_CameraUpdateControlsEvent);
 } // End of the CReceiveCameraImage::OnPlay method.
 
 ////==============================================================================
@@ -786,8 +780,6 @@ void CReceiveCameraImage::StartDataReception(void)
 //	} // End if, else.
 //
 //	m_bPauseOn = !m_bPauseOn;
-//
-//	//SetEvent(g_CameraUpdateControlsEvent);
 //} // End of the CReceiveCameraImage::OnPause method.
 
 //==============================================================================
@@ -819,9 +811,6 @@ void CReceiveCameraImage::StopDataReception(void)
 		m_bPlayOn = FALSE;
 	} // End if, else if.
 
-	//m_bPauseOn = FALSE;
-
-	//SetEvent(g_CameraUpdateControlsEvent);
 } // End of the CReceiveCameraImage::OnStop method.
 
 //*****************************************************************************************
@@ -868,8 +857,6 @@ void CReceiveCameraImage::StopDataReception(void)
 //			m_AcqDevice->SetConfigFile(dummy);
 //			CreateObjects();
 //		} // End if.
-//
-//		SetEvent(g_CameraUpdateControlsEvent);
 //	} // End if, else.
 //} // End of the CReceiveCameraImage::OnLoadAcqConfig method.
 
@@ -899,7 +886,6 @@ void CReceiveCameraImage::StopDataReception(void)
 //	CLoadSaveDlg dlg(NULL, m_Buffers, TRUE, TRUE);
 //	if (dlg.DoModal() == IDOK)
 //	{
-//		SetEvent(g_CameraUpdateControlsEvent);
 //	} // End if.  SapFormatRGB888
 //}
 
@@ -980,12 +966,30 @@ void CReceiveCameraImage::GetCameraDataAsMat()
 		if (bytesPerPixel == 3)
 		{
 			cv::Mat src(iHeight*(inumFrames+1), iWidth, CV_8UC3, pData);
-			src.copyTo(g_CVImageTest);
+
+			if (g_CVImageTest.rows != 0 || g_CVImageTest.cols != 0)
+			{
+				g_CVImageTest.release();
+			}
+
+			g_CVImageTest.create(iHeight*(inumFrames + 1), iWidth, CV_8UC3);
+			//src.copyTo(g_CVImageTest);
+
+			g_CVImageTest = src.clone();
 		}
 		else if (bytesPerPixel == 1)
 		{
 			cv::Mat src(iHeight*(inumFrames+1), iWidth, CV_8UC1, pData);
-			src.copyTo(g_CVImageTest);
+
+			if (g_CVImageTest.rows != 0 || g_CVImageTest.cols != 0)
+			{
+				g_CVImageTest.release();
+			}
+
+			g_CVImageTest.create(iHeight*(inumFrames + 1), iWidth, CV_8UC1);
+			//src.copyTo(g_CVImageTest);
+
+			g_CVImageTest = src.clone();
 		}
 
 		delete[] pData;
@@ -1069,12 +1073,29 @@ void CReceiveCameraImage::GetCameraIntermediateDataAsMat()
 		if (bytesPerPixel == 3)
 		{
 			cv::Mat src(iHeight, iWidth, CV_8UC3, pData);
-			src.copyTo(g_CVImageTestIntermediate[g_IntermediateCounter]);
+
+			if (g_CVImageTestIntermediate[g_IntermediateCounter].rows != 0 || g_CVImageTestIntermediate[g_IntermediateCounter].cols != 0)
+			{
+				g_CVImageTestIntermediate[g_IntermediateCounter].release();
+			}
+			g_CVImageTestIntermediate[g_IntermediateCounter].create(iHeight, iWidth, CV_8UC3);
+			
+			//src.copyTo(g_CVImageTestIntermediate[g_IntermediateCounter]);
+			g_CVImageTestIntermediate[g_IntermediateCounter] = src.clone();
 		}
 		else if (bytesPerPixel == 1)
 		{
 			cv::Mat src(iHeight, iWidth, CV_8UC1, pData);
-			src.copyTo(g_CVImageTestIntermediate[g_IntermediateCounter]);
+
+			if (g_CVImageTestIntermediate[g_IntermediateCounter].rows != 0 || g_CVImageTestIntermediate[g_IntermediateCounter].cols != 0)
+			{
+				g_CVImageTestIntermediate[g_IntermediateCounter].release();
+			}
+
+			g_CVImageTestIntermediate[g_IntermediateCounter].create(iHeight, iWidth, CV_8UC1);
+
+			//src.copyTo(g_CVImageTestIntermediate[g_IntermediateCounter]);
+			g_CVImageTestIntermediate[g_IntermediateCounter] = src.clone();
 		}
 
 		delete[] pData;

@@ -8,14 +8,7 @@
 #include "ARALGIS.h"
 #include "Constants.h"
 
-
 #define THREADEXIT_SUCCESS	  0x1234
-
-#define FILTER_PROCESS_FILTER1_READY    0x0001
-#define FILTER_PROCESS_FILTER2_READY    0x0002
-#define FILTER_PROCESS_FILTER3_READY    0x0003
-
-typedef void (CALLBACK* SCNOTIFYPROC)(LPVOID, UINT nCode);
 
 class CMainFrame;
 
@@ -27,10 +20,9 @@ public:
 
 
 public:
-	SCNOTIFYPROC  m_pNotifyProc;
 	CMainFrame*	  m_pFrame;
 
-	BOOL Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame);
+	BOOL Start(CMainFrame* pFrame);
 	BOOL Shutdown();
 
 private:
@@ -45,6 +37,18 @@ private:
 	unsigned int		    ThreadID1;
 	unsigned int		    ThreadID2;
 	unsigned int		    ThreadID3;
+
+	static UINT	__stdcall	RefFilter1ProcessingThread(LPVOID);
+	static UINT	__stdcall	RefFilter2ProcessingThread(LPVOID);
+	static UINT	__stdcall	RefFilter3ProcessingThread(LPVOID);
+
+	HANDLE					ThreadRefFilter1Processing;
+	HANDLE					ThreadRefFilter2Processing;
+	HANDLE					ThreadRefFilter3Processing;
+
+	unsigned int		    ThreadRefID1;
+	unsigned int		    ThreadRefID2;
+	unsigned int		    ThreadRefID3;
 
 	HANDLE				    ShutdownEvent;
 	bool				   	bRun;

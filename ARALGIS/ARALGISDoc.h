@@ -5,12 +5,6 @@
 
 #pragma once
 
-//#include <array>
-//#include <map>
-//#include "opencv2/core/core.hpp"
-//#include ".\\BitmapDisplay\\HeaderFiles\\SapToGDI.h"
-
-
 //#include ".\\Database\\HeaderFiles\\VehicleSet.h"
 
 

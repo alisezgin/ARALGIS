@@ -30,6 +30,7 @@
 #define IDD_DLG_DRIVER                  316
 #define IDD_DB_MODIFY_ACK1              317
 #define IDD_DB_NEWDRIVER                317
+#define IDB_BITMAP1                     324
 #define IDC_BITMAP                      1000
 #define IDC_GRP_TEST                    1006
 #define IDC_GRP_REF                     1007
@@ -107,10 +108,22 @@
 #define IDC_FORM_BGN_QUERY              1055
 #define IDC_DLG_DDRIVERLICENSECITY      1055
 #define IDC_DLG_DDRIVERLICENSEDISTRICT  1056
+#define IDC_STATIC_PLAKA_STR            1057
+#define IDC_STATIC_2222                 1059
 #define IDC_STATIC_BN1                  1060
+#define IDC_RADIO_COLOUR1               1061
 #define IDC_STATIC_BN2                  1062
+#define IDC_RADIO_COLOUR2               1062
 #define IDC_BUTTON1                     1063
 #define IDC_FORM_BARA                   1063
+#define IDC_RADIO_COLOUR3               1064
+#define IDC_STATIC_COLOURING            1065
+#define IDC_RADIO1_ORIGFILTER           1066
+#define IDC_RADIO_FILTER1               1067
+#define IDC_RADIO_FILTER2               1069
+#define IDC_RADIO_FILTER3               1070
+#define IDC_BUTTON2                     1071
+#define IDC_BUTTON_CHANGE_DETECT        1071
 #define ID_KAMERA_KONFIG32771           32771
 #define ID_KAMERA_KAY32772              32772
 #define ID_KAMERA_RESIMG32773           32773
@@ -164,9 +177,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        317
+#define _APS_NEXT_RESOURCE_VALUE        325
 #define _APS_NEXT_COMMAND_VALUE         32810
-#define _APS_NEXT_CONTROL_VALUE         1057
+#define _APS_NEXT_CONTROL_VALUE         1072
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

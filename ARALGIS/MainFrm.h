@@ -12,6 +12,8 @@
 #include ".\\ImageFiltering\\ImageFilterProcessing\\HeaderFiles\\ImageFilterProcessing.h"
 #include ".\\miniIni\\Processing\\HeaderFiles\\IniFileProcessing.h"
 #include ".\\VehicleDetection\\HeaderFiles\\VehicleDetection.h"
+#include ".\\ChangeDetection\\HeaderFiles\\ChangeDetectController.h"
+
 
 
 class CMainFrame : public CFrameWnd
@@ -30,6 +32,7 @@ public:
 	CCameraDBServer        *m_CameraDatabaseServer;
 	CImageFilterProcessing *m_ImageFilterProcessing;
 	CVehicleDetection      *m_VehicleDetector;
+	CChangeDetectController *m_ChangeDetector;
 
 
 protected:  // control bar embedded members
@@ -42,12 +45,6 @@ protected:  // control bar embedded members
 
 	// Operations
 public:
-	static void CALLBACK NotifyProcPTSComm(LPVOID lpParam, UINT nCode);
-	static void CALLBACK NotifyProcOdroidComm(LPVOID lpParam, UINT nCode);
-	static void CALLBACK NotifyProcCameraComm(LPVOID lpParam, UINT nCode);
-	static void CALLBACK NotifyProcImageFiltering(LPVOID lpParam, UINT nCode);
-	static void CALLBACK NotifyProcVehicleDetection(LPVOID lpParam, UINT nCode);
-
 	void Activate();
 	HANDLE  CreateOneAppMutex(LPCTSTR lpName);
 	ATOM    MyRegisterClass(HINSTANCE hInstance);

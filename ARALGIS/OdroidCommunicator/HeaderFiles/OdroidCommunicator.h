@@ -11,13 +11,10 @@
 #include "ARALGIS.h"
 #include "Constants.h"
 
-#define ODROID_CONNECTION_LOST      0x0001
-#define ODROID_CONNECTION_OK       0x0002
+
 
 
 #define THREADEXIT_SUCCESS	  0x1234
-
-typedef void (CALLBACK* SCNOTIFYPROC)(LPVOID, UINT nCode);
 
 class CMainFrame;
 
@@ -29,10 +26,9 @@ public:
 
 
 public:
-	SCNOTIFYPROC  m_pNotifyProc;
 	CMainFrame*	  m_pFrame;
 
-	BOOL Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame);
+	BOOL Start(CMainFrame* pFrame);
 	BOOL Shutdown();
 
 private:

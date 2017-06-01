@@ -34,15 +34,8 @@ void InitializeGlobalVars()
 	g_CameraStartDataRecieveEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_CameraStopDataRecieveEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_CameraChangeSampleRateEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	g_CameraPauseDataRecieveEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	g_CameraConfigFileChangeEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	g_CameraSelectStreamFileEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	g_CameraUpdateControlsEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	g_DisplayBitmapEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	g_DisplayOpenCVEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_SetTimerFrameRateEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_KillTimerEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	g_ResetTimerEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_OdroidOpenBarrierEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_OdroidCloseBarrierEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_OdroidStartHeatingEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -55,9 +48,16 @@ void InitializeGlobalVars()
 	g_ProcessFilter1Event = CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_ProcessFilter2Event = CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_ProcessFilter3Event = CreateEvent(NULL, TRUE, FALSE, NULL);
-	g_IntermediateImageReadyEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_ProcessFilter4Event = CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_ProcessFilter5Event = CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_ProcessFilter6Event = CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_IntermediateImageReadyEvent = CreateEvent(NULL, TRUE, FALSE, NULL); 
+	g_StartChangeDetectEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	strncpy_s(g_PlakaNoChars, "          ", PLAKA_CHAR_LENGTH);
+
+	InitializeCriticalSection(&RefImageCS);
+	InitializeCriticalSection(&TestImageCS);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -73,15 +73,8 @@ void DeleteGlobalVariables()
 	CloseHandle(g_CameraStartDataRecieveEvent);
 	CloseHandle(g_CameraStopDataRecieveEvent);
 	CloseHandle(g_CameraChangeSampleRateEvent);
-	CloseHandle(g_CameraPauseDataRecieveEvent);
-	CloseHandle(g_CameraConfigFileChangeEvent);
-	CloseHandle(g_CameraSelectStreamFileEvent);
-	CloseHandle(g_CameraUpdateControlsEvent);
-	CloseHandle(g_DisplayBitmapEvent);
-	CloseHandle(g_DisplayOpenCVEvent);
 	CloseHandle(g_SetTimerFrameRateEvent);
 	CloseHandle(g_KillTimerEvent);
-	CloseHandle(g_ResetTimerEvent);
 	CloseHandle(g_OdroidOpenBarrierEvent);
 	CloseHandle(g_OdroidCloseBarrierEvent);
 	CloseHandle(g_OdroidStartHeatingEvent);
@@ -94,6 +87,12 @@ void DeleteGlobalVariables()
 	CloseHandle(g_ProcessFilter1Event);
 	CloseHandle(g_ProcessFilter2Event);
 	CloseHandle(g_ProcessFilter3Event);
-	CloseHandle(g_IntermediateImageReadyEvent);
+	CloseHandle(g_ProcessFilter4Event);
+	CloseHandle(g_ProcessFilter5Event);
+	CloseHandle(g_ProcessFilter6Event);
+	CloseHandle(g_IntermediateImageReadyEvent); 
+	CloseHandle(g_StartChangeDetectEvent);
 
+	DeleteCriticalSection(&RefImageCS);
+	DeleteCriticalSection(&TestImageCS);
 }

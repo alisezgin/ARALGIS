@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#ifndef SHARED_HANDLERS
+#include "ARALGIS.h"
+#endif
+
 #include <stdio.h>
 #include <iostream>
 #include <iomanip>
@@ -9,12 +13,14 @@
 #include "opencv2\features2d\features2d.hpp"
 #include "opencv2\nonfree\features2d.hpp"
 #include "opencv2\calib3d\calib3d.hpp"
+#include "opencv2/opencv.hpp"
 
 #include "..\ProcessingAlgorithms\TransformImage.h" 
 #include "..\ProcessingAlgorithms\HistogramMatch.h"  
 #include "..\ProcessingAlgorithms\PreprocessImage.h"  
 #include "..\ProcessingAlgorithms\RobustMatcher.h"  
 #include "..\ProcessingAlgorithms\ImagePartition.h"  
+#include "..\ProcessingAlgorithms\ImagePartitionSelect.h"  
 #include "..\ProcessingAlgorithms\DisplayMatches.h"
 #include "..\ProcessingAlgorithms\HomographyEstimator.h"
 #include "..\ProcessingAlgorithms\MatchCombinerEliminator.h"
@@ -31,15 +37,43 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	cv::Mat imgReference;
 	cv::Mat imgTest;
 
-	cvtColor(aImgReference, imgReference, CV_BGR2GRAY);
-	cvtColor(aImgTest, imgTest, CV_BGR2GRAY);
-	
-	aImgReference.copyTo(imgReferenceClr);
-	aImgTest.copyTo(imgTestClr);
+	cv::Mat AA1, AA2, AA3, AA4, AA5, AA6;
+
+	transpose(aImgReference, AA1);
+	flip(AA1, AA2, 0); //transpose+flip(1)=CW
+	AA2.copyTo(AA3);
+
+	transpose(aImgTest, AA4);
+	flip(AA4, AA5, 0); //transpose+flip(1)=CW
+	AA5.copyTo(AA6);
+
+
+	if (g_CameraPixelBits == 24)
+	{
+		cvtColor(AA3, imgReference, CV_BGR2GRAY);
+		cvtColor(AA6, imgTest, CV_BGR2GRAY);
+
+		AA3.copyTo(imgReferenceClr);
+		AA6.copyTo(imgTestClr);
+	}
+	else
+	{
+		cv::applyColorMap(AA3, imgReferenceClr, cv::COLORMAP_RAINBOW);
+		cv::applyColorMap(AA6, imgTestClr, cv::COLORMAP_RAINBOW);
+
+		AA3.copyTo(imgReference);
+		AA6.copyTo(imgTest);
+	}
+
+
+
+
+	int dRowDiff = abs(imgReferenceClr.rows - imgTestClr.rows);
 
 	if (!imgReference.data || !imgTest.data)
 	{
-		std::cout << " --(!) Error reading images " << std::endl; return -1;
+		TRACE(" --(!) Error reading images "); 
+		return -1;
 	}
 	//TRACE("\n\n Image 1 Width %d  Height %d\n", imgReference.cols, imgReference.rows);
 	//TRACE("\n Image 2 Width %d  Height %d\n\n", imgTest.cols, imgTest.rows);
@@ -115,7 +149,7 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	cv::Ptr<cv::FeatureDetector> pfd4 = new cv::StarFeatureDetector();
 	cv::Ptr<cv::DescriptorExtractor> pfd44 = new cv::OrbDescriptorExtractor();
 
-	cv::Ptr<cv::FeatureDetector> pfd5 = new cv::FastFeatureDetector(25, true);
+	cv::Ptr<cv::FeatureDetector> pfd5 = new cv::FastFeatureDetector(50, true);
 	cv::Ptr<cv::DescriptorExtractor> pfd55 = new cv::OrbDescriptorExtractor();
 
 	//cv::Ptr<cv::FeatureDetector> pfd5 = new cv::SiftFeatureDetector();
@@ -169,9 +203,6 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 
 	cv::Mat imgTestWarpedPers;
 
-	MatchCombinerEliminator matchProcessor1;
-	std::vector<cv::DMatch> matchesCombined;
-	std::vector<cv::KeyPoint> keypointsRefCombined, keypointsTestCombined;
 
 	RobustMatcher rmatcherSURF;
 	rmatcherSURF.setRatio(0.7f);
@@ -235,78 +266,11 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	cv::Point2f offset((float)imgReference.cols, 0);
 	TRACE("\n OFFSET %d\n", imgReference.cols);
 
-	matchProcessor1.combineEliminateMatches(imgReference,
-		imgTest,
-		matchesSURF,
-		keypointsRefSURF,
-		keypointsTestSURF,
-		matchesORB,
-		keypointsRefORB,
-		keypointsTestORB,
-		offset,
-		&matchesCombined,
-		&keypointsRefCombined,
-		&keypointsTestCombined,
-		0,
-		0);
-
-#ifdef  DISPLAY_IMAGES_DEBUG
-	char title22[1000];
-	strcpy_s(title22, "MATCHES  After SURF-SIFT Slope-Distance Processing");
-	char sNum22[20];
-	_itoa_s(kkk, sNum22, sizeof(sNum22), 10);
-	strcat_s(title22, sNumSIFT);
-	DisplayMatches matchDisplayer;
-	matchDisplayer.displayMatchesProcessor(imgReference, imgTest, matchesCombined,
-		keypointsRefCombined, keypointsTestCombined, title22);
-#endif
-
-	matchesSURF.erase(matchesSURF.begin(), matchesSURF.end());
-
-	keypointsRefSURF.erase(keypointsRefSURF.begin(), keypointsRefSURF.end());
-
-	keypointsTestSURF.erase(keypointsTestSURF.begin(), keypointsTestSURF.end());
-
-	matchesORB.erase(matchesORB.begin(), matchesORB.end());
-
-	keypointsRefORB.erase(keypointsRefORB.begin(), keypointsRefORB.end());
-
-	keypointsTestORB.erase(keypointsTestORB.begin(), keypointsTestORB.end());
-
-	matches1SURFAll.erase(matches1SURFAll.begin(), matches1SURFAll.end());
-
-	keypoints1SURFAll.erase(keypoints1SURFAll.begin(), keypoints1SURFAll.end());
-
-	matches2SURFAll.erase(matches2SURFAll.begin(), matches2SURFAll.end());
-
-	keypoints2SURFAll.erase(keypoints2SURFAll.begin(), keypoints2SURFAll.end());
-
-	matches1ORBAll.erase(matches1ORBAll.begin(), matches1ORBAll.end());
-
-	keypoints1ORBAll.erase(keypoints1ORBAll.begin(), keypoints1ORBAll.end());
-
-	matches2ORBAll.erase(matches2ORBAll.begin(), matches2ORBAll.end());
-
-	keypoints2ORBAll.erase(keypoints2ORBAll.begin(), keypoints2ORBAll.end());
-
-	int64 tick22 = cv::getTickCount();
-
-	// time in miliseconds
-	double time22 = ((tick22 - tick1) / cv::getTickFrequency());
-	TRACE("\nExecution Time After SURF-ORB PROCESSING %.3f seconds\n", time22);
-
-	// get the matches, transformed and combined image
-	//cv::Mat imageTestProcessed1 = imgTest;
-
-
-#ifdef  DISPLAY_PRINTS_DEBUG
-	TRACE("\nCalculating FAST \n");
-#endif
 
 #ifdef INCLUDE_STAR
 	TRACE("\n STAR Matcher begins");
 
-	/// STAR MATCHER begins
+	/// FAST MATCHER begins
 	RobustMatcher rmatcherSTAR;
 	rmatcherSTAR.setRatio(0.7f);
 	rmatcherSTAR.setFeatureDetector(pfd4);
@@ -321,9 +285,9 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 #ifdef  DISPLAY_IMAGES_DEBUG_FINAL
 	char titleSTAR[1000];
 	strcpy_s(titleSTAR, "STAR ");
-	//char sNumSTAR[20];
-	//_itoa_s(kkk, sNumFAST, sizeof(sNumSTAR), 10);
-	//strcat_s(titleSTAR, sNumSTAR);
+	//char sNumFAST[20];
+	//_itoa_s(kkk, sNumFAST, sizeof(sNumFAST), 10);
+	//strcat_s(titleFAST, sNumFAST);
 
 	DisplayMatches matchDisplayerSTAR;
 	matchDisplayerSTAR.displayMatchesProcessor(imgReference, imgTest, matchesSTAR, // imageTestProcessed1
@@ -337,16 +301,16 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	int64 tick3333 = cv::getTickCount();
 	// time in miliseconds
 	double time3333 = ((tick3333 - tick1) / cv::getTickFrequency());
-	TRACE("\nExecution Time After FAST Calculation %.3f seconds\n", time3333);
+	TRACE("\nExecution Time After STAR Calculation %.3f seconds\n", time3333);
 
-	/// FAST MATCHER begins
+	/// STAR MATCHER begins
 	RobustMatcher rmatcherFAST;
 	rmatcherFAST.setRatio(0.7f);
 	rmatcherFAST.setFeatureDetector(pfd5);
 	rmatcherFAST.setDescriptorExtractor(pfd55);
 	rmatcherFAST.setDisplay(true);
 
-	rmatcherSTAR.match(imgReference, imgTest, // imageTestProcessed1
+	rmatcherFAST.match(imgReference, imgTest, // imageTestProcessed1
 		matchesFAST, keypointsRefFAST, keypointsTestFAST,
 		matches1FASTAll, keypoints1FASTAll,
 		matches2FASTAll, keypoints2FASTAll);
@@ -354,12 +318,12 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 #ifdef  DISPLAY_IMAGES_DEBUG_FINAL
 	char titleFAST[1000];
 	strcpy_s(titleFAST, "FAST ");
-	//char sNumFAST[20];
-	//_itoa_s(kkk, sNumFAST, sizeof(sNumFAST), 10);
-	//strcat_s(titleFAST, sNumFAST);
+	//char sNumSIFT[20];
+	//_itoa_s(kkk, sNumSIFT, sizeof(sNumSIFT), 10);
+	//strcat_s(titleSIFT, sNumSIFT);
 
 	DisplayMatches matchDisplayerFAST;
-	matchDisplayerSTAR.displayMatchesProcessor(imgReference, imgTest, matchesFAST, // imageTestProcessed1
+	matchDisplayerFAST.displayMatchesProcessor(imgReference, imgTest, matchesFAST, // imageTestProcessed1
 		keypointsRefFAST, keypointsTestFAST, titleFAST);
 #endif
 #endif
@@ -371,29 +335,62 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 
 	// Match the two images begins
 	MatchCombinerEliminator matchProcessor2;
-	std::vector<cv::DMatch> matchesCombined1;
-	std::vector<cv::KeyPoint> keypointsRefCombined1, keypointsTestCombined1;
 	cv::Mat homographyCombined;
 
+	std::vector<cv::DMatch> matchesCombined2;
+	std::vector<cv::KeyPoint> keypointsRefCombined2, keypointsTestCombined2;
+
+
+#ifdef USE_ALL_KEYPOINTS
 
 	matchProcessor2.combineEliminateMatches(imgReference,
 		imgTest,
-		matchesFAST,
+		matches1SURFAll,
+		keypointsRefSURF,
+		keypointsTestSURF,
+		matches1ORBAll,
+		keypointsRefORB,
+		keypointsTestORB,
+		matches1FASTAll,
 		keypointsRefFAST,
 		keypointsTestFAST,
-		matchesSTAR,
+		matches1STARAll,
 		keypointsRefSTAR,
 		keypointsTestSTAR,
 		offset,
-		&matchesCombined1,
-		&keypointsRefCombined1,
-		&keypointsTestCombined1,
+		&matchesCombined2,
+		&keypointsRefCombined2,
+		&keypointsTestCombined2,
 		1,
 		0);
 
+#else
+
+	matchProcessor2.combineEliminateMatches(imgReference,
+											imgTest,
+											matchesSURF,
+											keypointsRefSURF,
+											keypointsTestSURF,
+											matchesORB,
+											keypointsRefORB,
+											keypointsTestORB,
+											matchesFAST,
+											keypointsRefFAST,
+											keypointsTestFAST,
+											matchesSTAR,
+											keypointsRefSTAR,
+											keypointsTestSTAR,
+											offset,
+											&matchesCombined2,
+											&keypointsRefCombined2,
+											&keypointsTestCombined2,
+											1,
+											0);
+#endif
+
 #ifdef  DISPLAY_IMAGES_DEBUG
 	char title22[1000];
-	strcpy_s(title22, "MATCHES  After FAST-STAR Slope-Distance Processing");
+	strcpy_s(title22, "MATCHES  After Elimination Processing");
 	char sNum22[20];
 	_itoa_s(kkk, sNum22, sizeof(sNum22), 10);
 	strcat_s(title22, sNumSIFT);
@@ -407,53 +404,73 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	double time33 = ((tick33 - tick1) / cv::getTickFrequency());
 	TRACE("\nExecution Time After STAR-FAST PROCESSING %.3f seconds\n", time33);
 
-	std::vector<cv::DMatch> matchesCombined2;
-	std::vector<cv::KeyPoint> keypointsRefCombined2, keypointsTestCombined2;
 
-	MatchCombinerEliminator processFinal;
-	processFinal.combineEliminateMatches(imgReference,
-		imgTest,
-		matchesCombined,
-		keypointsRefCombined,
-		keypointsTestCombined,
-		matchesCombined1,
-		keypointsRefCombined1,
-		keypointsTestCombined1,
-		offset,
-		&matchesCombined2,
-		&keypointsRefCombined2,
-		&keypointsTestCombined2,
-		2,
-		1);
 
-	int64 tick44 = cv::getTickCount();
-	// time in miliseconds
-	double time44 = ((tick44 - tick1) / cv::getTickFrequency());
-	TRACE("\nExecution Time After FINAL PROCESSING %.3f seconds\n", time44);
+	std::vector<cv::DMatch> matchesCombined3;
+	std::vector<cv::KeyPoint> keypointsRefCombined3, keypointsTestCombined3;
+
 
 	cv::Mat imgTestWarpedPersNormClr;
 
-	if ((int)MAX_CLUSTERS > 1)  // more than 1 cluster, i.e., real partitioning
+
+#ifdef USE_CLUSTER_CLEAN
+	ImagePartitionSelector ddd;
+
+	ddd.SelectKP(imgReferenceClr,
+				 imgTestClr,
+				 offset,
+				 matchesCombined2,
+				 keypointsRefCombined2,
+				 keypointsTestCombined2,
+				 &matchesCombined3,
+				 &keypointsRefCombined3,
+				 &keypointsTestCombined3,
+				 2,
+				 1);
+
+#ifdef DISPLAY_PARTITION
+	char title2233[1000];
+	strcpy_s(title2233, "MATCHES  After ImagePartitionSelector");
+	DisplayMatches matchDisplayer;
+	matchDisplayer.displayMatchesProcessor(imgReferenceClr, imgTestClr,
+		matchesCombined3,
+		keypointsRefCombined3,
+		keypointsTestCombined3,
+		title2233);
+#endif
+
+#else
+
+	matchesCombined3 = matchesCombined2;
+	keypointsRefCombined3 = keypointsRefCombined3
+		keypointsTestCombined3 = keypointsTestCombined3;
+
+#endif
+
+	//#ifdef USE_CLUSTERING
+	if (dRowDiff > 500)
 	{
 		TRACE("\nCLUSTERING Begins for %d CLUSTERS\n", (int)MAX_CLUSTERS);
 
-		ImagePartitioner ddd;
+		ImagePartitioner zzz;
+
 
 		cv::Mat img_TestWarpedPartitioned;
 
-		ddd.PartitionImage(imgReferenceClr,
+		zzz.PartitionImage(imgReferenceClr,
 			imgTestClr,
 			img_TestWarpedPartitioned,
 			offset,
-			matchesCombined2,
-			keypointsRefCombined2,
-			keypointsTestCombined2,
-			2,
+			matchesCombined3,
+			keypointsRefCombined3,
+			keypointsTestCombined3,
+			7,
 			1);
 
 
 		imgTestWarpedPersNormClr = img_TestWarpedPartitioned.clone();
 	}
+	//#else
 	else // process whole image
 	{
 		TRACE("\nSINGLE PARTITION HOMOGRAPHY\n");
@@ -461,15 +478,15 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 		cv::Mat homographyRefined1;
 		HomographyEstimator homographyEstimator;
 
-		if (matchesCombined2.size() >= 4)
+		if (matchesCombined3.size() >= 4)
 		{
 			bool ishomogCalculated = false;
 
 			ishomogCalculated =
-				homographyEstimator.calculateHomography(keypointsTestCombined2,
-				keypointsRefCombined2,
+				homographyEstimator.calculateHomography(keypointsTestCombined3,
+				keypointsRefCombined3,
 				HOMOGRAPHY_REPROJECT_THRESHOLD,
-				matchesCombined2,
+				matchesCombined3,
 				&homographyRefined1);
 
 			if (ishomogCalculated == false)
@@ -480,13 +497,13 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 			}
 			else
 			{
-				TRACE("\n Size after homography %d\n\n", matchesCombined2.size());
+				TRACE("\n Size after homography %d\n\n", matchesCombined3.size());
 				int ii = 0;
-				for (std::vector<cv::DMatch>::iterator matchIterator = matchesCombined2.begin();
-					matchIterator != matchesCombined2.end();
+				for (std::vector<cv::DMatch>::iterator matchIterator = matchesCombined3.begin();
+					matchIterator != matchesCombined3.end();
 					++matchIterator)
 				{
-					//TRACE("\n DIST Index %d X %.5f ", ii, matchIterator->distance);
+					//std::printf("\n DIST Index %d X %.5f ", ii, matchIterator->distance);
 					ii++;
 				}
 				TRACE("\n\n");
@@ -511,18 +528,18 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 		imgTestWarpedPersNorm = imgTransformGrey.transformPerspective(imgReference,
 			*testImageNormalized,
 			homographyRefined1,
-			matchesCombined2,
-			keypointsRefCombined2,
-			keypointsTestCombined2,
+			matchesCombined3,
+			keypointsRefCombined3,
+			keypointsTestCombined3,
 			0);
 
 
 		imgTestWarpedPersNormClr = imgTransformClr.transformPerspective(imgReferenceClr,
 			imgTestClr,
 			homographyRefined1,
-			matchesCombined2,
-			keypointsRefCombined2,
-			keypointsTestCombined2,
+			matchesCombined3,
+			keypointsRefCombined3,
+			keypointsTestCombined3,
 			1);
 
 #ifdef  DISPLAY_IMAGES_DEBUG
@@ -531,6 +548,11 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 		cv::waitKey(0);
 #endif
 	} /// end of clustering-partitioning
+	//#endif
+	//
+
+	////////////////////////////////////////////////
+	cv::Mat  dChangeImage;
 
 	SpectralAngleMapper SAMEngine;
 
@@ -541,92 +563,64 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	if (resizedImgNo == 1)
 	{
 #ifdef DISPLAY_CONCAN_IMAGE
-		TRACE("\nRESIZED REFERENCE SIZE W %d H %d", resizedImage.cols, resizedImage.rows);
-		TRACE("\nTEST SIZE W %d H %d", imgTestWarpedPersNormClr.cols, imgTestWarpedPersNormClr.rows);
+		printf("\nRESIZED REFERENCE SIZE W %d H %d", resizedImage.cols, resizedImage.rows);
+		printf("\nTEST SIZE W %d H %d", imgTestWarpedPersNormClr.cols, imgTestWarpedPersNormClr.rows);
 
 		ImageDisplayer imageDisplayerClr2;
 		char titleClr2[1000];
-		strcpy_s(titleClr2, "REF TEST-CONCAN-WRAPEDT RESIZED TOGETHER");
+		strcpy_s(titleClr2, "REF TEST-CONCAN-WRAPED RESIZED TOGETHER");
 		imageDisplayerClr2.displayImages(resizedImage, imgTestWarpedPersNormClr, titleClr2);
 #endif
-		SAMEngine.SpectralAngleMapperCalculator(resizedImage, imgTestWarpedPersNormClr);
-	}
+		
+		if (g_CVTestWrapped.rows != 0 || g_CVTestWrapped.cols != 0)
+		{
+			g_CVTestWrapped.release();
+		}
+		g_CVTestWrapped.create(imgTestWarpedPersNormClr.size(), imgTestWarpedPersNormClr.type());
+		g_CVTestWrapped = imgTestWarpedPersNormClr.clone();
+
+		SAMEngine.SpectralAngleMapperCalculator(resizedImage, imgTestWarpedPersNormClr, &dChangeImage);
+}
 	else if (resizedImgNo == 2)
 	{
 #ifdef DISPLAY_CONCAN_IMAGE
-		TRACE("\nREFERENCE SIZE W %d H %d", imgReferenceClr.cols, imgReferenceClr.rows);
-		TRACE("\nRESIZED nTEST SIZE W %d H %d", resizedImage.cols, resizedImage.rows);
+		printf("\nREFERENCE SIZE W %d H %d", imgReferenceClr.cols, imgReferenceClr.rows);
+		printf("\nRESIZED nTEST SIZE W %d H %d", resizedImage.cols, resizedImage.rows);
 
 		ImageDisplayer imageDisplayerClr2;
 		char titleClr2[1000];
-		strcpy_s(titleClr2, "REF TEST-CONCAN-WRAPEDT RESIZED TOGETHER");
+		strcpy_s(titleClr2, "REF TEST-CONCAN-WRAPED RESIZED TOGETHER");
 		imageDisplayerClr2.displayImages(imgReferenceClr, resizedImage, titleClr2);
 #endif
-		SAMEngine.SpectralAngleMapperCalculator(imgReferenceClr, resizedImage);
+		if (g_CVTestWrapped.rows != 0 || g_CVTestWrapped.cols != 0)
+		{
+			g_CVTestWrapped.release();
+		}
+		g_CVTestWrapped.create(resizedImage.size(), resizedImage.type());
+		g_CVTestWrapped = resizedImage.clone();
+
+		SAMEngine.SpectralAngleMapperCalculator(imgReferenceClr, resizedImage, &dChangeImage);
 	}
+	//////////////////////////////////////////////////
 
+	//cv::Mat FFF, GGG, HHH;
 
-	/////////
-	// TEST Begin
-	/*
+	//cvtColor(resizedImage, GGG, cv::COLOR_BGR2GRAY);
 
-	// Image Change Detection
-	// First Method is Image Differencing
-	cv::Mat differenceImageGreyMean;
-	cv::Mat ratioImage;
-	cv::Mat imgTestWarpedGrey;
+	//FalseColour colourizer;
+	//HHH = colourizer.createColour(GGG);
 
-	cv::cvtColor(imgReferenceClr, imgReference, CV_RGB2GRAY);
-	cv::cvtColor(imgTestWarpedPersNormClr, imgTestWarpedGrey, CV_RGB2GRAY);
+	//bitwise_and(GGG, dChangeImage, FFF);
 
-	PreprocessImage preImg3;
-	preImg3.PreprocessStage(&imgReference, &imgTestWarpedGrey);
-
-	differenceImageGreyMean = cv::Mat::zeros(imgReference.size(), cv::DataType<uchar>::type);
-
-	ratioImage = cv::Mat::zeros(imgReference.size(), CV_8UC1);
-
-	// Ratio Image (From Grey Images)
-	DifferenceCalculator imageDifferencer;
-	imageDifferencer.computeRatio(imgReference, imgTestWarpedGrey, &ratioImage);
-
-	// Mean Difference Image (From Grey Images)
-	MeanDifferenceCalculator imageMeanDifferencer;
-	imageMeanDifferencer.computeDifferenceMean(imgReference, imgTestWarpedGrey, &differenceImageGreyMean, 5);
-	double min, max;
-	cv::minMaxLoc(differenceImageGreyMean, &min, &max);
-	differenceImageGreyMean = differenceImageGreyMean + ((255 - max) / 4);
-
-	//#ifdef  DISPLAY_IMAGES_DEBUG_DIFF
-	cv::namedWindow("MEAN GREY DIFFERENCE ", cv::WINDOW_NORMAL);
-	cv::imshow("MEAN GREY DIFFERENCE ", differenceImageGreyMean);
-	cv::waitKey(0);
-
-	cv::namedWindow("ORG GREY RATIO", cv::WINDOW_NORMAL);
-	cv::imshow("ORG GREY RATIO", ratioImage);
-	cv::waitKey(0);
-	//#endif
-
-
-	cv::Mat clrDiffKapurOpen;
-	cv::Mat greyMeanDiffKapurOpen;
-	cv::Mat greyRatioKapurOpen;
-
-	ThreshBora imgThresholder2;
-	imgThresholder2.thresholdImage(ratioImage, &greyRatioKapurOpen, 0);
-
-	ThreshBora1 imgThresholder3;
-	imgThresholder3.thresholdImage(differenceImageGreyMean, &greyMeanDiffKapurOpen, 0);
-
-	*/
-	////////
-	//// TEST END
+	//cv::namedWindow("AND", cv::WINDOW_NORMAL);
+	//cv::imshow("AND", HHH);
+	//cv::waitKey(0);
 
 	int64 tick2 = cv::getTickCount();
 
 	// time in miliseconds
 	double time55 = ((tick2 - tick1) / cv::getTickFrequency());
-	TRACE("\n\n TOTaL Execution Time %.3f seconds\n\n", time55);
+	printf("\n\n TOTaL Execution Time %.3f seconds\n\n", time55);
 
 	getchar();
 

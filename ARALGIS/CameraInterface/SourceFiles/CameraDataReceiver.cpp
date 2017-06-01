@@ -5,7 +5,6 @@
 #include "stdafx.h"
 
 #include "..\\HeaderFiles\\CameraDataReceiver.h"
-//#include "ARALGIS.h"
 #include "MainFrm.h"
 
 #ifdef _DEBUG
@@ -54,6 +53,67 @@ CCameraDataReceiver::~CCameraDataReceiver()
 
 ////////////////////////////////////////////////////////////////////////////////
 // 
+// FUNCTION:	CCameraDataReceiver::Start
+// 
+// DESCRIPTION: starts the CameraDataReceiver thread
+// 
+////////////////////////////////////////////////////////////////////////////////
+bool CCameraDataReceiver::Start(CMainFrame* pFrame)
+{
+	TRACE("CameraDataReceiver Starting ...\n");
+
+	m_pFrame = pFrame;
+
+	ShutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+	// Launch Add Print Job Thread
+	ThreadCameraDataReceiver = (HANDLE)_beginthreadex(NULL,
+		0,
+		CameraDataReceiverThread,
+		this,
+		0,
+		&ThreadID
+		);
+
+	if (!ThreadCameraDataReceiver)
+	{
+		TRACE("_beginthreadex(...) failure, ThreadCameraDataReceiver::Start\n");
+		return FALSE;
+	}
+	TRACE("ThreadCameraDataReceiver ThreadID %x ...\n", ThreadID);
+
+	m_bInit = TRUE;
+
+	return TRUE;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// 
+// FUNCTION:	CCameraDataReceiver::Shutdown
+// 
+// DESCRIPTION: stops the CameraDataReceiver thread
+// 
+////////////////////////////////////////////////////////////////////////////////
+bool CCameraDataReceiver::Shutdown()
+{
+	if (m_bInit == FALSE)
+		return FALSE;
+
+	TRACE("ThreadCameraDataReceiver Shutting down ...\n");
+
+	SetEvent(ShutdownEvent);
+
+	// wait for the thread to stop
+	WaitForSingleObject(ThreadCameraDataReceiver, INFINITE);
+
+	CloseHandle(ShutdownEvent);
+	CloseHandle(ThreadCameraDataReceiver);
+
+	return TRUE;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// 
 // FUNCTION:	CCameraDataReceiver::CameraDataReceiverThread
 // 
 // DESCRIPTION: thread function that receive image data from line scan camera.	 
@@ -68,17 +128,11 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 	Handles[0] = pServer->ShutdownEvent;
 	Handles[1] = g_CameraStartDataRecieveEvent;
 	Handles[2] = g_CameraStopDataRecieveEvent;
-	Handles[3] = g_CameraPauseDataRecieveEvent;
-	Handles[4] = g_CameraConfigFileChangeEvent;
-	Handles[5] = g_CameraSelectStreamFileEvent;
-	Handles[6] = g_CameraUpdateControlsEvent;
-	Handles[7] = pServer->m_hTimer;
-	Handles[8] = g_DisplayBitmapEvent;
-	Handles[9] = g_DisplayOpenCVEvent;
-	Handles[10] = g_SetTimerFrameRateEvent;
-	Handles[11] = g_KillTimerEvent;
-	Handles[12] = g_ResetTimerEvent;
-	Handles[13] = g_CameraChangeSampleRateEvent;
+	Handles[3] = pServer->m_hTimer;
+	Handles[4] = g_KillTimerEvent;
+
+	Handles[5] = g_CameraChangeSampleRateEvent;  // not implemented yet
+	Handles[6] = g_SetTimerFrameRateEvent;  // not used  for the time being
 
 
 	// this line is very important and must be present for each launched thread.
@@ -91,7 +145,7 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 
 	for (;;)
 	{
-		DWORD EventCaused = WaitForMultipleObjects( 14,
+		DWORD EventCaused = WaitForMultipleObjects( 7,
 													Handles,
 													FALSE,
 													INFINITE);
@@ -134,32 +188,13 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 			SetEvent(g_KillTimerEvent); 
 		}
 
-		else if (EventCaused == (WAIT_OBJECT_0 + 10)) // set timer frame rate 
+		else if (EventCaused == (WAIT_OBJECT_0 + 3)) // timer event  
 		{
-			ResetEvent(g_SetTimerFrameRateEvent);
-			int tFrameTime = pServer->m_MyCamera.GetFrameTime();   /// boraN time iþine bak
-			/////// boraN tFrameTime iþini iyice öðren
-
-			__int64 qwDueTime;
-			LARGE_INTEGER   liDueTime;
-
-			qwDueTime = -10 * tFrameTime; // -10 is: negative since relative time
-			                              //       : multiplied by 10, since it is in 100 nanoseconds 
-			                              //         and  tFrameTime is in miliseconds
-
-			liDueTime.QuadPart = (long long)qwDueTime;
-
-			//Set a timer to wait for XX seconds.
-			if (!SetWaitableTimer(pServer->m_hTimer, &liDueTime, tFrameTime, NULL, NULL, 0))
-			{
-				TRACE("SetWaitableTimer failed (%d)\n", GetLastError());
-				return 2;
-			}
-
-			SetEvent(g_CameraUpdateControlsEvent);
+			//pServer->m_MyCamera.OnTimerCamera();
+			pServer->m_MyCamera.OnWaitableTimer();
 		}
 
-		else if (EventCaused == (WAIT_OBJECT_0 + 11)) // kill timer 
+		else if (EventCaused == (WAIT_OBJECT_0 + 4)) // kill timer 
 		{
 			if (bIsProcessingInProgress == true)
 			{
@@ -188,13 +223,7 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 
 		}
 
-		else if (EventCaused == (WAIT_OBJECT_0 + 12)) // reset timer 
-		{
-			ResetEvent(g_ResetTimerEvent);
-			//pServer->m_MyCamera.DisplayOpenCVWindow();
-		}
-
-		else if (EventCaused == (WAIT_OBJECT_0 + 13)) // Change Camera Sample Rate
+		else if (EventCaused == (WAIT_OBJECT_0 + 5)) // Change Camera Sample Rate
 		{
 			// reset the event for further processing
 			ResetEvent(g_CameraChangeSampleRateEvent);
@@ -202,115 +231,28 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 			//pServer->m_MyCamera.StopDataReception();
 		}
 
-
-		else if (EventCaused == (WAIT_OBJECT_0 + 7)) // timer event  
+		else if (EventCaused == (WAIT_OBJECT_0 + 6)) // set timer frame rate 
 		{
-			//pServer->m_MyCamera.OnTimerCamera();
-			pServer->m_MyCamera.OnWaitableTimer();
+			ResetEvent(g_SetTimerFrameRateEvent);
+			int tFrameTime = pServer->m_MyCamera.GetFrameTime();   /// boraN time iþine bak
+			/////// boraN tFrameTime iþini iyice öðren
+
+			__int64 qwDueTime;
+			LARGE_INTEGER   liDueTime;
+
+			qwDueTime = -10 * tFrameTime; // -10 is: negative since relative time
+			                              //       : multiplied by 10, since it is in 100 nanoseconds 
+			                              //         and  tFrameTime is in miliseconds
+
+			liDueTime.QuadPart = (long long)qwDueTime;
+
+			//Set a timer to wait for XX seconds.
+			if (!SetWaitableTimer(pServer->m_hTimer, &liDueTime, tFrameTime, NULL, NULL, 0))
+			{
+				TRACE("SetWaitableTimer failed (%d)\n", GetLastError());
+				return 2;
+			}
 		}
-
-		else if (EventCaused == (WAIT_OBJECT_0 + 8)) // display bitmap window  
-		{
-			ResetEvent(g_DisplayBitmapEvent);
-		}
-
-		else if (EventCaused == (WAIT_OBJECT_0 + 9)) // display openCV window 
-		{
-			ResetEvent(g_DisplayOpenCVEvent);
-		}
-
-		else if (EventCaused == (WAIT_OBJECT_0 + 3)) // Pause Data Reception From Camera
-		{
-			// reset the event for further processing
-			ResetEvent(g_CameraPauseDataRecieveEvent);
-
-			//pServer->m_MyCamera.PauseDataReception();
-		}
-
-		else if (EventCaused == (WAIT_OBJECT_0 + 4)) // Load Camera Configuration File
-		{
-			// reset the event for further processing
-			ResetEvent(g_CameraConfigFileChangeEvent);
-
-			//pServer->m_MyCamera.LoadConfiguationFile();
-		}
-
-		else if (EventCaused == (WAIT_OBJECT_0 + 5)) // Display Recording Selection Dialog
-		{
-			// reset the event for further processing
-			ResetEvent(g_CameraSelectStreamFileEvent);
-			//pServer->m_MyCamera.DisplayRecordSelectDialog();
-		}
-
-		else if (EventCaused == (WAIT_OBJECT_0 + 6)) // update camera controls  
-		{
-			// reset the event for further processing
-			ResetEvent(g_CameraUpdateControlsEvent);
-			//pServer->m_MyCamera.UpdateControls();
-		}
-
 	}
 	return 1;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// 
-// FUNCTION:	CCameraDataReceiver::Start
-// 
-// DESCRIPTION: starts the CameraDataReceiver thread
-// 
-////////////////////////////////////////////////////////////////////////////////
-bool CCameraDataReceiver::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
-{
-	TRACE("CameraDataReceiver Starting ...\n");
-
-	m_pNotifyProc = pNotifyProc;
-	m_pFrame = pFrame;
-
-	ShutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-	// Launch Add Print Job Thread
-	ThreadCameraDataReceiver = (HANDLE)_beginthreadex(	NULL,
-														0,
-														CameraDataReceiverThread,
-														this,
-														0,
-														&ThreadID
-													 );
-
-	if (!ThreadCameraDataReceiver)
-	{
-		TRACE("_beginthreadex(...) failure, ThreadCameraDataReceiver::Start\n");
-		return FALSE;
-	}
-	TRACE("ThreadCameraDataReceiver ThreadID %x ...\n", ThreadID);
-
-	m_bInit = TRUE;
-
-	return TRUE;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// 
-// FUNCTION:	CCameraDataReceiver::Shutdown
-// 
-// DESCRIPTION: stops the CameraDataReceiver thread
-// 
-////////////////////////////////////////////////////////////////////////////////
-bool CCameraDataReceiver::Shutdown()
-{
-	if (m_bInit == FALSE)
-		return FALSE;
-
-	TRACE("ThreadCameraDataReceiver Shutting down ...\n");
-
-	SetEvent(ShutdownEvent);
-
-	// wait for the thread to stop
-	WaitForSingleObject(ThreadCameraDataReceiver, INFINITE);
-
-	CloseHandle(ShutdownEvent);
-	CloseHandle(ThreadCameraDataReceiver);
-
-	return TRUE;
 }

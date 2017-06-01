@@ -27,32 +27,11 @@ extern HANDLE g_CameraStopDataRecieveEvent;
 // event used for changing camera sample rate
 extern HANDLE g_CameraChangeSampleRateEvent;
 
-// event used for pausing camera data reception
-extern HANDLE g_CameraPauseDataRecieveEvent;
-
-// event used for displaying camera configuration file selection dialog
-extern HANDLE g_CameraConfigFileChangeEvent;
-
-// event used for loading a recorded stream file 
-extern HANDLE g_CameraSelectStreamFileEvent;
-
-// event used for updating camera controls 
-extern HANDLE g_CameraUpdateControlsEvent;
-
-// event used for displaying BITMAP Window 
-extern HANDLE g_DisplayBitmapEvent;
-
-// event used for displaying OpenCV Window 
-extern HANDLE g_DisplayOpenCVEvent;
-
 // event used for setting timer frame rate 
 extern HANDLE g_SetTimerFrameRateEvent;
 
 // event used for killing timer 
 extern HANDLE g_KillTimerEvent;
-
-// event used for resetting timer 
-extern HANDLE g_ResetTimerEvent;
 
 // event used for sending UVSS image to PTS 
 extern HANDLE SendUVSSImageEvent;
@@ -90,11 +69,20 @@ extern HANDLE g_ProcessFilter2Event;
 // event used for triggering Filter-3 processing of test image
 extern HANDLE g_ProcessFilter3Event;
 
+// event used for triggering Filter-1 processing of test image
+extern HANDLE g_ProcessFilter4Event;
+
+// event used for triggering Filter-2 processing of test image
+extern HANDLE g_ProcessFilter5Event;
+
+// event used for triggering Filter-3 processing of test image
+extern HANDLE g_ProcessFilter6Event;
+
 // event used for triggering intermediate test image ready
 extern HANDLE g_IntermediateImageReadyEvent;
 
 // event used for resetting timer 
-//HANDLE g_CameraDataReadyEvent;
+extern HANDLE g_StartChangeDetectEvent;
 
 ///////////////////////////////////////////////////
 ////////// GLOBAL EVENTS ends here ////////////////
@@ -105,6 +93,10 @@ extern HANDLE g_IntermediateImageReadyEvent;
 
 // Critical Section to protect intermediate test Images
 extern CRITICAL_SECTION g_IntermediateTestImgCS;
+
+// Critical Section to protect intermediate test Images
+extern CRITICAL_SECTION g_BoraCS;
+
 ///////////////////////////////////////////////////////////
 ////////// GLOBAL CRITICAL SECTIONs start here ////////////
 
@@ -130,8 +122,23 @@ extern unsigned int g_ByteImageSize;
 // global variable to hold openCV reference image from Camera
 extern cv::Mat g_CVImageRef;
 
+// global variable to hold filtered #1 openCV ref image 
+extern cv::Mat g_CVImageRefFilter1;
+
+// global variable to hold filtered #2 openCV ref image 
+extern cv::Mat g_CVImageRefFilter2;
+
+// global variable to hold filtered #3 openCV ref image 
+extern cv::Mat g_CVImageRefFilter3;
+
 // global variable to hold openCV intermediate test image from Camera
 extern cv::Mat g_CVImageTestIntermediate[NUM_INTERMEDIATE_TEST_IMAGE+1];
+
+// global variable for change detection result
+extern cv::Mat g_CVTestChangeDetect;
+
+// global variable for perspective wrapped test image
+extern cv::Mat g_CVTestWrapped;
 
 // global variable to hold counter of  openCV intermediate test image from Camera
 extern int g_IntermediateCounter;
@@ -162,6 +169,7 @@ extern int  g_CameraPixelBits;
 extern int  g_CameraBufferSize;
 extern char g_Odroid_Port[PORT_BYTE_LEN + 1];
 extern char g_PTSPort[PORT_BYTE_LEN + 1];
+extern char g_PTSIP[IP_BYTE_LEN + 1];
 extern char g_ReferenceFilePath[MAX_DIR_PATH_LENGTH + 1];
 extern char g_ConfigFilename[MAX_FILENAME_LENGTH + 1];
 extern int  g_ImageOnScreenDuration;
@@ -179,6 +187,12 @@ extern BOOL g_isProgramStarted;
 
 // something like a counting semaphore for thread sync
 extern int g_carsDetectedByPTSCnt;
+
+// Critical Section to protect RefImage 
+extern CRITICAL_SECTION   RefImageCS;
+
+// Critical Section to protect TestImage 
+extern CRITICAL_SECTION   TestImageCS;
 ////////////////////////////////////////////////////////////////////
 ////// GLOBAL CONTROL VARIABLES end here /////////////////////////
 
