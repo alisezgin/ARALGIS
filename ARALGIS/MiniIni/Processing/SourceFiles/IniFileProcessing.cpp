@@ -92,6 +92,7 @@ BOOL IniFileProcessing::ReadIniFile()
 	
 	const char* cOdroidPort;
 	const char* cPTSPort;
+	const char* cPTSIP;
 
 	const char* cRefImageFilePath;
 
@@ -176,6 +177,13 @@ BOOL IniFileProcessing::ReadIniFile()
 					WARNINGWINDOW_TITLE, MB_ICONSTOP);
 				return FALSE;
 			}
+
+			if (!ethernet_parameters->ReadString("PTS_IP", cPTSIP))
+			{
+				::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasýnda Hata.\nKamera Parametreleri: PTS_Port.\nProgram Kapanýyor!!!!!",
+					WARNINGWINDOW_TITLE, MB_ICONSTOP);
+				return FALSE;
+			}
 		}
 	}
 
@@ -225,6 +233,9 @@ BOOL IniFileProcessing::ReadIniFile()
 
 	strncpy_s(g_Odroid_Port, (size_t)(PORT_BYTE_LEN + 1), cOdroidPort, (size_t)(PORT_BYTE_LEN));
 	strncpy_s(g_PTSPort, (size_t)(PORT_BYTE_LEN + 1), cPTSPort, (size_t)(PORT_BYTE_LEN));
+
+	strncpy_s(g_PTSIP, (size_t)(IP_BYTE_LEN + 1), cPTSIP, (size_t)(IP_BYTE_LEN));
+
 
 	strncpy_s(g_ReferenceFilePath, (size_t)(MAX_DIR_PATH_LENGTH + 1), cRefImageFilePath, (size_t)(MAX_DIR_PATH_LENGTH));
 

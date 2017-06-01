@@ -81,18 +81,16 @@ CPTSCommunicator::~CPTSCommunicator()
 // BN            26082003	1.0			Origin
 // 
 ////////////////////////////////////////////////////////////////////////////////
-BOOL CPTSCommunicator::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
+BOOL CPTSCommunicator::Start(CMainFrame* pFrame)
 {
 	if(bRun)
 	{
 		TRACE("_beginthreadex(...) failure, for Launch Thread CPTSCommunicator::Start\n");
 		return FALSE;
 	}
-
-
+	
 	TRACE("PTS CommunicatorThread Starting ...\n");
 
-	m_pNotifyProc	= pNotifyProc;
 	m_pFrame	    = pFrame;
 
 	bRun = TRUE;
@@ -203,6 +201,10 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 		*ptr = NULL,
 		hints;
 
+	CView * pView = pPTSCommunicator->m_pFrame->GetActiveView();
+	LPARAM pLparam;
+	pLparam = reinterpret_cast<LPARAM>("ARALGIS");
+
 	TRACE("\n\n PTS Communicator Thread Started\n");
 
 	// Create Notification Event
@@ -223,7 +225,7 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 	hints.ai_protocol = IPPROTO_TCP;  //TCP connection!!!
 
 	//resolve server address and port 
-	iResult = getaddrinfo(PTS_IP_ADDRESS_CHAR, g_PTSPort, &hints, &result);
+	iResult = getaddrinfo(g_PTSIP, g_PTSPort, &hints, &result);
 	if (iResult != 0)
 	{
 		TRACE("CPTSCommunicator::PTSCommunicatorThread getaddrinfo failed with error: %d\n", iResult);
@@ -264,11 +266,11 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 
 				if (bretVal)
 				{
-					pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_CONNECTION_OK);
+					pView->SendMessage(PTS_CONNECTION_OK, 0, pLparam);
 				}
 				else
 				{
-					pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_CONNECTION_NOK);
+					pView->SendMessage(PTS_CONNECTION_NOK, 0, pLparam);
 				}
 			}
 		}
@@ -348,22 +350,12 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 						if (pPTSCommunicator->ControlMessage(buffer) == FALSE)
 							continue;
 
-
 						// message is OK.	
 						// start processing the received message
 						if (buffer[MESSAGE_TYPE_POS] == PLAKA_NO_MESSAGE)
 						{
 
 							int dPlakaSize = 0;
-
-							//int AA = buffer[0];
-							//int BB = buffer[1];
-							//int CC = buffer[2];
-							//int DD = buffer[3];
-							//int EE = sizeof(int);
-
-							//memcpy(&dPlakaSize, (BYTE*)buffer, 4);
-
 
 							dPlakaSize = buffer[IMAGE_SIZE_CALC_1] * 16777216 +
 										 buffer[IMAGE_SIZE_CALC_2] * 65536 +
@@ -382,7 +374,7 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 								SetEvent(g_CameraStartDataRecieveEvent);
 
 								strncpy_s(g_PlakaNoChars, (char*)buffer, dPlakaSize);
-								pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_DISPLAY_PLAKA);
+								pView->SendMessage(PTS_DISPLAY_PLAKA, 0, pLparam);
 							}
 						}
 
@@ -392,15 +384,9 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 							int dPlakaImageSize = 0;
 							memcpy(&dPlakaImageSize, buffer, 4);
 
-							//dPlakaImageSize = buffer[IMAGE_SIZE_CALC_1] * 16777216 +
-							//				  buffer[IMAGE_SIZE_CALC_2] * 65536 +
-							//				  buffer[IMAGE_SIZE_CALC_3] * 256 +
-							//				  buffer[IMAGE_SIZE_CALC_4];
-
 							BYTE *bigBuffer = new BYTE[dPlakaImageSize];
 
-							//////////////////////////
-							int dTotalBytesReceived = 1;
+							int dTotalBytesReceived = 0;
 							int dLoopCntr = 0;
 							int dReadSize = 1024;
 
@@ -450,28 +436,14 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 								}
 							}
 
-
-							///////////////////////////////
-
-							//nBytes = recv(pPTSCommunicator->scSocket, (char*)bigBuffer, dPlakaImageSize, NULL);
-							//if ((INVALID_SOCKET == nBytes) || (0 == nBytes))
-							//{
-							//	TRACE("recvfrom(...) receiving image %d failure CPTSCommunicator::PTSCommunicatorThread\n",
-							//		WSAGetLastError());
-							//	continue;
-							//}
-							//else
-							//{
-								pPTSCommunicator->GetImageData(bigBuffer, dPlakaImageSize);
-								delete[] bigBuffer;
-								pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_DISPLAY_IMAGE);
-							//}
+							pPTSCommunicator->GetImageData(bigBuffer, dPlakaImageSize);
+							delete[] bigBuffer;
+							pView->SendMessage(PTS_DISPLAY_IMAGE, 0, pLparam);
 						}
 
 					}
 				}
 
-				///
 				// handle ACCEPT operations 
 				else if (NetworkEvents.lNetworkEvents & FD_ACCEPT)
 				{
@@ -489,8 +461,7 @@ UINT __stdcall CPTSCommunicator::PTSCommunicatorThread(LPVOID pParam)
 				{
 					pPTSCommunicator->m_bIsConnectedToServer = false;
 					TRACE("CPTSCommunicator Thread Server Socket Closed\n");
-					pPTSCommunicator->m_pNotifyProc((LPVOID)pPTSCommunicator->m_pFrame, PTS_CONNECTION_LOST);
-
+					pView->SendMessage(PTS_CONNECTION_LOST, 0, pLparam);
 				}
 			}
 		}

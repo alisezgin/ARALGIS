@@ -24,7 +24,7 @@ public:
 	SpectralAngleMapper() {}
 
 
-	void SpectralAngleMapperCalculator(cv::Mat& srcImg, cv::Mat& testImg/*, cv::Mat* SAMMatOutput*/)
+	void SpectralAngleMapperCalculator(cv::Mat& srcImg, cv::Mat& testImg, cv::Mat* SAMMatOutput)
 	{
 		cv::Mat srcImgHSV;
 		cv::Mat testImgHSV; 
@@ -180,7 +180,7 @@ public:
 				if ((tmp1 == 0) || (tmp2 == 0) || (tmp3 == 0))
 				{
 					_samMat[j] = 0.0;
-					//TRACE("\nA%.3f %.3f %.3f %.3f %.3f ", tmp1, tmp2, tmp3, dSAM, _samMat[i]);
+					//printf("\nA%.3f %.3f %.3f %.3f %.3f ", tmp1, tmp2, tmp3, dSAM, _samMat[i]);
 				}
 				else
 				{
@@ -188,21 +188,21 @@ public:
 					_samMat[j] = acos(dSAM) * 180.0 / PI;
 					if ((dSAM > 1.0) && (dSAM < -1.0))
 					{
-						TRACE("\n FFF %.9f ", dSAM);
+						printf("\n FFF %.9f ", dSAM);
 					}
 
 					if ((_samMat[j] > 180.0) && (_samMat[j] < 0.0))
 					{
-						TRACE("\n FFF %.9f ", _samMat[j]);
+						printf("\n FFF %.9f ", _samMat[j]);
 					}
 
 
-					//TRACE("\nB%.3f %.3f %.3f %.3f %.3f ", tmp1, tmp2, tmp3, dSAM, _samMat[i]);
+					//printf("\nB%.3f %.3f %.3f %.3f %.3f ", tmp1, tmp2, tmp3, dSAM, _samMat[i]);
 				}
-				//fTRACE(fp, "\n%d  %d  %d %d %d   %.5f", i,j, tmp1, tmp2, tmp3, _samMat[j]);
+				//fprintf(fp, "\n%d  %d  %d %d %d   %.5f", i,j, tmp1, tmp2, tmp3, _samMat[j]);
 
 
-				//TRACE("%.3f %.3f ", dSAM, _samMat[i]);
+				//printf("%.3f %.3f ", dSAM, _samMat[i]);
 
 			}
 		}
@@ -211,7 +211,7 @@ public:
 
 		cv::minMaxLoc(SAMMat, &mind, &maxd);
 
-		//TRACE("\n\n MIN %.5f MAX %.5f \n", mind, maxd);
+		//printf("\n\n MIN %.5f MAX %.5f \n", mind, maxd);
 
 		double KKK = 254.0 / maxd;
 
@@ -236,7 +236,7 @@ public:
 #ifdef DISPLAY_SAM
 		double mini, maxi;
 		cv::minMaxLoc(imgToThreshold, &mini, &maxi);
-		TRACE("\n\n MIN %.5f MAX %.5f \n", mini, maxi);
+		printf("\n\n MIN %.5f MAX %.5f \n", mini, maxi);
 
 		cv::namedWindow("SAM IMAGE", cv::WINDOW_NORMAL);
 		cv::imshow("SAM IMAGE", imgToThreshold);
@@ -247,7 +247,7 @@ public:
 		SAMThresholder.thresholdImage(imgToThreshold);
 
 		RosinThreshold SAMRosinThresholder;
-		SAMRosinThresholder.ComputeRosinThreshold(imgToThreshold);
+		SAMRosinThresholder.ComputeRosinThreshold(imgToThreshold, SAMMatOutput);
 	}
 
 

@@ -61,7 +61,7 @@ CVehicleDetection::~CVehicleDetection()
 // MODIFICATIONS:
 // 
 ////////////////////////////////////////////////////////////////////////////////
-BOOL CVehicleDetection::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
+BOOL CVehicleDetection::Start(CMainFrame* pFrame)
 {
 	if (bRun)
 	{
@@ -72,7 +72,6 @@ BOOL CVehicleDetection::Start(SCNOTIFYPROC pNotifyProc, CMainFrame* pFrame)
 	TRACE("Vehicle Detection Thread Starting ...\n");
 
 	m_pFrame = pFrame;
-	m_pNotifyProc = pNotifyProc;
 
 	bRun = TRUE;
 
@@ -263,7 +262,7 @@ UINT __stdcall CVehicleDetection::VehicleDetectionThread(LPVOID pParam)
 	int nRows;
 	int nCols;
 	uchar* dataPtr1;
-	float fMean[50000];
+	float* fMean;
 	// boraN code analysis
 	// decrease 50000. It uses all of the stack. put it to the heap.
 
@@ -282,7 +281,9 @@ UINT __stdcall CVehicleDetection::VehicleDetectionThread(LPVOID pParam)
 
 	float fCoeffOfVar1, fCoeffOfVar2;
 
+	float d1;
 
+	fMean = new float[50000];
 
 	HANDLE Handles[2];
 	Handles[0] = pVehicleDetection->ShutdownEvent;
@@ -302,6 +303,7 @@ UINT __stdcall CVehicleDetection::VehicleDetectionThread(LPVOID pParam)
 			else
 				TRACE("VehicleDetectionThread is shutting Down normally...\n");
 
+			delete[] fMean;
 			return THREADEXIT_SUCCESS;
 		}
 
@@ -331,8 +333,30 @@ UINT __stdcall CVehicleDetection::VehicleDetectionThread(LPVOID pParam)
 			while ((bIsProcessingFinished == false) )
 			{
 				TRACE("PRS FRM-CNT %d \n", pVehicleDetection->m_dProcessedFrameCounter);
-				g_CVImageTestIntermediate[pVehicleDetection->m_dProcessedFrameCounter].copyTo(inClr);
-				cv::cvtColor(inClr, inGray, CV_RGB2GRAY);
+
+				//if (inClr.rows != 0 || inClr.cols != 0)
+				//{
+				//	inClr.release();
+				//}
+
+				//if (inGray.rows != 0 || inGray.cols != 0)
+				//{
+				//	inGray.release();
+				//}
+
+				if (g_CameraPixelBits == 24)
+				{
+					//g_CVImageTestIntermediate[pVehicleDetection->m_dProcessedFrameCounter].copyTo(inClr);
+					inClr = g_CVImageTestIntermediate[pVehicleDetection->m_dProcessedFrameCounter].clone();
+					cv::cvtColor(inClr, inGray, CV_RGB2GRAY);
+				}
+				else
+				{
+					//g_CVImageTestIntermediate[pVehicleDetection->m_dProcessedFrameCounter].copyTo(inGray);
+					inGray.create(g_CVImageTestIntermediate[pVehicleDetection->m_dProcessedFrameCounter].size(),
+						          g_CVImageTestIntermediate[pVehicleDetection->m_dProcessedFrameCounter].type());
+					inGray = g_CVImageTestIntermediate[pVehicleDetection->m_dProcessedFrameCounter].clone();
+				}
 
 				nRows = inGray.rows;
 				nCols = inGray.cols;
@@ -360,6 +384,10 @@ UINT __stdcall CVehicleDetection::VehicleDetectionThread(LPVOID pParam)
 				}
 				TRACE("lineCounter-2 %d \n", pVehicleDetection->m_dlineCounter);
 
+#ifdef DEBUG_BORA
+				FILE* fp;
+				fopen_s(&fp, "C:\\Users\\bora\\Desktop\\sil\\meanStd.txt", "w");
+#endif
 
 				for (int k = 0; k < pVehicleDetection->m_dlineCounter - dAnalysisWindow; k++)
 				{
@@ -394,23 +422,38 @@ UINT __stdcall CVehicleDetection::VehicleDetectionThread(LPVOID pParam)
 					fCoeffOfVar1 = fMeanWindowPrev / fStdWindowPrev;
 					fCoeffOfVar2 = fMeanWindowCurr / fStdWindowCurr;
 
+					d1 = fCoeffOfVar1 / fCoeffOfVar2;
 
-					//if (k >  nRows)
+#ifdef DEBUG_BORA
+					fprintf_s(fp, "%lf %lf %lf %lf %lf\n", fMeanWindow, fStdWindow, fCoeffOfVar1, fCoeffOfVar2, d1);
+#endif
+
+					//if (
+					//	( (fMeanWindow != 0.0) && (fStdWindow != 0.0) ) ||
+					//	( (fMeanWindow != 255.0) && (fStdWindow != 0.0))
+					//	)
 					//{
 
 						if (
+							//(
+							//   (bBegIdxFound == false) &&
+							//   (fStdWindowCurr > 2.0) &&
+							//   (fStdWindowPrev > 1.0) &&
+							//   (fStdWindowPrev2 > 0.5) &&
+							//   (fStdWindowPrev3 > 0.5)
+							//)
+							//&&
+							//(
+							//	(fCoeffOfVar1 < 500.0) &&
+							//	(bBegIdxFound == false)
+							//)
+							//||
 							(
-							(bBegIdxFound == false) &&
-							(fStdWindowCurr > 2.0) &&
-							(fStdWindowPrev > 1.0) &&
-							(fStdWindowPrev2 > 0.5) &&
-							(fStdWindowPrev3 > 0.5)
+								(bBegIdxFound == false) &&
+								(fStdWindowCurr > 0.2) &&
+								(fMeanWindow < 254.0)
 							)
-							&&
-							(
-							(fCoeffOfVar1 < 500.0) &&
-							(bBegIdxFound == false)
-							))
+						   )
 						{
 							bBegIdxFound = true;
 							g_dBeginIndex = k;
@@ -418,20 +461,28 @@ UINT __stdcall CVehicleDetection::VehicleDetectionThread(LPVOID pParam)
 
 
 						if (
+							//(
+							//	(bEndIdxFound == false) && (bBegIdxFound == true) &&
+							//	(fStdWindowCurr < 0.5) &&
+							//	(fStdWindowPrev < 0.5) &&
+							//	(fStdWindowPrev2 < 0.5) &&
+							//	(fStdWindowPrev3 < 0.5) &&
+							//	(k - g_dBeginIndex > 2000)
+							//)
+							//&&
+							//(
+							//	(bEndIdxFound == false) && (bBegIdxFound == true) &&
+							//	(k - g_dBeginIndex > 2000) &&
+							//	(fCoeffOfVar1 > 2000.0)
+							//)
+							//||
 							(
-							(bEndIdxFound == false) && (bBegIdxFound == true) &&
-							(fStdWindowCurr < 0.5) &&
-							(fStdWindowPrev < 0.5) &&
-							(fStdWindowPrev2 < 0.5) &&
-							(fStdWindowPrev3 < 0.5) &&
-							(k - g_dBeginIndex > 2000)
+								(bEndIdxFound == false) && (bBegIdxFound == true) &&
+								(k - g_dBeginIndex > 2000) &&
+								(fStdWindowCurr < 0.2) &&
+								(fMeanWindow > 254.0)
 							)
-							&&
-							(
-							(bEndIdxFound == false) && (bBegIdxFound == true) &&
-							(k - g_dBeginIndex > 2000) &&
-							(fCoeffOfVar1 > 2000.0)
-							))
+							)
 						{
 							bEndIdxFound = true;
 							g_dEndIndex = k;
@@ -441,16 +492,18 @@ UINT __stdcall CVehicleDetection::VehicleDetectionThread(LPVOID pParam)
 
 				}
 
-				//pVehicleDetection->m_pNotifyProc((LPVOID)pVehicleDetection->m_pFrame, FILTER_PROCESS_FILTER1_READY);
+#ifdef DEBUG_BORA
+				fclose(fp);
+#endif
 
 				if ((bBegIdxFound == true) && (bEndIdxFound == true))
 				{
 					bIsCarFound = true;
 
+
 					if (pVehicleDetection->m_isStopSignalled == false)
 					{
 						pVehicleDetection->m_isStopSignalled = true;
-						//Sleep(1000);
 						TRACE("Signal STOPPPPPPPPPPPPPPPP\n");
 						SetEvent(g_CameraStopDataRecieveEvent);
 					}
@@ -468,13 +521,25 @@ UINT __stdcall CVehicleDetection::VehicleDetectionThread(LPVOID pParam)
 				   )
 				{
 					bIsProcessingFinished = true;
-					ResetEvent(pVehicleDetection->ProcessDataEvent);  ///???????????????
+					ResetEvent(pVehicleDetection->ProcessDataEvent);  
 					SetEvent(pVehicleDetection->ProcessingFinishedEvent);
 				}
 
 			}
 		}
 	} // infite for loop
+
+	delete[] fMean;
+
+	if (inClr.rows != 0 || inClr.cols != 0)
+	{
+		inClr.release();
+	}
+
+	if (inGray.rows != 0 || inGray.cols != 0)
+	{
+		inGray.release();
+	}
 
 	return THREADEXIT_SUCCESS;
 }

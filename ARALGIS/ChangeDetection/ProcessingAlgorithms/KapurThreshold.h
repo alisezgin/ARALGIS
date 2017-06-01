@@ -48,13 +48,13 @@ public:
 		int threshold;
 		int first_bin;			/* see below */
 		int last_bin;			/* see below */
-		double tot_ent;		    /* total entropy */
-		double max_ent;		    /* max entropy */
+		double tot_ent;		/* total entropy */
+		double max_ent;		/* max entropy */
 		double ent_back;		/* entropy of the background pixels at a given threshold */
-		double ent_obj;		    /* entropy of the object pixels at a given threshold */
+		double ent_obj;		/* entropy of the object pixels at a given threshold */
 		double *data;			/* normalized histogram data */
-		double *P1;			    /* cumulative normalized histogram */
-		double *P2;			    /* see below */
+		double *P1;			/* cumulative normalized histogram */
+		double *P2;			/* see below */
 		Histo *norm_histo;		/* normalized histogram */
 
 		if (img.channels() != 1)
@@ -141,9 +141,8 @@ public:
 		free_histo(norm_histo);
 		free(P1);
 		free(P2);
-		//free(data); /// new memory leak
 
-		TRACE("Kapur Threshold is: %d\n", threshold);
+		printf("Kapur Threshold is: %d\n", threshold);
 
 		computeKapursSegmentation(img, thresholdedImg, threshold);
 
@@ -155,6 +154,7 @@ public:
 		long int N = input.cols * input.rows;
 		
 		// Modify output image
+
 		uchar *in = &(input.at<uchar>(0, 0)); // Image value
 		uchar *out = &(output.at<uchar>(0, 0)); // Image value
 

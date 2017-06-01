@@ -29,15 +29,15 @@ public:
 		cv::perspectiveTransform(imgCornerPT, imgCornerPTTransformed, homography); 
 
 
-		TRACE("\nPNT 1 X %f Y %f", imgCornerPT[0].x, imgCornerPT[0].y);
-		TRACE("\nPNT 2 X %f Y %f", imgCornerPT[1].x, imgCornerPT[1].y);
-		TRACE("\nPNT 3 X %f Y %f", imgCornerPT[2].x, imgCornerPT[2].y);
-		TRACE("\nPNT 4 X %f Y %f", imgCornerPT[3].x, imgCornerPT[3].y);
+		printf("\nPNT 1 X %f Y %f", imgCornerPT[0].x, imgCornerPT[0].y);
+		printf("\nPNT 2 X %f Y %f", imgCornerPT[1].x, imgCornerPT[1].y);
+		printf("\nPNT 3 X %f Y %f", imgCornerPT[2].x, imgCornerPT[2].y);
+		printf("\nPNT 4 X %f Y %f", imgCornerPT[3].x, imgCornerPT[3].y);
 
-		TRACE("\nPNT TRS 1 X %f Y %f", imgCornerPTTransformed[0].x, imgCornerPTTransformed[0].y);
-		TRACE("\nPNT TRS 2 X %f Y %f", imgCornerPTTransformed[1].x, imgCornerPTTransformed[1].y);
-		TRACE("\nPNT TRS 3 X %f Y %f", imgCornerPTTransformed[2].x, imgCornerPTTransformed[2].y);
-		TRACE("\nPNT TRS 4 X %f Y %f", imgCornerPTTransformed[3].x, imgCornerPTTransformed[3].y);
+		printf("\nPNT TRS 1 X %f Y %f", imgCornerPTTransformed[0].x, imgCornerPTTransformed[0].y);
+		printf("\nPNT TRS 2 X %f Y %f", imgCornerPTTransformed[1].x, imgCornerPTTransformed[1].y);
+		printf("\nPNT TRS 3 X %f Y %f", imgCornerPTTransformed[2].x, imgCornerPTTransformed[2].y);
+		printf("\nPNT TRS 4 X %f Y %f", imgCornerPTTransformed[3].x, imgCornerPTTransformed[3].y);
 
 		float maxX, minX, maxY, minY;
 
@@ -70,7 +70,7 @@ public:
 
 		sizeCalc = cv::Size((int)(maxX - minX + 0.5), (int)(maxY - minY + 0.5));
 
-		TRACE("\n\n FINAL SIZE X %d Y %d", sizeCalc.width, sizeCalc.height);
+		printf("\n\n FINAL SIZE X %d Y %d", sizeCalc.width, sizeCalc.height);
 
 		return sizeCalc;
 	}
@@ -165,6 +165,7 @@ public:
 			keypoints1, keypoints2, title);
 #endif
 
+		cv::Mat tempImg;
 
 		std::vector<cv::KeyPoint> KeyPointTrain, KeyPointTest;
 		std::vector<cv::Point2f> keyPointTrainPT;
@@ -217,17 +218,28 @@ public:
 			
 			
 			//cv::warpPerspective(imgTest, persImage, homography, imgTest.size(), cv::INTER_NEAREST, cv::BORDER_REPLICATE);
-			cv::warpPerspective(imgTest, persImage, homography, imgTrain.size(), cv::INTER_NEAREST, cv::BORDER_REPLICATE);
+			cv::warpPerspective(imgTest, persImage, homography, imgTrain.size(), cv::INTER_NEAREST, cv::BORDER_REPLICATE); // BORDER_TRANSPARENT
+
+			//resize(tempImg, persImage, imgTrain.size(), (0, 0), (0, 0), cv::INTER_CUBIC);
 
 
-			//TRACE("\nTEST H %d W %d \n", imgTest.rows, imgTest.cols);
+			//cv::warpPerspective(imgTest, persImage, homography, imgTrain.size(), cv::INTER_NEAREST | cv::WARP_INVERSE_MAP, cv::BORDER_REPLICATE);
+
+
+			//cv::warpPerspective(imgTest, persImage, homography, cv::Size(2048, 4096), cv::INTER_NEAREST, cv::BORDER_TRANSPARENT);
+
+
+			//printf("\nTEST H %d W %d \n", imgTest.rows, imgTest.cols);
 			//homography_warp(imgTest, homography, persImage);
+			
+			//homography_warp(imgTest, homography, tempImg);
+			//resize(tempImg, persImage, imgTrain.size(), (0, 0), (0, 0), cv::INTER_CUBIC);
 		}
 
 
 		for (int jj = 0; jj < (int) matchesHomography.size(); jj++)
 		{
-			//TRACE("\n RID %d TID %d JJ %d", matchesHomography[jj].trainIdx, matchesHomography[jj].queryIdx, jj);
+			//printf("\n RID %d TID %d JJ %d", matchesHomography[jj].trainIdx, matchesHomography[jj].queryIdx, jj);
 			keypoints2Tmp[matchesHomography[jj].queryIdx].pt = keyPointTestPTWarped[jj];
 		}
 
@@ -247,11 +259,11 @@ public:
 		char sNumCntTrl[20];
 		_itoa_s(aDisplayIndex, sNumCntTrl, sizeof(sNumCntTrl), 10);
 		strcat_s(trialNo, sNumCntTrl);
-		TRACE("\n%s", trialNo);
+		printf("\n%s", trialNo);
 
-		TRACE("\n Size Ref Image W %d H %d", imgTrain.cols, imgTrain.rows);
-		TRACE("\n Size Test Image W %d H %d", imgTest.cols, imgTest.rows);
-		TRACE("\n Size Warped Test Image W %d H %d", persImage.cols, persImage.rows);
+		printf("\n Size Ref Image W %d H %d", imgTrain.cols, imgTrain.rows);
+		printf("\n Size Test Image W %d H %d", imgTest.cols, imgTest.rows);
+		printf("\n Size Warped Test Image W %d H %d", persImage.cols, persImage.rows);
 #endif
 
 #ifdef  DISPLAY_DEBUG_PARTITION
@@ -275,7 +287,8 @@ public:
 							const cv::Mat& homography,
 							std::vector<cv::DMatch>& matchesHomography,
 							std::vector<cv::KeyPoint>& keypoints1,
-							std::vector<cv::KeyPoint>& keypoints2)
+							std::vector<cv::KeyPoint>& keypoints2,
+							int aDisplayIndex = 0)
 	{
 
 #ifdef  DISPLAY_IMAGES_DEBUG
@@ -293,8 +306,12 @@ public:
 		std::vector<cv::Point2f> keyPointTrainPT;
 		//std::vector<cv::Point2f> keypoints2Saved;
 
-		cv::Point2f srcTri[3];
-		cv::Point2f dstTri[3];
+		cv::Point2f* srcPoints;
+		cv::Point2f* dstPoints;
+
+		srcPoints = new cv::Point2f[matchesHomography.size()];
+		dstPoints = new cv::Point2f[matchesHomography.size()];
+
 
 		std::vector<cv::DMatch> MH;
 
@@ -311,8 +328,8 @@ public:
 			keyPointTestPT.push_back(KeyPointTest[i].pt);
 
 
-			srcTri[j] = keypoints1[i].pt;
-			dstTri[j] = keypoints2[i].pt;
+			srcPoints[j] = keypoints1[i].pt;
+			dstPoints[j] = keypoints2[i].pt;
 
 			MH.push_back(
 				cv::DMatch((*matchIterator).queryIdx,
@@ -326,17 +343,22 @@ public:
 
 		cv::Mat warp_mat(2, 3, CV_32FC1);
 		/// Get the Affine Transform
-		warp_mat = cv::getAffineTransform(srcTri, dstTri);
+		warp_mat = cv::getAffineTransform(srcPoints, dstPoints);
 
 		cv::Mat persImage;
-		cv::warpAffine(imgTest, persImage, warp_mat, persImage.size(), cv::INTER_CUBIC, cv::BORDER_TRANSPARENT);
+		cv::warpAffine(imgTest, persImage, warp_mat, imgTrain.size(), cv::INTER_CUBIC, cv::BORDER_REPLICATE);
 
 
-#ifdef  DISPLAY_IMAGES_DEBUG
+#ifdef  DISPLAY_IMAGES_PERSPECTIVE
 		char title1[1000];
 		strcpy_s(title1, "WARP AFFINE ");
-		DisplayMatches matchDisplayer1;
+		char sNumCnt1[20];
+		strcat_s(title1, " ");
+		_itoa_s(aDisplayIndex, sNumCnt1, sizeof(sNumCnt1), 10);
+		strcat_s(title1, sNumCnt1);
 
+		DisplayMatches matchDisplayer1;
+		
 		matchDisplayer1.displayMatchesHomographyMatrix(imgTrain, persImage, MH,
 			keypoints1, keypoints2, title1);
 

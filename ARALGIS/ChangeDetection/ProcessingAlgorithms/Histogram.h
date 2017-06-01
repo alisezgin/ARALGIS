@@ -100,6 +100,8 @@ bool is_double_histo(const Histo * histo)
 * @return # bins if the histogram is valid;
 *         INT_MIN otherwise
 *
+* @author M. Emre Celebi
+* @date 06.15.2007
 */
 
 int get_num_bins(const Histo * histo)

@@ -14,6 +14,10 @@
 #include "KapurThreshold.h"
 #include "Settings.h"  
 
+//#ifndef SHARED_HANDLERS
+//#include "ARALGIS.h"
+//#endif
+
 
 class ThresholdSAM
 {
@@ -61,11 +65,13 @@ public:
 		// Apply OPENING to image
 		cv::morphologyEx(imageThresholdedKapur, dst, cv::MORPH_OPEN, elementOpen);
 
+		//g_CVTestChangeDetect = dst.clone();
+
 		//cv::Mat dstTmp;
 		//cv::morphologyEx(imageThresholdedKapur, dstTmp, cv::MORPH_OPEN, elementOpen);
 		//cv::morphologyEx(dstTmp, dst, cv::MORPH_CLOSE, elementClose);
 
-#ifdef  DISPLAY_IMAGES_THRESHOLD
+#ifdef  DISPLAY_IMAGES_THRESHOLD_OPENED
 		cv::namedWindow("KAPUR THRESHOLDED SAM OPENED", cv::WINDOW_NORMAL);
 		cv::imshow("KAPUR THRESHOLDED SAM OPENED", dst);
 		cv::waitKey(0);
@@ -87,11 +93,13 @@ public:
 		cv::Mat dstOtsuOpened;
 		cv::morphologyEx(thresholdedImageCV2, dstOtsuOpened, cv::MORPH_OPEN, elementOpen);
 
+		g_CVTestChangeDetect = dstOtsuOpened.clone();
+
 		//cv::morphologyEx(thresholdedImageCV2, dstTmp, cv::MORPH_OPEN, elementOpen);
 		//cv::morphologyEx(dstTmp, dstOtsuOpened, cv::MORPH_CLOSE, elementClose);
 
 
-#ifdef  DISPLAY_IMAGES_THRESHOLD
+#ifdef  DISPLAY_IMAGES_THRESHOLD_OPENED
 		cv::namedWindow("OTSU THRESHOLDED SAM OPENED", cv::WINDOW_NORMAL);
 		cv::imshow("OTSU THRESHOLDED SAM OPENED", dstOtsuOpened);
 		cv::waitKey(0);

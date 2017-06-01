@@ -11,7 +11,7 @@
 ///////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdAfx.h"
 #include "..\HeaderFiles\PictureCtrl.h"
 #include <GdiPlus.h>
 using namespace Gdiplus;
@@ -281,15 +281,13 @@ void CPictureCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	//Check if pic data is loaded
 	if(m_bIsPicLoaded)
 	{
-
 		//Get control measures
 		RECT rc;
 		this->GetClientRect(&rc);
 
 		Graphics graphics(lpDrawItemStruct->hDC);
 		Image image(m_pStream);
-		graphics.DrawImage(&image, (INT)rc.left, (INT)rc.top, (INT)(rc.right-rc.left), (INT)(rc.bottom-rc.top));
-		
+		graphics.DrawImage(&image, (INT)rc.left, (INT)rc.top, (INT)(rc.right-rc.left), (INT)(rc.bottom-rc.top));	
 	}
 }
 
@@ -297,7 +295,6 @@ BOOL CPictureCtrl::OnEraseBkgnd(CDC *pDC)
 {
 	if(m_bIsPicLoaded)
 	{
-
 		//Get control measures
 		RECT rc;
 		this->GetClientRect(&rc);

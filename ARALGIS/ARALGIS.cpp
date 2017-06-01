@@ -10,6 +10,7 @@
 
 #include "ARALGISDoc.h"
 #include "ARALGISView.h"
+#include "afxwin.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -28,32 +29,11 @@ HANDLE g_CameraStopDataRecieveEvent;
 // event used for changing camera sample rate
 HANDLE g_CameraChangeSampleRateEvent;
 
-// event used for pausing camera data reception
-HANDLE g_CameraPauseDataRecieveEvent;
-
-// event used for displaying camera configuration file selection dialog
-HANDLE g_CameraConfigFileChangeEvent;
-
-// event used for loading a recorded stream file 
-HANDLE g_CameraSelectStreamFileEvent;
-
-// event used for updating camera controls 
-HANDLE g_CameraUpdateControlsEvent;
-
-// event used for displaying BITMAP Window 
-HANDLE g_DisplayBitmapEvent;
-
-// event used for displaying OpenCV Window 
-HANDLE g_DisplayOpenCVEvent;
-
 // event used for setting timer frame rate 
 HANDLE g_SetTimerFrameRateEvent;
 
 // event used for killing timer 
 HANDLE g_KillTimerEvent;
-
-// event used for resetting timer 
-HANDLE g_ResetTimerEvent;
 
 // event used for sending UVSS image to PTS 
 HANDLE SendUVSSImageEvent;
@@ -91,11 +71,20 @@ HANDLE g_ProcessFilter2Event;
 // event used for triggering Filter-3 processing of test image
 HANDLE g_ProcessFilter3Event;
 
+// event used for triggering Filter-1 processing of test image
+HANDLE g_ProcessFilter4Event;
+
+// event used for triggering Filter-2 processing of test image
+HANDLE g_ProcessFilter5Event;
+
+// event used for triggering Filter-3 processing of test image
+HANDLE g_ProcessFilter6Event;
+
 // event used for triggering intermediate test image ready
 HANDLE g_IntermediateImageReadyEvent;
 
-// event used for resetting timer 
-//HANDLE g_CameraDataReadyEvent;
+// event used for starting change detection 
+HANDLE g_StartChangeDetectEvent;
 
 ///////////////////////////////////////////////////
 ////////// GLOBAL EVENTS ends here ////////////////
@@ -131,6 +120,21 @@ int unsigned g_ByteImageSize;
 // global variable to hold openCV reference image from Camera
 cv::Mat g_CVImageRef;
 
+// global variable to hold filtered #1 openCV ref image 
+cv::Mat g_CVImageRefFilter1;
+
+// global variable to hold filtered #2 openCV ref image 
+cv::Mat g_CVImageRefFilter2;
+
+// global variable to hold filtered #3 openCV ref image 
+cv::Mat g_CVImageRefFilter3;
+
+// global variable for change detection result
+cv::Mat g_CVTestChangeDetect;
+
+// global variable for perspective wrapped test image
+cv::Mat g_CVTestWrapped;
+
 // global variable to hold openCV intermediate test image from Camera
 cv::Mat g_CVImageTestIntermediate[NUM_INTERMEDIATE_TEST_IMAGE+1];
 
@@ -157,17 +161,18 @@ char g_RefImageFileName[MAX_DIR_PATH_LENGTH];
 int g_dBeginIndex;
 int g_dEndIndex;
 
+// configuration file (INI file) variables starts here
 int  g_CameraWidth;
 int  g_CameraHeight;
 int  g_CameraPixelBits;
 int  g_CameraBufferSize;
 char g_Odroid_Port[PORT_BYTE_LEN + 1];
 char g_PTSPort[PORT_BYTE_LEN + 1];
+char g_PTSIP[IP_BYTE_LEN + 1];
 char g_ReferenceFilePath[MAX_DIR_PATH_LENGTH + 1];
 char g_ConfigFilename[MAX_FILENAME_LENGTH + 1];
 int  g_ImageOnScreenDuration;
 // boraN INI ends
-
 
 /////////////////////////////////////////////////////
 //// GLOBAL DATA VARIABLES end here////////////////
@@ -182,6 +187,12 @@ BOOL g_isProgramStarted;
 
 // something like a counting semaphore for thread sync
 int g_carsDetectedByPTSCnt;
+
+// Critical Section to protect RefImage 
+CRITICAL_SECTION   RefImageCS;
+
+// Critical Section to protect TestImage 
+CRITICAL_SECTION   TestImageCS;
 
 ////////////////////////////////////////////////////////////////////
 ////// GLOBAL CONTROL VARIABLES end here /////////////////////////
@@ -266,7 +277,7 @@ BOOL CARALGISApp::InitInstance()
 	// Change the registry key under which our settings are stored
 	// TODO: You should modify this string to be something appropriate
 	// such as the name of your company or organization
-	SetRegistryKey(_T("FuzyonSoft ARALGIS"));
+	SetRegistryKey(_T("Utarit ARALGIS"));
 	LoadStdProfileSettings(4);  // Load standard INI file options (including MRU)
 
 

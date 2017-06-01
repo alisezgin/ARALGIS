@@ -83,14 +83,14 @@ public:
 				{
 					dataPtr3[j] = 255;
 #ifdef  DISPLAY_PRINTS_DEBUG
-					//TRACE("%d %.3f ", *itout, dTemp);
+					//printf("%d %.3f ", *itout, dTemp);
 #endif
 				}
 				else if (dTemp < 0)
 				{
 					dataPtr3[j] = 0;
 #ifdef  DISPLAY_PRINTS_DEBUG
-					//TRACE("%d %.3f", *itout, dTemp);
+					//printf("%d %.3f", *itout, dTemp);
 #endif
 				}
 				else

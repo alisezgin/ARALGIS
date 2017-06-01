@@ -6,7 +6,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 
-///PkMatToGDI Class
+/// PkMatToGDI Class
 /// This class provides a method to fast draw (fitting or stretching) an OpenCV Mat image directly into MFC Gui.
 /// It's optimized to display a feed from video (cam or file) and it can be used to display a single cv::Mat.
 /// 
@@ -18,14 +18,14 @@
 ///
 /// Only Grey,RGB, and RGBA images are supported (please note RGB and not BGR)
 /// Windows GDI requires DWORD alignment for rows and continuous memory block for the source bitmap.
-///This means that the cv::Mat you will provide should be continuous (no ROI) and have columns %4.
-///The class checks the requirement and creates a right temporary image in case is needed (loosing a bit of time).
+/// This means that the cv::Mat you will provide should be continuous (no ROI) and have columns %4.
+/// The class checks the requirement and creates a right temporary image in case is needed (loosing a bit of time).
 ///
-///To improve general memory management is strongly suggested to use always images where cols %4 =0 but if
-///given image is not continuous the class will create the right image again.
+/// To improve general memory management is strongly suggested to use always images where cols %4 =0 but if
+/// given image is not continuous the class will create the right image again.
 ///
-///This class isn't memory consuming because it uses an internal cv::Mat to recycle always it's possible,
-///in special case when you are rendering a video where all frames have almost same size.
+/// This class isn't memory consuming because it uses an internal cv::Mat to recycle always it's possible,
+/// in special case when you are rendering a video where all frames have almost same size.
 
 class PkMatToGDI
 {

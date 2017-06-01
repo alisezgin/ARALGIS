@@ -56,7 +56,7 @@ public:
 
 		//if (matches1.size() >= matches2.size()) //==> keypoints2.size() > keypoints1.size()
 		//{
-		//	TRACE("\nYYYYYYYYY matches1.size() >= matches2.size()\n");
+		//	printf("\nYYYYYYYYY matches1.size() >= matches2.size()\n");
 		cv::drawMatches(image1, keypoints1, image2, keypoints2,
 			matchB2, resMatches,
 			cv::Scalar::all(-1), cv::Scalar::all(-1),
@@ -120,7 +120,7 @@ public:
 			i++;
 		}
 
-		TRACE("After Ratio Test Num Matches1 %d III %d KP11 %d KP21 %d KKK %d\n", matchB.size(), i, KP1.size(), KP2.size(), k);
+		printf("After Ratio Test Num Matches1 %d III %d KP11 %d KP21 %d KKK %d\n", matchB.size(), i, KP1.size(), KP2.size(), k);
 
 		cv::drawMatches(image1, KP1, image2, KP2,
 			matchB, resMatches,
@@ -155,7 +155,7 @@ public:
 		std::vector<cv::DMatch> matchB;
 		std::vector<cv::KeyPoint> KP1, KP2;
 
-		TRACE("\n displayMatchesSymetryTest SIZE1 %d SIZE2 %d\n", keypoints1.size(), keypoints2.size());
+		printf("\n displayMatchesSymetryTest SIZE1 %d SIZE2 %d\n", keypoints1.size(), keypoints2.size());
 
 		int k = 0;
 		for (std::vector<cv::DMatch>::iterator matchIterator = symMatches.begin();
@@ -174,7 +174,7 @@ public:
 			}
 		}
 
-		TRACE("\nAfter Symetry Test Num Matches1 %d IIII %d KP111 %d KP2111 %d\n", symMatches.size(), k, KP1.size(), KP2.size());
+		printf("\nAfter Symetry Test Num Matches1 %d IIII %d KP111 %d KP2111 %d\n", symMatches.size(), k, KP1.size(), KP2.size());
 
 		if (m_bIsSeqDisp == true)
 		{
@@ -247,7 +247,7 @@ public:
 			k++;
 		}
 
-		TRACE("After RANSAC Test Num Matches1 %d IIIII %d KP1111 %d KP2111 %d\n", matches.size(), k, KP1.size(), KP2.size());
+		printf("After RANSAC Test Num Matches1 %d IIIII %d KP1111 %d KP2111 %d\n", matches.size(), k, KP1.size(), KP2.size());
 
 		cv::drawMatches(image1, KP1, image2, KP2,
 			matchB, resMatches,
@@ -294,14 +294,14 @@ public:
 			KP1.push_back(keypoints1[matches[k].trainIdx]);
 			KP2.push_back(keypoints2[matches[k].queryIdx]);  // queryIdx
 
-			//TRACE("I %d QUER %d TRN %d \n", k, matches[k].queryIdx, matches[k].trainIdx);
+			//printf("I %d QUER %d TRN %d \n", k, matches[k].queryIdx, matches[k].trainIdx);
 
 			k++;
 		}
 
-		TRACE("\nRETURN SIZE %d\n", matches.size());
+		printf("\nRETURN SIZE %d\n", matches.size());
 
-		TRACE("After HOMO Test Num Matches1 %d IIIIII %d KP1111 %d KP2111 %d\n", matches.size(), k, KP1.size(), KP2.size());
+		printf("After HOMO Test Num Matches1 %d IIIIII %d KP1111 %d KP2111 %d\n", matches.size(), k, KP1.size(), KP2.size());
 
 		cv::drawMatches(image1, KP1, image2, KP2,
 			matchB, resMatches,
@@ -312,14 +312,14 @@ public:
 		for (int jj = 0; jj < (int) KP1.size(); jj++)
 		{
 			//cv::circle(resMatches, KP1[jj].pt, 2, cv::Scalar(255, 0, 0), 10);
-			//TRACE("\n KP1 Index %d X %.3f Y %.3f", jj, KP1[jj].pt.x, KP1[jj].pt.y);
+			//printf("\n KP1 Index %d X %.3f Y %.3f", jj, KP1[jj].pt.x, KP1[jj].pt.y);
 		}
 
 
 		for (int jj = 0; jj < (int) KP2.size(); jj++)
 		{
 			//cv::circle(resMatches, KP2[jj].pt + offset, 2, cv::Scalar(0, 255, 0), 10);
-			//TRACE("\n KP2 Index %d X %.3f Y %.3f", jj, KP2[jj].pt.x + offset.x, KP2[jj].pt.y + offset.y);
+			//printf("\n KP2 Index %d X %.3f Y %.3f", jj, KP2[jj].pt.x + offset.x, KP2[jj].pt.y + offset.y);
 
 		}
 
@@ -340,7 +340,9 @@ public:
 		std::vector<cv::DMatch> matchB;
 		std::vector<cv::KeyPoint> KP1, KP2;
 
-		TRACE("\n displayMatchesProcessor SIZE1 %d SIZE2 %d\n", keypoints1.size(), keypoints2.size());
+		printf("\n displayMatchesProcessor SIZE1 %d SIZE2 %d\n", keypoints1.size(), keypoints2.size());
+		printf("\n displayMatchesProcessor SIZE of MATCHES %d \n", symMatches.size());
+
 
 		int k = 0;
 		for (std::vector<cv::DMatch>::iterator matchIterator = symMatches.begin();

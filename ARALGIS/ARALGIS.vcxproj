@@ -131,6 +131,7 @@
       <AdditionalLibraryDirectories>$(OPENCV_DIR)\x64\vc11\lib;$(SAPERADIR)\Lib\Win64;$(SAPERADIR)\Lib\Win64\VS2013;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>odbc32.lib;SapClassBasic.lib;SapClassGUId.lib;opencv_calib3d2411d.lib;opencv_contrib2411d.lib;opencv_core2411d.lib;opencv_features2d2411d.lib;opencv_flann2411d.lib;opencv_gpu2411d.lib;opencv_highgui2411d.lib;opencv_imgproc2411d.lib;opencv_legacy2411d.lib;opencv_ml2411d.lib;opencv_objdetect2411d.lib;opencv_ts2411d.lib;opencv_video2411d.lib;opencv_nonfree2411d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <StackCommitSize>131072</StackCommitSize>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -206,9 +207,10 @@
     <ClInclude Include="ARALGISView.h" />
     <ClInclude Include="BitmapDisplay\HeaderFiles\PictureCtrl.h" />
     <ClInclude Include="BitmapDisplay\HeaderFiles\PkMattoGDI.h" />
-    <ClInclude Include="BitmapDisplay\HeaderFiles\SapToGDI.h" />
+    <ClInclude Include="BitmapDlg.h" />
     <ClInclude Include="CameraInterface\HeaderFiles\CameraDataReceiver.h" />
     <ClInclude Include="CameraInterface\HeaderFiles\ReceiveCameraImage.h" />
+    <ClInclude Include="ChangeDetection\ProcessingAlgorithms\ImagePartitionSelect.h" />
     <ClInclude Include="ColourButton.h" />
     <ClInclude Include="ChangeDetection\HeaderFiles\ChangeDetectController.h" />
     <ClInclude Include="ChangeDetection\HeaderFiles\ChangeDetector.h" />
@@ -284,7 +286,7 @@
     <ClCompile Include="ARALGISView.cpp" />
     <ClCompile Include="BitmapDisplay\SourceFiles\PictureCtrl.cpp" />
     <ClCompile Include="BitmapDisplay\SourceFiles\PkMattoGDI.cpp" />
-    <ClCompile Include="BitmapDisplay\SourceFiles\SapToGDI.cpp" />
+    <ClCompile Include="BitmapDlg.cpp" />
     <ClCompile Include="CameraInterface\SourceFiles\CameraDataReceiver.cpp" />
     <ClCompile Include="CameraInterface\SourceFiles\ReceiveCameraImage.cpp" />
     <ClCompile Include="ChangeDetection\SourceFiles\ChangeDetectController.cpp" />
@@ -382,9 +384,16 @@
     <None Include="res\ARALGIS.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\sil\UTARIT.BMP" />
+    <Image Include="..\..\sil\utarit.jpg" />
+    <Image Include="..\..\sil\UTARİT.gif" />
+    <Image Include="..\..\sil\UTARİT.jpg" />
     <Image Include="res\ARALGIS.ico" />
     <Image Include="res\ARALGISDoc.ico" />
+    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\icon1.ico" />
     <Image Include="res\Toolbar.bmp" />
+    <Image Include="res\UTARIT.BMP" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -45,6 +45,7 @@ CMainFrame::CMainFrame()
 	m_CameraDatabaseServer = NULL;
 	m_ImageFilterProcessing = NULL;
 	m_VehicleDetector = NULL;
+	m_ChangeDetector = NULL;
 }
 
 CMainFrame::~CMainFrame()
@@ -79,6 +80,11 @@ CMainFrame::~CMainFrame()
 		delete m_VehicleDetector;
 	}
 
+	if (m_ChangeDetector)
+	{
+		delete m_ChangeDetector;
+	}
+
 	// Don't forget to release the semaphore
 	if (!ReleaseSemaphore(m_hSemaphore,  // handle to semaphore
 						  1,           // increase count by one
@@ -93,24 +99,24 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
-	if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
-		!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
-	{
-		TRACE0("Failed to create toolbar\n");
-		return -1;      // fail to create
-	}
+	//if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
+	//	!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
+	//{
+	//	TRACE0("Failed to create toolbar\n");
+	//	return -1;      // fail to create
+	//}
 
-	if (!m_wndStatusBar.Create(this))
-	{
-		TRACE0("Failed to create status bar\n");
-		return -1;      // fail to create
-	}
-	m_wndStatusBar.SetIndicators(indicators, sizeof(indicators) / sizeof(UINT));
+	//if (!m_wndStatusBar.Create(this))
+	//{
+	//	TRACE0("Failed to create status bar\n");
+	//	return -1;      // fail to create
+	//}
+	//m_wndStatusBar.SetIndicators(indicators, sizeof(indicators) / sizeof(UINT));
 
-	// TODO: Delete these three lines if you don't want the toolbar to be dockable
-	m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
-	EnableDocking(CBRS_ALIGN_ANY);
-	DockControlBar(&m_wndToolBar);
+	//// TODO: Delete these three lines if you don't want the toolbar to be dockable
+	//m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
+	//EnableDocking(CBRS_ALIGN_ANY);
+	//DockControlBar(&m_wndToolBar);
 
 	m_IsFirstTime = false;
 
@@ -140,241 +146,6 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 	cs.style = WS_OVERLAPPED | WS_SYSMENU | WS_BORDER;
 
 	return TRUE;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// 
-// FUNCTION:	CMainFrame::NotifyProcPTSComm
-// 
-// DESCRIPTION:	Handles the notification messages sent by PTSCommunicator.
-//              Updates the GUI according to the received message 
-//
-// INPUTS:		
-// 
-// NOTES:	
-// 
-// MODIFICATIONS:
-// 
-// Name				Date		Version		Comments
-// BN              28032017	    1.0			Origin
-// 
-//////////////////////////////////////////////////////////////////////////////// 
-void CMainFrame::NotifyProcPTSComm(LPVOID lpParam, UINT nCode)
-{
-	CMainFrame* pFrame = (CMainFrame*)lpParam;
-
-	CARALGISView* pView = static_cast<CARALGISView*>(pFrame->GetActiveView());
-
-	if (pView)
-	{
-		switch (nCode)
-		{
-		case PTS_DISPLAY_IMAGE:
-			pView->DisplayPTSImage();
-			break;
-
-		case PTS_DISPLAY_PLAKA:
-			pView->DisplayPlakaNo();
-			break;
-
-		case PTS_CONNECTION_LOST:
-		{
-			pView->UpdatePTSStatus(0);
-			break;
-		}
-
-		case PTS_CONNECTION_NOK:
-		{
-			pView->UpdatePTSStatus(1);
-
-			break;
-		}
-
-		case PTS_CONNECTION_OK:
-		{
-			pView->UpdatePTSStatus(2);
-			break;
-		}
-		default:
-			break;
-		}
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// 
-// FUNCTION:	CMainFrame::NotifyProcOdroidComm
-// 
-// DESCRIPTION:	Handles the notification messages sent by OdroidCommunicator.
-//              Updates the GUI according to the received message 
-//
-// INPUTS:		
-// 
-// NOTES:	
-// 
-// MODIFICATIONS:
-// 
-// Name				Date		Version		Comments
-// BN              28032017	    1.0			Origin
-// 
-//////////////////////////////////////////////////////////////////////////////// 
-void CMainFrame::NotifyProcOdroidComm(LPVOID lpParam, UINT nCode)
-{
-	CMainFrame* pFrame = (CMainFrame*)lpParam;
-
-	CARALGISView* pView = static_cast<CARALGISView*>(pFrame->GetActiveView());
-
-	if (pView)
-	{
-		switch (nCode)
-		{
-		case ODROID_CONNECTION_LOST:
-		{
-			pView->UpdatePeripheralStatus(false);
-		}
-			break;
-
-		case ODROID_CONNECTION_OK:
-		{
-			pView->UpdatePeripheralStatus(true);
-		}
-			break;			
-
-		default:
-			break;
-		}
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// 
-// FUNCTION:	CMainFrame::NotifyProcCameraComm
-// 
-// DESCRIPTION:	Handles the notification messages sent by CameraDataReceiver.
-//              Updates the GUI according to the received message 
-//
-// INPUTS:		
-// 
-// NOTES:	
-// 
-// MODIFICATIONS:
-// 
-// Name				Date		Version		Comments
-// BN              28032017	    1.0			Origin
-// 
-//////////////////////////////////////////////////////////////////////////////// 
-void CMainFrame::NotifyProcCameraComm(LPVOID lpParam, UINT nCode)
-{
-	CMainFrame* pFrame = (CMainFrame*)lpParam;
-
-	CARALGISView* pView = static_cast<CARALGISView*>(pFrame->GetActiveView());
-
-	if (pView)
-	{
-		switch (nCode)
-		{
-		case SET_TIMER_PERIOD_CAMERA:
-			//pView->SetTimerDisplay();
-			break;
-
-		case KILL_TIMER_CAMERA:
-			//pView->KillTimerCamera();
-			break;
-
-		default:
-			break;
-		}
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// 
-// FUNCTION:	CMainFrame::NotifyProcImageFiltering
-// 
-// DESCRIPTION:	Handles the notification messages sent by ImageFilterProcessing.
-//              Updates the GUI according to the received message 
-//
-// INPUTS:		
-// 
-// NOTES:	
-// 
-// MODIFICATIONS:
-// 
-// Name				Date		Version		Comments
-// BN              28032017	    1.0			Origin
-// 
-//////////////////////////////////////////////////////////////////////////////// 
-void CMainFrame::NotifyProcImageFiltering(LPVOID lpParam, UINT nCode)
-{
-	CMainFrame* pFrame = (CMainFrame*)lpParam;
-
-	CARALGISView* pView = static_cast<CARALGISView*>(pFrame->GetActiveView());
-
-	if (pView)
-	{
-		switch (nCode)
-		{
-		case FILTER_PROCESS_FILTER1_READY:
-			pView->FilterAvailable(1);
-			break;
-
-		case FILTER_PROCESS_FILTER2_READY:
-			pView->FilterAvailable(2);
-			break;
-
-		case FILTER_PROCESS_FILTER3_READY:
-			pView->FilterAvailable(3);
-			break;
-
-		default:
-			break;
-		}
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// 
-// FUNCTION:	CMainFrame::NotifyProcVehicleDetection
-// 
-// DESCRIPTION:	Handles the notification messages sent by VehicleDetection.
-//              Updates the GUI according to the received message 
-//
-// INPUTS:		
-// 
-// NOTES:	
-// 
-// MODIFICATIONS:
-// 
-// Name				Date		Version		Comments
-// BN              28032017	    1.0			Origin
-// 
-//////////////////////////////////////////////////////////////////////////////// 
-void CMainFrame::NotifyProcVehicleDetection(LPVOID lpParam, UINT nCode)
-{
-	CMainFrame* pFrame = (CMainFrame*)lpParam;
-
-	CARALGISView* pView = static_cast<CARALGISView*>(pFrame->GetActiveView());
-
-	if (pView)
-	{
-		switch (nCode)
-		{
-		case FILTER_PROCESS_FILTER1_READY:
-			//pView->FilterAvailable(1);
-			break;
-
-		case FILTER_PROCESS_FILTER2_READY:
-			//pView->FilterAvailable(2);
-			break;
-
-		case FILTER_PROCESS_FILTER3_READY:
-			//pView->FilterAvailable(3);
-			break;
-
-		default:
-			break;
-		}
-	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -432,7 +203,7 @@ void CMainFrame::Activate()
 
 			// start the thread for receiving camera data
 			m_CameraDataReceiver = new CCameraDataReceiver;
-			if (!m_CameraDataReceiver->Start(NotifyProcCameraComm, this))
+			if (!m_CameraDataReceiver->Start(this))
 			{
 				delete m_CameraDataReceiver;
 				m_CameraDataReceiver = NULL;
@@ -446,7 +217,7 @@ void CMainFrame::Activate()
 
 			// start the thread for PTS communication
 			m_PTSCommunicator = new CPTSCommunicator;
-			if (!m_PTSCommunicator->Start(NotifyProcPTSComm, this))
+			if (!m_PTSCommunicator->Start(this))
 			{
 				delete m_PTSCommunicator;
 				m_PTSCommunicator = NULL;
@@ -460,7 +231,7 @@ void CMainFrame::Activate()
 
 			// start the thread for Odroid communication
 			m_OdroidCommunicator = new COdroidCommunicator;
-			if (!m_OdroidCommunicator->Start(NotifyProcOdroidComm, this))
+			if (!m_OdroidCommunicator->Start(this))
 			{
 				delete m_OdroidCommunicator;
 				m_OdroidCommunicator = NULL;
@@ -488,7 +259,7 @@ void CMainFrame::Activate()
 
 			// start the threads for Image Filtering
 			m_ImageFilterProcessing = new CImageFilterProcessing;
-			if (!m_ImageFilterProcessing->Start(NotifyProcImageFiltering, this))
+			if (!m_ImageFilterProcessing->Start(this))
 			{
 				delete m_ImageFilterProcessing;
 				m_ImageFilterProcessing = NULL;
@@ -502,7 +273,7 @@ void CMainFrame::Activate()
 
 			// start the threads for VehicleDetection
 			m_VehicleDetector = new CVehicleDetection;
-			if (!m_VehicleDetector->Start(NotifyProcVehicleDetection, this))
+			if (!m_VehicleDetector->Start(this))
 			{
 				delete m_VehicleDetector;
 				m_VehicleDetector = NULL;
@@ -513,6 +284,21 @@ void CMainFrame::Activate()
 					MB_OK | MB_ICONERROR
 					);
 			}
+
+			// start the threads for VehicleDetection
+			m_ChangeDetector = new CChangeDetectController;
+			if (!m_ChangeDetector->Start(this))
+			{
+				delete m_ChangeDetector;
+				m_ChangeDetector = NULL;
+
+				::MessageBox(NULL,
+					(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Deðiþiklik Tespiti",
+					(LPCWSTR)WARNINGWINDOW_TITLE,
+					MB_OK | MB_ICONERROR
+					);
+			}
+
 		}
 		else /// ini file fails
 		{
