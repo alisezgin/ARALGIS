@@ -129,7 +129,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OPENCV_DIR)\x64\vc11\lib;$(SAPERADIR)\Lib\Win64;$(SAPERADIR)\Lib\Win64\VS2013;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>odbc32.lib;SapClassBasic.lib;SapClassGUId.lib;opencv_calib3d2411d.lib;opencv_contrib2411d.lib;opencv_core2411d.lib;opencv_features2d2411d.lib;opencv_flann2411d.lib;opencv_gpu2411d.lib;opencv_highgui2411d.lib;opencv_imgproc2411d.lib;opencv_legacy2411d.lib;opencv_ml2411d.lib;opencv_objdetect2411d.lib;opencv_ts2411d.lib;opencv_video2411d.lib;opencv_nonfree2411d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;SapClassBasic.lib;SapClassGUI.lib;opencv_calib3d2411d.lib;opencv_contrib2411d.lib;opencv_core2411d.lib;opencv_features2d2411d.lib;opencv_flann2411d.lib;opencv_gpu2411d.lib;opencv_highgui2411d.lib;opencv_imgproc2411d.lib;opencv_legacy2411d.lib;opencv_ml2411d.lib;opencv_objdetect2411d.lib;opencv_ts2411d.lib;opencv_video2411d.lib;opencv_nonfree2411d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <StackCommitSize>131072</StackCommitSize>
     </Link>
@@ -243,6 +243,7 @@
     <ClInclude Include="Database\HeaderFiles\DriverSet.h" />
     <ClInclude Include="Database\HeaderFiles\GateSet.h" />
     <ClInclude Include="Database\HeaderFiles\UserInfoSet.h" />
+    <ClInclude Include="Database\HeaderFiles\UserSet.h" />
     <ClInclude Include="Database\HeaderFiles\VehicleInfoSet.h" />
     <ClInclude Include="Database\HeaderFiles\VehiclePassageSet.h" />
     <ClInclude Include="Database\HeaderFiles\VehicleSet.h" />
@@ -278,6 +279,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="VehicleDetection\HeaderFiles\VehicleDetection.h" />
     <ClInclude Include="VehicleDlg.h" />
+    <ClInclude Include="VisitInfo.h" />
     <ClInclude Include="WndResizer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -299,6 +301,7 @@
     <ClCompile Include="Database\SourceFiles\DriverSet.cpp" />
     <ClCompile Include="Database\SourceFiles\GateSet.cpp" />
     <ClCompile Include="Database\SourceFiles\UserInfoSet.cpp" />
+    <ClCompile Include="Database\SourceFiles\UserSet.cpp" />
     <ClCompile Include="Database\SourceFiles\VehicleInfoSet.cpp" />
     <ClCompile Include="Database\SourceFiles\VehiclePassageSet.cpp" />
     <ClCompile Include="Database\SourceFiles\VehicleSet.cpp" />
@@ -375,6 +378,7 @@
     </ClCompile>
     <ClCompile Include="VehicleDetection\SourceFiles\VehicleDetection.cpp" />
     <ClCompile Include="VehicleDlg.cpp" />
+    <ClCompile Include="VisitInfo.cpp" />
     <ClCompile Include="WndResizer.cpp" />
   </ItemGroup>
   <ItemGroup>

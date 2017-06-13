@@ -5,6 +5,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+class CARALGISView;
+
 
 /// PkMatToGDI Class
 /// This class provides a method to fast draw (fitting or stretching) an OpenCV Mat image directly into MFC Gui.
@@ -29,6 +31,8 @@
 
 class PkMatToGDI
 {
+	// ali: ARALGISView has to use BackgroundClear()
+	friend CARALGISView;
 public:
 	//Standard constructor
 	//Set the CStatic controls where the cv::Mat will be drawn

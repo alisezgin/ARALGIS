@@ -21,6 +21,8 @@
 #include "afxdtctl.h"
 #include "atltime.h"
 
+#include "VisitInfo.h"
+
 class CARALGISDoc;
 
 class CARALGISView : public CColorFormView
@@ -65,18 +67,29 @@ protected:
 	// called to update the vehicle info boxes upon the retrieval of a new license plate number
 	void OnLPUpdateInfo(CString);
 
+	// clears the preview box of the chassis bottom
+	void ClearPreviewBox();
+
+	// prepares the image filename to be saved in the Cars/ChassisBottom directory
+	CString PrepareImageFilename(CString const &, CTime const &);
+
 protected:
 
 	CStatic *m_RefImgBMP;
 	CStatic *m_TestImgBMP;
+	CStatic *m_PrevImgBMP;
 
 	PkMatToGDI *m_MatToGDITest;
 	PkMatToGDI *m_MatToGDIRef;
+	PkMatToGDI *m_MatToGDIPrev;
+
+	cv::Mat m_CVImagePrev;
 
 	bool m_AutoFit;
 
 	cv::Mat    m_RefCVMat;
 	cv::Mat	   m_TestCVMat;
+	cv::Mat m_PrevCVMat;
 
 	CPictureCtrl m_CarPlakaImageStatic;
 	CStatic m_PlakaDisplayControl;
@@ -111,11 +124,16 @@ protected:
 	CButton m_AlarmStartBtn;
 	CButton m_AlarmStop;
 
-	CListBox m_FormListBox;
+	// control variable for the combo box holding the most recent visits to the premises.
+	CComboBox m_formCBoxVisitList;
+	// an array holding the driver name, keeper name and entry gate per visit
+	CVisitInfo m_VisitInfo[VISIT_LIST_LENGTH];
+
 	// to be removed: enter licenseplates manually
 	CString m_FormLPEntry;
 	// ARALGISForm'da arac plaka numarasi kutusu icin
 	CString m_FormELP;
+
 	CString m_FormEUID;
 	CString m_FormEGID;
 	CString m_FormEDID;
@@ -148,6 +166,12 @@ protected:
 	long m_GID;
 	// holds the ID of the current gate keeper
 	long m_UID;
+
+	// holds the absolute path to the 'Cars' directory
+	CString m_PathToCars;
+
+	// to have a better control on the background color
+	CBrush m_brush;
 
 private:
 	CWndResizer m_resizer;
@@ -199,6 +223,8 @@ public:
 	afx_msg void OnBnClickedRadioFilter3();
 	CButton m_ChangeDetectControl;
 	afx_msg void OnBnClickedButtonChangeDetect();
+	afx_msg void OnCbnSelchangeFormCboxVisitlist();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

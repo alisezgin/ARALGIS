@@ -354,6 +354,12 @@
     <ClInclude Include="ChangeDetection\ProcessingAlgorithms\ImagePartitionSelect.h">
       <Filter>ChangeDetection\ProcessingAlgorithms</Filter>
     </ClInclude>
+    <ClInclude Include="VisitInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\UserSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -523,6 +529,12 @@
     </ClCompile>
     <ClCompile Include="BitmapDlg.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VisitInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\UserSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

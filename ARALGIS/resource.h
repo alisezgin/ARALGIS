@@ -124,6 +124,8 @@
 #define IDC_RADIO_FILTER3               1070
 #define IDC_BUTTON2                     1071
 #define IDC_BUTTON_CHANGE_DETECT        1071
+#define IDC_FORM_CBOX_VISITLIST         1072
+#define IDC_FORM_PICTCTRL_CBPREVIEW     1073
 #define ID_KAMERA_KONFIG32771           32771
 #define ID_KAMERA_KAY32772              32772
 #define ID_KAMERA_RESIMG32773           32773
@@ -179,7 +181,11 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        325
 #define _APS_NEXT_COMMAND_VALUE         32810
-#define _APS_NEXT_CONTROL_VALUE         1072
+#define _APS_NEXT_CONTROL_VALUE         1074
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif
+
+// ali: constants entered manually - begin
+#define VISIT_LIST_LENGTH				10
+// ali: constants entered manually - end

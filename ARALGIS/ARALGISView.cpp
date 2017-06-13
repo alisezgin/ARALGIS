@@ -23,6 +23,7 @@
 #include "VehicleSet.h"
 #include "GateSet.h"
 #include "UserInfoSet.h"
+#include "UserSet.h"
 //#include "VehicleView.h"
 
 #include "VehiclePassageSet.h"
@@ -35,6 +36,8 @@
 #include "DriverAckDlg.h"
 
 #include "BitmapDlg.h"
+
+#include "VisitInfo.h"
 
 
 #include <sstream>
@@ -93,6 +96,8 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_BN_CLICKED(IDC_RADIO_FILTER2, &CARALGISView::OnBnClickedRadioFilter2)
 	ON_BN_CLICKED(IDC_RADIO_FILTER3, &CARALGISView::OnBnClickedRadioFilter3)
 	ON_BN_CLICKED(IDC_BUTTON_CHANGE_DETECT, &CARALGISView::OnBnClickedButtonChangeDetect)
+	ON_CBN_SELCHANGE(IDC_FORM_CBOX_VISITLIST, &CARALGISView::OnCbnSelchangeFormCboxVisitlist)
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -115,9 +120,11 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 
 	m_RefImgBMP = new CStatic;
 	m_TestImgBMP = new CStatic;
+	m_PrevImgBMP = new CStatic;
 
 	g_ByteImageTest = NULL;
 
+	m_MatToGDIPrev = nullptr;
 	m_MatToGDITest = NULL;
 	m_MatToGDIRef = NULL;
 
@@ -128,6 +135,26 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 	m_iDisplayRefImageColourType = (int)0;
 
 	m_AutoFit = false;
+
+	// ali : ARALGISCarsDir is an environment variable which should be set
+	// (at the time of the installation of ARALGIS)
+	// pointing to the directory containing the Image directories
+	// LPWSTR tmpPathToCars = (LPWSTR)malloc(MAX_FILENAME_LENGTH*sizeof(TCHAR));
+	LPWSTR tmpPathToCars = m_PathToCars.GetBufferSetLength(MAX_FILENAME_LENGTH);
+	GetEnvironmentVariable(_T("ARALGISCarsDir"), tmpPathToCars, MAX_FILENAME_LENGTH);
+	// because the contents were modified via the buffer, it must be released
+	// before further modification to the contents of the CString variable.
+	m_PathToCars.ReleaseBuffer();
+	// the environment variable does not contain the trailing directory separator
+	m_PathToCars += _T("\\");
+	// currently we have two image subdirectories:
+	// FrontalView and ChassisBottom
+	// we may very well end up removing the former.
+	m_PathToCars += _T("ChassisBottom\\");
+	//strcpy(m_PathToCars, "\\");
+
+	// set the background color variable
+	m_brush.CreateSolidBrush(RGB(255, 255, 255));
 }
 
 CARALGISView::~CARALGISView()
@@ -142,9 +169,20 @@ CARALGISView::~CARALGISView()
 		delete m_TestImgBMP;
 	}
 
+	// ali: mimic above for Preview
+	if (m_PrevImgBMP)
+	{
+		delete m_PrevImgBMP;
+	}
+
 	if (m_MatToGDITest)
 	{
 		delete m_MatToGDITest;
+	}
+
+	if (m_MatToGDIPrev != nullptr)
+	{
+		delete m_MatToGDIPrev;
 	}
 
 	if (m_MatToGDIRef)
@@ -165,6 +203,12 @@ CARALGISView::~CARALGISView()
 	if (g_CVImageRef.rows != 0 || g_CVImageRef.cols != 0)
 	{
 		g_CVImageRef.release();
+	}
+
+	// ali: for the Preview Image; mimic above
+	if (m_CVImagePrev.rows != 0 || m_CVImagePrev.cols != 0)
+	{
+		m_CVImagePrev.release();
 	}
 
 	if (g_CVImageRefFilter1.rows != 0 || g_CVImageRefFilter1.cols != 0)
@@ -235,6 +279,7 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Control(pDX, IDC_BMP_REFERENCE, *m_RefImgBMP);
 	DDX_Control(pDX, IDC_BMP_TEST, *m_TestImgBMP);
+	DDX_Control(pDX, IDC_FORM_PICTCTRL_CBPREVIEW, *m_PrevImgBMP);
 	DDX_Text(pDX, IDC_EDIT_PLAKA, m_PlakaStr);
 	DDX_Control(pDX, IDC_EDIT_PLAKA, m_PlakaCtrl);
 	DDX_Control(pDX, IDC_STATIC_PLAKA, m_CarPlakaImageStatic);
@@ -244,7 +289,6 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_HEATER_OFF, m_HeterStopBtn);
 	DDX_Control(pDX, IDC_BUTTON_ALARM_ON, m_AlarmStartBtn);
 	DDX_Control(pDX, IDC_BUTTON_ALARM_OFF, m_AlarmStop);
-	DDX_Control(pDX, IDC_FORM_LMRV, m_FormListBox);
 	DDX_Text(pDX, IDC_FORM_LPENTRY, m_FormLPEntry);
 	DDX_Text(pDX, IDC_FORM_ELP, m_FormELP);
 	DDX_Text(pDX, IDC_FORM_EDID, m_FormEDID);
@@ -255,6 +299,7 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RADIO_COLOUR1, m_ColourRadioOriginal);
 	DDX_Control(pDX, IDC_RADIO1_ORIGFILTER, m_FilterRadioOriginal);
 	DDX_Control(pDX, IDC_BUTTON_CHANGE_DETECT, m_ChangeDetectControl);
+	DDX_Control(pDX, IDC_FORM_CBOX_VISITLIST, m_formCBoxVisitList);
 }
 
 BOOL CARALGISView::PreCreateWindow(CREATESTRUCT& cs)
@@ -395,7 +440,7 @@ void CARALGISView::OnInitialUpdate()
 	arrID.Add(IDC_FORM_EGID);
 	arrID.Add(IDC_FORM_EDID);
 	arrID.Add(IDC_FORM_EBL);
-	arrID.Add(IDC_FORM_LMRV);
+	arrID.Add(IDC_FORM_CBOX_VISITLIST);
 	arrID.Add(IDC_FORM_BMODIFY);
 	arrID.Add(IDC_FORM_BUPDATEDB);
 	arrID.Add(IDC_FORM_BLP_QUERY);
@@ -1006,6 +1051,20 @@ void CARALGISView::OnPaint()
 
 		}
 	}
+
+	// ali: mimic what is done above for the Preview image
+	if (m_MatToGDIPrev != nullptr)
+	{
+		delete m_MatToGDIPrev;
+		m_MatToGDIPrev = nullptr;
+
+		m_MatToGDIPrev = new PkMatToGDI(m_PrevImgBMP, TRUE);
+
+		if (m_CVImagePrev.rows != 0)
+		{
+			m_MatToGDIPrev->DrawImg(m_PrevCVMat);
+		}
+	}
 }
 
 
@@ -1104,11 +1163,12 @@ void CARALGISView::OnLbnSelchangeList2()
 {
 	// TODO: Add your control notification handler code here
 	CString strLP;
-	int index = m_FormListBox.GetCurSel();
-	m_FormListBox.GetText(index, strLP);
+
+	int index = m_formCBoxVisitList.GetCurSel();
+	m_formCBoxVisitList.GetLBText(index, strLP);
 
 
-	//MessageBox(strLP);
+	MessageBox(strLP);
 }
 
 void CARALGISView::OnAdd()
@@ -1167,10 +1227,101 @@ void CARALGISView::OnGuncelle()
 }
 
 
+
+// ali - UTILITY FUNCTION - begin
+
+CString DriverNameFromID(long _id) 
+{
+	CString tempStrofInt;
+	CDriverInfoSet dInfoSet;
+	CString driverFilter = CString{ _T("[dbo].[Driver].[Type] = [dbo].[DriverType].[DTID] AND [dbo].[Driver].[ID] = '") };
+	tempStrofInt.Format(_T("%ld"), _id);
+	driverFilter += tempStrofInt;
+	driverFilter += CString{ _T("'") };
+	dInfoSet.m_strFilter = driverFilter;
+	dInfoSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	//ASSERT(dInfoSet.GetRecordCount() == 1);
+	CString strDriverName = dInfoSet.m_dboDriverLastName;
+	strDriverName += _T(", ");
+	strDriverName += dInfoSet.m_dboDriverName;
+	return strDriverName;
+}
+
+CString GateFromID(long _id)
+{
+	CString tempStrofInt;
+	CGateSet gSet;
+	CString gateFilter = CString{ _T("ID = '") };
+	tempStrofInt.Format(_T("%ld"), _id);
+	gateFilter += tempStrofInt;
+	gateFilter += CString{ _T("'") };
+	gSet.m_strFilter = gateFilter;
+	gSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	//ASSERT(gSet.GetRecordCount() == 1);
+	CString strGate = gSet.m_GateType;
+	return strGate;
+}
+
+CString KeeperNameFromID(long _id)
+{
+	CString tempStrofInt;
+	CUserSet uSet;
+	CString userFilter = CString{ _T("[User].[ID] = '") };
+	tempStrofInt.Format(_T("%ld"), _id);
+	userFilter += tempStrofInt;
+	userFilter += CString{ _T("'") };
+	uSet.m_strFilter = userFilter;
+	uSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	CString strKeeperName = uSet.m_LastName;
+	strKeeperName += _T(",");
+	strKeeperName += uSet.m_Name;
+	return strKeeperName;
+
+	/* CString tempStrofInt;
+	CUserInfoSet uInfoSet;
+	CString userFilter = CString{ _T("[User].[ID] = [UserLog].[UserID] AND [User].[Type] = [UserType].[UTID] AND [User].[ID] = '") };
+	tempStrofInt.Format(_T("%ld"), _id);
+	userFilter += tempStrofInt;
+	userFilter += CString{ _T("'") };
+	uInfoSet.m_strFilter = userFilter;
+	uInfoSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	//ASSERT(uInfoSet.GetRecordCount() == 1);
+	CString strKeeperName = uInfoSet.m_dboUserLastName;
+	strKeeperName += _T(",");
+	strKeeperName += uInfoSet.m_dboUserName;
+	return strKeeperName; */
+}
+
+void CARALGISView::ClearPreviewBox()
+{
+	CPaintDC dc{ this };
+	CDC dcMem;
+	dcMem.CreateCompatibleDC(&dc);
+	CStatic* pBox = static_cast<CStatic*>(GetDlgItem(IDC_FORM_PICTCTRL_CBPREVIEW));	
+	CRect rect;
+	pBox->GetClientRect(&rect);
+	pBox->ClientToScreen(&rect);
+	
+}
+
+CString CARALGISView::PrepareImageFilename(CString const & _lp, CTime const & _datetime)
+{
+	CString strDateTime = _datetime.Format(_T("%d%m%Y_%H%M%S.img"));
+
+	CString strPrevTag = _lp + _T("_") + strDateTime;
+	CString strFilename = m_PathToCars + strPrevTag;
+
+	return strFilename;
+}
+
+// ali - UTILITY FUNCTION - end
+
+
+
 // called to update the vehicle info boxes upon the retrieval of a new license plate number
 void CARALGISView::OnLPUpdateInfo(CString strLP)
 {
-	m_FormListBox.ResetContent();
+	m_formCBoxVisitList.ResetContent();
 
 	CVehiclePassageSet vPassageSet;
 	// find all visits of the given LP
@@ -1180,6 +1331,8 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	vPassageSet.m_strSort = _T("EntryDateTime DESC");
 
 	m_FormEDT = CTime::GetCurrentTime();
+	strLP.MakeUpper();
+	m_FormELP = strLP;
 
 	// before executing the query;
 	// it may be beneficial to bound the resulting record set
@@ -1187,8 +1340,7 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	vPassageSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
 	if (vPassageSet.IsBOF()) {
 		MessageBox(CString{ _T("Kayit bulunamadi; plaka no: ") } +strLP);
-		m_FormListBox.AddString(LPCTSTR{ CString{ _T("Kayit yok") } });
-		m_FormELP = _T("Kayit yok");
+		m_formCBoxVisitList.AddString(LPCTSTR{ CString{ _T("Kayit yok") } });
 		m_FormEUID = _T("Kayit yok");
 		m_FormEGID = _T("Kayit yok");
 		m_FormEDID = _T("Kayit yok");
@@ -1203,8 +1355,6 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 
 	// these should belong to the most recent visit
 	//	strLP.Remove(' ');
-	strLP.MakeUpper();
-	m_FormELP = strLP;
 	m_FormEBL.SetCheck(!vPassageSet.m_VehiclePassagePermissionGranted);
 
 	// since there is an existing record; m_VID >= 0
@@ -1216,52 +1366,66 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	// this is rather expensive operation.
 	// for the final release version, modify the design of the database tables.
 	//m_FormEDID = vPassageSet.m_VehiclePassageDriverID;
-	CString tempStrofInt;
-	CDriverInfoSet dInfoSet;
-	CString driverFilter = CString{ _T("[dbo].[Driver].[Type] = [dbo].[DriverType].[DTID] AND [dbo].[Driver].[ID] = '") };
-	tempStrofInt.Format(_T("%ld"), vPassageSet.m_VehiclePassageDriverID);
-	driverFilter += tempStrofInt;
-	driverFilter += CString{ _T("'") };
-	dInfoSet.m_strFilter = driverFilter;
-	dInfoSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
-	//ASSERT(dInfoSet.GetRecordCount() == 1);
-	m_FormEDID = dInfoSet.m_dboDriverLastName;
-	m_FormEDID += _T(", ");
-	m_FormEDID += dInfoSet.m_dboDriverName;
-	m_DID = dInfoSet.m_dboDriverID;
+	//CString tempStrofInt;
+	//CDriverInfoSet dInfoSet;
+	//CString driverFilter = CString{ _T("[dbo].[Driver].[Type] = [dbo].[DriverType].[DTID] AND [dbo].[Driver].[ID] = '") };
+	//tempStrofInt.Format(_T("%ld"), vPassageSet.m_VehiclePassageDriverID);
+	//driverFilter += tempStrofInt;
+	//driverFilter += CString{ _T("'") };
+	//dInfoSet.m_strFilter = driverFilter;
+	//dInfoSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	////ASSERT(dInfoSet.GetRecordCount() == 1);
+	//m_FormEDID = dInfoSet.m_dboDriverLastName;
+	//m_FormEDID += _T(", ");
+	//m_FormEDID += dInfoSet.m_dboDriverName;
+	m_FormEDID = DriverNameFromID(vPassageSet.m_VehiclePassageDriverID);
+	m_DID = vPassageSet.m_VehiclePassageDriverID;
 
 
 	//m_FormEGID = vPassageSet.m_VehiclePassageGateID;
-	CGateSet gSet;
-	CString gateFilter = CString{ _T("ID = '") };
-	tempStrofInt.Format(_T("%ld"), vPassageSet.m_VehiclePassageGateID);
-	gateFilter += tempStrofInt;
-	gateFilter += CString{ _T("'") };
-	gSet.m_strFilter = gateFilter;
-	gSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
-	//ASSERT(gSet.GetRecordCount() == 1);
-	m_FormEGID = gSet.m_GateType;
-	m_GID = gSet.m_GateID;
+	//CGateSet gSet;
+	//CString gateFilter = CString{ _T("ID = '") };
+	//tempStrofInt.Format(_T("%ld"), vPassageSet.m_VehiclePassageGateID);
+	//gateFilter += tempStrofInt;
+	//gateFilter += CString{ _T("'") };
+	//gSet.m_strFilter = gateFilter;
+	//gSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	////ASSERT(gSet.GetRecordCount() == 1);
+	//m_FormEGID = gSet.m_GateType;
+	m_FormEGID = GateFromID(vPassageSet.m_VehiclePassageGateID);
+	m_GID = vPassageSet.m_VehiclePassageGateID;
 
 	//m_FormEUID = _T("Veli, Ali");
 	//m_FormEUID = vPassageSet.m_VehiclePassageUserID;
-	CUserInfoSet uInfoSet;
-	CString userFilter = CString{ _T("[User].[ID] = [UserLog].[UserID] AND [User].[Type] = [UserType].[UTID] AND [User].[ID] = '") };
-	tempStrofInt.Format(_T("%ld"), vPassageSet.m_VehiclePassageUserID);
-	userFilter += tempStrofInt;
-	userFilter += CString{ _T("'") };
-	uInfoSet.m_strFilter = userFilter;
-	uInfoSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
-	//ASSERT(uInfoSet.GetRecordCount() == 1);
-	m_FormEUID = uInfoSet.m_dboUserLastName;
-	m_FormEUID += _T(",");
-	m_FormEUID += uInfoSet.m_dboUserName;
-	m_UID = uInfoSet.m_dboUserID;
+	//CUserInfoSet uInfoSet;
+	//CString userFilter = CString{ _T("[User].[ID] = [UserLog].[UserID] AND [User].[Type] = [UserType].[UTID] AND [User].[ID] = '") };
+	//tempStrofInt.Format(_T("%ld"), vPassageSet.m_VehiclePassageUserID);
+	//userFilter += tempStrofInt;
+	//userFilter += CString{ _T("'") };
+	//uInfoSet.m_strFilter = userFilter;
+	//uInfoSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	////ASSERT(uInfoSet.GetRecordCount() == 1);
+	//m_FormEUID = uInfoSet.m_dboUserLastName;
+	//m_FormEUID += _T(",");
+	//m_FormEUID += uInfoSet.m_dboUserName;
+	m_FormEUID = KeeperNameFromID(vPassageSet.m_VehiclePassageUserID);
+	m_UID = vPassageSet.m_VehiclePassageUserID;
+
+	auto VisitListIndex = 0;
 
 	while (!vPassageSet.IsEOF()) {
 		CTime visitDate = vPassageSet.m_VehiclePassageEntryDateTime;  // vSet.m_MostRecentVisitDate;
 //		MessageBox(visitDate.Format("%d/%m/%Y %X"));
-		m_FormListBox.AddString(visitDate.Format("%d/%m/%Y %X"));
+		// TODO - ali: 
+		// fill in a class variable m_strFilenames[10] (of type CString)
+		// so that whenever a new date is selected, we can immediately retrieve the filename
+		// without querying (unnecessarily) the database
+		m_formCBoxVisitList.AddString(visitDate.Format("%d/%m/%Y %X"));
+		m_VisitInfo[VisitListIndex++].Prepare(
+			DriverNameFromID(vPassageSet.m_VehiclePassageDriverID),
+			KeeperNameFromID(vPassageSet.m_VehiclePassageUserID),
+			GateFromID(vPassageSet.m_VehiclePassageGateID));
+
 		vPassageSet.MoveNext();
 	}
 
@@ -1320,9 +1484,21 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	m_RefCVMat = g_CVImageRef.clone();
 	m_MatToGDIRef = new PkMatToGDI(m_RefImgBMP, m_AutoFit);
 
+
 	EnterCriticalSection(&RefImageCS);
 	m_MatToGDIRef->DrawImg(g_CVImageRef);
 	LeaveCriticalSection(&RefImageCS);
+
+	// ali: reset the preview box; by default no visit date is selected
+	// BackgroundClear() is a private function of PkMatToGdi,
+	// so CARALGISView has been made a friend of PkMatToGdi.
+	if (m_MatToGDIPrev != nullptr)
+	{
+		m_MatToGDIPrev->BackgroundClear();
+
+		delete m_MatToGDIPrev;
+		m_MatToGDIPrev = nullptr;
+	}
 
 	m_Ref1FilterOK = FALSE;
 	m_Ref2FilterOK = FALSE;
@@ -1346,7 +1522,7 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	dRadioB->SetCheck(0);
 	
 	UpdateData(FALSE);
-	// m_FormListBox.AddString(strLP);
+	// m_formCBoxVisitList.AddString(strLP);
 
 	delete[] charfilename;
 }
@@ -1408,6 +1584,35 @@ void CARALGISView::OnBnClickedFormBupdatedb()
 	CDBUpdateAckDlg dUpAck;
 
 	if (dUpAck.DoModal() == IDOK) { // Update operations
+		// begin by saving the current image in m_CVImageTest
+		//CString strImgFilename = PrepareImageFilename(m_FormELP, m_FormEDT);
+
+		//LPCTSTR cpImgFilename = LPCTSTR(strImgFilename);
+		//std::string strStdFilename{ cpImgFilename->begin(), cpImgFilename->end());
+
+		//TCHAR cpImgFilename[MAX_FILENAME_LENGTH];
+
+		//std::basic_string<TCHAR, std::char_traits<TCHAR>> strStdFilename{ cpImgFilename };
+
+		//cv::imwrite(strStdFilename, m_TestCVMat);
+
+		//DWORD dwAttrib = GetFileAttributes(strFilename);
+		//char charFilename[MAX_FILENAME_LENGTH];
+
+		//if (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+		//	!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) {
+		//	for (auto i = 0; i < strFilename.GetLength(); ++i)
+		//		charFilename[i] = strFilename[i];
+		//	charFilename[strFilename.GetLength()] = '\0';
+
+		//}
+		//else {
+		//	strFilename = m_PathToCars + _T("default.img");
+		//	for (auto i = 0; i < strFilename.GetLength(); ++i)
+		//		charFilename[i] = strFilename[i];
+		//	charFilename[strFilename.GetLength()] = '\0';
+		//}
+
 		CVehiclePassageSet vPassageSet;
 		vPassageSet.Open(CRecordset::dynamic, nullptr, CRecordset::none);
 
@@ -1894,72 +2099,176 @@ void CARALGISView::OnBnClickedButtonChangeDetect()
 	dlgBitmap.DoModal();
 }
 
-//void CARALGISView::OnBnClickedButtonChangeDetect()
-//{
-//	// TODO: Add your control notification handler code here
-//	cv::Mat dMat1, dMat2, dMat3, dMat4;
-//
-//	cv::Mat AA1, AA2, AA3, AA4, AA5, AA6;
-//	cv::Mat BB1, BB2, BB3;
-//
-//	transpose(g_CVTestWrapped, BB1);
-//	flip(BB1, BB2, 1); 
-//	BB2.copyTo(BB3);
-//
-//	cv::resize(g_CVImageTest, AA3, BB3.size(), (0, 0), (0, 0), cv::INTER_CUBIC);
-//
-//	cv::transpose(g_CVTestChangeDetect, AA4);
-//	cv::flip(AA4, AA5, 1); 
-//	AA5.copyTo(AA6);
-//
-//	// 1. create wrapped image first as grey since it is calculated with false colour
-//	// 2. change it to colour (it is grey in fact) so that it has 3 channels again
-//	// it will be ready for blending  
-//	//cvtColor(AA3, dMat3, CV_BGR2GRAY);
-//
-//	cvtColor(AA3, dMat1, CV_GRAY2BGR);
-//	////// end of wrapped image preparation
-//
-//	// create detected changes as 
-//	// red colour image with 3 channels
-//	dMat2.create(AA6.size(), CV_8UC3);
-//
-//	std::vector<cv::Mat> bgr_planes(3);
-//	cv::split(dMat2, bgr_planes);
-//
-//	bgr_planes[2] = AA6.clone(); // 2 is red channel
-//	cv::merge(bgr_planes, dMat2);
-//	// red colour image creation ends
-//
-//	float fBlend = 0.75;
-//	dMat4 = fBlend*dMat1 + (1.0 - fBlend)*dMat2;
-//
-//
-//	cv::namedWindow("g_CVTestWrapped", cv::WINDOW_NORMAL);
-//	cv::imshow("g_CVTestWrapped", AA3);
-//	cv::waitKey(0);
-//
-//	//cv::namedWindow("dMat3", cv::WINDOW_NORMAL);
-//	//cv::imshow("dMat3", dMat3);
-//	//cv::waitKey(0);
-//
-//	cv::namedWindow("dMat1", cv::WINDOW_NORMAL);
-//	cv::imshow("dMat1", dMat1);
-//	cv::waitKey(0);
-//
-//	cv::namedWindow("g_CVTestChangeDetect", cv::WINDOW_NORMAL);
-//	cv::imshow("g_CVTestChangeDetect", AA6);
-//	cv::waitKey(0);
-//
-//	cv::namedWindow("dMat2", cv::WINDOW_NORMAL);
-//	cv::imshow("dMat2", dMat2);
-//	cv::waitKey(0);
-//
-//	cv::namedWindow("dMat4", cv::WINDOW_NORMAL);
-//	cv::imshow("dMat4", dMat4);
-//	cv::waitKey(0);
-//
-//	CBitmapDlg dlgBitmap;
-//	dlgBitmap.SetCVMat(dMat4);
-//	dlgBitmap.DoModal();
-//}
+
+/** Called every time the highlighted previous date is altered.
+	Read the associated image filename and publish the image in the
+	small preview box (IDC_FORM_PICCTRL_CBPREVIEW). 
+	*/
+void CARALGISView::OnCbnSelchangeFormCboxVisitlist()
+{
+	// TODO: Add your control notification handler code here
+	CString strVisitDateTime;
+
+	int index = m_formCBoxVisitList.GetCurSel();
+	m_formCBoxVisitList.GetLBText(index, strVisitDateTime);
+
+	// prepare the associated image filename
+	strVisitDateTime.Replace(' ', '_');
+	strVisitDateTime.Remove('/');
+	strVisitDateTime.Remove(':');
+	// m_FormELP must have been set at the time of the License Plate reception
+	CString strPrevTag = m_FormELP + _T("_") + strVisitDateTime;
+	CString strFilename = m_PathToCars + strPrevTag;
+	strFilename += _T(".img");
+
+	DWORD dwAttrib = GetFileAttributes(strFilename);
+	char charFilename[MAX_FILENAME_LENGTH];
+
+	if (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+		!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) {
+		for (auto i = 0; i < strFilename.GetLength(); ++i)
+			charFilename[i] = strFilename[i];
+		charFilename[strFilename.GetLength()] = '\0';
+
+	}
+	else {
+		strFilename = m_PathToCars + _T("default.img");
+		for (auto i = 0; i < strFilename.GetLength(); ++i)
+			charFilename[i] = strFilename[i];
+		charFilename[strFilename.GetLength()] = '\0';
+	}
+
+	if (m_CVImagePrev.rows != 0 || m_CVImagePrev.cols != 0)
+	{
+		m_CVImagePrev.release();
+	}
+
+	if (g_CameraPixelBits == 24)
+	{
+		m_CVImagePrev = cv::imread(charFilename, cv::IMREAD_COLOR);
+	}
+	else
+	{
+		m_CVImagePrev = cv::imread(charFilename, cv::IMREAD_GRAYSCALE);
+	}
+
+	if (m_MatToGDIPrev != nullptr)
+	{
+		delete m_MatToGDIPrev;
+		m_MatToGDIPrev = nullptr;
+	}
+
+	m_PrevCVMat = m_CVImagePrev.clone();
+	m_MatToGDIPrev = new PkMatToGDI(m_PrevImgBMP, false);
+	m_MatToGDIPrev->DrawImg(m_CVImagePrev);
+
+	// fill in the rest of visit information boxes.
+	// careful: index is in reverse
+	auto visitInfoIndex = m_formCBoxVisitList.GetCount() - index - 1;
+	m_FormEDID = m_VisitInfo[visitInfoIndex].GetDriver();
+	m_FormEUID = m_VisitInfo[visitInfoIndex].GetKeeper();
+	m_FormEGID = m_VisitInfo[visitInfoIndex].GetGate();
+
+	UpdateData(FALSE);
+
+	// MessageBox(strVisitDateTime);
+
+
+
+	/*////////////////////////////// remove remove remove - begin
+	//CString strRefFilename = vSet.m_VehicleChassisBottomReferenceImageFile;
+
+	//CString fullPathName = CString{ _T("C:\\Users\\bora\\Desktop\\ARALGIS-GitHub-HTR\\Cars\\ChassisBottom\\") } +strRefFilename;
+
+
+	//const size_t newsizew = (fullPathName.GetLength() + 1) * 2;
+	//char *charfilename = new char[newsizew];
+	//size_t convertedCharsw = 0;
+	//wcstombs_s(&convertedCharsw, charfilename, newsizew, fullPathName, newsizew);
+
+	//// TODO: display the contents of strRefFilename
+	//// MessageBox(CString{ _T("The filename for Reference image: ") }+strRefFilename);
+
+	//if (g_CVImageRef.rows != 0 || g_CVImageRef.cols != 0)
+	//{
+	//	g_CVImageRef.release();
+	//}
+
+	//cv::Mat pTemp;
+
+	//if (g_CameraPixelBits == 24)
+	//{
+	//	g_CVImageRef = cv::imread(charfilename, cv::IMREAD_COLOR);
+	//}
+	//else
+	//{
+	//	g_CVImageRef = cv::imread(charfilename, cv::IMREAD_GRAYSCALE);
+	//}
+
+	////g_CVImageRef.create(pTemp.size(), pTemp.type());
+
+	//if (m_MatToGDIRef != nullptr)
+	//{
+	//	delete m_MatToGDIRef;
+	//	m_MatToGDIRef = nullptr;
+	//}
+	//m_RefCVMat = g_CVImageRef.clone();
+	//m_MatToGDIRef = new PkMatToGDI(m_RefImgBMP, m_AutoFit);
+
+
+	//EnterCriticalSection(&RefImageCS);
+	//m_MatToGDIRef->DrawImg(g_CVImageRef);
+	//LeaveCriticalSection(&RefImageCS);
+
+	//m_Ref1FilterOK = FALSE;
+	//m_Ref2FilterOK = FALSE;
+	//m_Ref3FilterOK = FALSE;
+
+	//m_ColourRadioOriginal.EnableWindow(FALSE);
+	//m_ColourRadioOriginal.SetCheck(1);
+
+	//m_iDisplayTestImageFilterType = (int)0;
+	//m_iDisplayRefImageFilterType = (int)0;
+	//m_iDisplayRefImageColourType = (int)0;
+	//m_iDisplayTestImageColourType = (int)0;
+
+	//CButton* dRadioB;
+	//dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR2));
+	//dRadioB->SetCheck(0);
+	//dRadioB->EnableWindow(FALSE);
+
+	//dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR3));
+	//dRadioB->EnableWindow(FALSE);
+	//dRadioB->SetCheck(0);
+
+	//UpdateData(FALSE);
+	//// m_formCBoxVisitList.AddString(strLP);
+
+	//delete[] charfilename;
+	/////////////////////////////// remove remove remove - end */
+
+
+
+
+
+
+}
+
+
+HBRUSH CARALGISView::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	// HBRUSH hbr = CColorFormView::OnCtlColor(pDC, pWnd, nCtlColor);
+	CColorFormView::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	//if (pWnd->GetDlgCtrlID() == IDC_FORM_PICTCTRL_CBPREVIEW)
+	//{
+	//	pDC->SetBkColor(RGB(240, 240, 240));
+	//	pDC->SetDCBrushColor(RGB(240, 240, 240));
+	//	tmpBrush.CreateSolidBrush(RGB(240, 240, 240));
+	//}
+
+	// TODO:  Change any attributes of the DC here
+
+	// TODO:  Return a different brush if the default is not desired
+	return (HBRUSH)m_brush;
+}

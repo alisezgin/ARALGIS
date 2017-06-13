@@ -238,9 +238,41 @@ bool PkMatToGDI::DrawImg(const cv::Mat &img)
 ///Repaint the rectangle using current brush
 void PkMatToGDI::BackgroundClear()
 {
-	CClientDC hDC(m_WinCtrl);
+	// ali - default version commented out - begin
+	//CClientDC hDC(m_WinCtrl);
 	//the rectangle is outlined by using the current pen and filled by using the current brush
+	//::Rectangle(hDC, m_ctrlRectWin.left, m_ctrlRectWin.top, m_ctrlRectWin.right, m_ctrlRectWin.bottom);
+	// ali - default version commented out - end
+
+	CClientDC hDC(m_WinCtrl);
+
+	// Select DC_PEN so you can change the color of the pen with
+
+	// COLORREF SetDCPenColor(HDC hdc, COLORREF color)
+
+	// SelectObject(hDC, GetStockObject(DC_PEN));
+
+	// Select DC_BRUSH so you can change the brush color from the
+
+	// default WHITE_BRUSH to any other color
+
+	SelectObject(hDC, GetStockObject(DC_BRUSH));
+
+	// Set the DC Brush to Red
+
+	// The RGB macro is declared in "Windowsx.h"
+
+	SetDCBrushColor(hDC, RGB(240, 240, 240));
+
+	// Set the Pen to Blue
+
+	// SetDCPenColor(hDC, RGB(0, 0, 255));
+
+	//the rectangle is outlined by using the current pen and filled by using the current brush
+
 	::Rectangle(hDC, m_ctrlRectWin.left, m_ctrlRectWin.top, m_ctrlRectWin.right, m_ctrlRectWin.bottom);
+
+
 
 }
 
