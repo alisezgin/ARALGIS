@@ -71,7 +71,22 @@ protected:
 	void ClearPreviewBox();
 
 	// prepares the image filename to be saved in the Cars/ChassisBottom directory
-	CString PrepareImageFilename(CString const &, CTime const &);
+	std::string PrepareImageFilename();
+	std::string PrepareImageFilename(CString const &, CTime const &);
+	std::string PrepareImageFilename(CString const &, CString const &);
+	BOOL SaveImage(std::string const &);
+	BOOL UpdateRefImage(CString const &);
+
+	// prepares m_DriverList to be used in the driver list combo box
+	void PrepareDriverList();
+	// fills the drop down list with the contents of m_DriverList
+	void FillDriverList();
+
+	// prepares m_KeeperList to be used in the keeper list combo box
+	void PrepareKeeperList();
+
+	// prepares m_GateList to be used in the gate list combo box
+	void PrepareGateList();
 
 protected:
 
@@ -110,8 +125,8 @@ protected:
 	BOOL m_Ref3FilterOK;
 
 
-	CString m_PlakaStr;
-	CEdit m_PlakaCtrl;
+//	CString m_PlakaStr;
+//	CEdit m_PlakaCtrl;
 
 	CFont m_Font;
 
@@ -169,6 +184,17 @@ protected:
 
 	// holds the absolute path to the 'Cars' directory
 	CString m_PathToCars;
+
+	// controls the driver list combo box
+	CComboBox m_FormCBDriverList;
+	// holds the list of drivers in the database
+	std::vector<std::pair<CString, long>> m_DriverList;
+
+	// holds the list of gate keepers in the database
+	std::vector<std::pair<CString, long>> m_KeeperList;
+
+	// holds the list of gate names in the database
+	std::vector<std::pair<CString, long>> m_GateList;
 
 	// to have a better control on the background color
 	CBrush m_brush;
