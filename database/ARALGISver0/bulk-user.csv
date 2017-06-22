@@ -1,0 +1,4 @@
+ID,Name,LastName,Type,Nickname,RegistrationDateTime,Password,OldPassword,IsActive,ExpungeDateTime
+0,Haydar,Dogan,2,haydari,2016-07-12 09:00:00,hadigari,yettigari,1,
+0,Ismet,Kismet,1,kulyutmaz,2015-01-01 00:00:01,123abc!@#,mypass,1,
+0,Satilmis,Portakal,2,lawrence,2016-08-11 10:04:00,cia123,kgb234,0,2016-08-14 15:47:04

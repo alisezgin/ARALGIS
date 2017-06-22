@@ -1,0 +1,5 @@
+VehicleID,LicensePlate,LicensePlateImage,FrontViewImage,ChassisBottomImageCurrent,ChassisBottomImageRef,MostRecentVisitDate,DriverName
+0,06 VE 809,06-ve-809.img,fvi-06-ve-809.img,cbic-06-ve-809.img,cbir-06-ve-809.img,2010-10-10 01:02:03,Omur Sezgin
+0,06 FVF 80,06-fvf-80.img,fvi-06-fvf-80.img,cbic-06-fvf-80.img,cbir-06-fvf-80.img,2011-11-09 13:46:00,Ali Sezgin
+0,06 AL 6421,06-al-6421.img,fvi-06-al-6421.img,cbic-06-al-6421.img,cbir-06-al-6421.img,2011-07-01 20:16:00,Alper Erdogan
+0,06 ZDK 89,06-zdk-89.img,fvi-06-zdk-89.img,cbic-06-zdk-89.img,cbir-06-zdk-89.img,2016-12-31 23:59:59,Ali Sezgin

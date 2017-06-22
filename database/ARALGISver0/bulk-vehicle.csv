@@ -1,0 +1,5 @@
+ID,LicensePlate,Type,RegistrationName,RegistrationDate,RegistrationNumber,LicensePlateImage,FrontViewImageFile,ChassisBottomReferenceImageFile,ChassisBottomLastImageFile
+0,06VE809,1,Ali Sezgin,1983-08-07,TR1346,06-ve-809.img,fvi-06-ve-809.img,cbri-06-ve-809.img,cbli-06-ve-809.img
+0,06FVF80,2,Omur Sezgin,1992-05-17,TR1408,06-fvf-80.img,fvi-06-fvf-80.img,cbri-06-fvf-80.img,cbli-06-fvf-80.img
+0,06AL6421,1,Omur Sezgin,2004-07-01,TR55241,06-al-6421.img,fvi-06-al-6421.img,cbri-06-al-6421.img,cbli-06-al-6421.img
+0,06ZDK89,1,Mustafa Ali Turker,1992-10-01,TR1952,06-zdk-89.img,fvi-06-zdk-89.img,cbri-06-zdk-89.img,cbli-06-zdk-89.img

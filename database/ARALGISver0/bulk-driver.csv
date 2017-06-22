@@ -1,0 +1,4 @@
+ID,Name,LastName,Type,DriverLicenseIssueCity,DriverLicenseIssueDistrict,NatIDNo,DateofBirth,BirthPlace,NatIDIssueCity,NatIDIssueDistrict,NatIDVolNo,NatIDRowNo,NatIDLogNo,FatherName,MotherName,BloodType,IssueAuthority
+0,Ali,Sezgin,1,Ankara,,12345678901,1971-08-07,Kuala Lumpur,Ankara,,1,2,3,Ahmet,Ayse,0+,Ankara Emniyet Md.
+0,Omur,Sezgin,2,Manisa,,23456789012,1942-05-17,Ulan Batur,Bilecik,,1,2,1,Hasan,Fatma,A-,Istanbul Em. Md.
+0,Mustafa Ali,Turker,1,Ankara,,11234567890,1969-10-01,Sana,Izmir,,7,8,9,Ismet,Kismet,AB-,Eskisehir Emniyet Mudurlugu

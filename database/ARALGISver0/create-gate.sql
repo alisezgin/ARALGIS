@@ -1,0 +1,24 @@
+USE [ARALGISver0]
+GO
+
+/****** Object:  Table [dbo].[Gate]    Script Date: 12.05.2017 16:11:01 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Gate](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[Type] [nvarchar](50) NULL,
+	[PCName] [nvarchar](50) NULL,
+	[IP] [nvarchar](50) NULL,
+	[Notes] [nvarchar](max) NULL,
+ CONSTRAINT [PK_Gate] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+
