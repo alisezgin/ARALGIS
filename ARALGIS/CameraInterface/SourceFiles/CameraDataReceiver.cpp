@@ -171,6 +171,11 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 
 				g_IntermediateCounter = 0;
 
+				if (g_AutoDetect_Type == NO_AUTO_VEHICLE_DETECT)
+				{
+					g_dEndIndex = g_dBeginIndex = 0;
+				}
+
 				pServer->m_MyCamera.StartDataReception();
 			}
 
@@ -211,14 +216,22 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 				LeaveCriticalSection(&g_IntermediateTestImgCS);
 			}
 
-			::InterlockedDecrement((long*)&g_carsDetectedByPTSCnt);
-			TRACE("dec g_carsDetectedByPTSCnt %d \n", g_carsDetectedByPTSCnt);
-
-			// boraN code analysis
-			// use Interlocked function below for g_carsDetectedByPTSCnt if check
-			if (g_carsDetectedByPTSCnt > 0)
+			if ((g_AutoDetect_Type != NO_AUTO_VEHICLE_DETECT) && (g_PTS_Producer_ID == PTS_BY_DIVIT))
 			{
-				SetEvent(g_CameraStartDataRecieveEvent);
+				ResetEvent(g_KillTimerEvent);
+			}
+
+			if ((g_AutoDetect_Type != NO_AUTO_VEHICLE_DETECT) && (g_PTS_Producer_ID == PTS_BY_ISSD))
+			{
+				::InterlockedDecrement((long*)&g_carsDetectedByPTSCnt);
+				TRACE(L"dec g_carsDetectedByPTSCnt %d \n", g_carsDetectedByPTSCnt);
+
+				// boraN code analysis
+				// use Interlocked function below for g_carsDetectedByPTSCnt if check
+				if (g_carsDetectedByPTSCnt > 0)
+				{
+					SetEvent(g_CameraStartDataRecieveEvent);
+				}
 			}
 
 		}

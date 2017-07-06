@@ -33,8 +33,11 @@ extern HANDLE g_SetTimerFrameRateEvent;
 // event used for killing timer 
 extern HANDLE g_KillTimerEvent;
 
+// event used for triggering PTS 
+extern HANDLE g_PTSTriggerEvent;
+
 // event used for sending UVSS image to PTS 
-extern HANDLE SendUVSSImageEvent;
+extern HANDLE g_SendUVSSImageEvent;
 
 // event used for triggering PTS 
 extern HANDLE g_PTSLostEvent;
@@ -56,6 +59,18 @@ extern HANDLE g_OdroidStartAlarmEvent;
 
 // event used for sending stop alarm message to odroid 
 extern HANDLE g_OdroidStopAlarmEvent;
+
+// event used for sending critical disk space message to odroid 
+extern HANDLE g_OdroidDiskSpaceEvent;
+
+// event used for sending file written message to odroid 
+extern HANDLE g_OdroidPTSFileWrittenEvent;
+
+// event used for sending file written message to odroid 
+extern HANDLE g_OdroidImageFileWrittenEvent;
+
+// event used for sending error occured message to odroid 
+extern HANDLE g_OdroidErrorOccuredEvent;
 
 // event used for triggering CameraDBServer
 extern HANDLE g_CameraDBServerPlakaDataReadyEvent;
@@ -81,9 +96,11 @@ extern HANDLE g_ProcessFilter6Event;
 // event used for triggering intermediate test image ready
 extern HANDLE g_IntermediateImageReadyEvent;
 
-// event used for resetting timer 
+// event used for start change detection 
 extern HANDLE g_StartChangeDetectEvent;
 
+// event used for starting free disc space control 
+extern HANDLE g_ControlHardDiskSpaceEvent;
 ///////////////////////////////////////////////////
 ////////// GLOBAL EVENTS ends here ////////////////
 
@@ -162,6 +179,7 @@ extern char g_RefImageFileName[MAX_DIR_PATH_LENGTH];
 // test image indices
 extern int g_dBeginIndex;
 extern int g_dEndIndex;
+extern int g_dCarDetectCount;
 
 extern int  g_CameraWidth;
 extern int  g_CameraHeight;
@@ -171,9 +189,9 @@ extern char g_Odroid_Port[PORT_BYTE_LEN + 1];
 extern char g_PTSPort[PORT_BYTE_LEN + 1];
 extern char g_PTSIP[IP_BYTE_LEN + 1];
 extern char g_ReferenceFilePath[MAX_DIR_PATH_LENGTH + 1];
-extern char g_ConfigFilename[MAX_FILENAME_LENGTH + 1];
-extern int  g_ImageOnScreenDuration;
+extern char g_CameraConfigFilename[MAX_FILENAME_LENGTH + 1];
 
+extern bool g_ChangeDetectActive;
 /////////////////////////////////////////////////////
 //// GLOBAL DATA VARIABLES end here////////////////
 
@@ -193,6 +211,26 @@ extern CRITICAL_SECTION   RefImageCS;
 
 // Critical Section to protect TestImage 
 extern CRITICAL_SECTION   TestImageCS;
+
+// Critical Section to shutdown after change detection is finished
+extern CRITICAL_SECTION g_ChangeDetectCS;
+
+// defines what type of code will be used for PTS comm
+extern int g_PTS_Producer_ID;
+
+// defines operation mode of PTS (trigger/continuous)
+extern int g_PTS_Mode;
+
+// defines is automatic vehicle will be used
+extern bool g_Use_Auto_VehicleDetect;
+
+// defines if PTS is DIVIT and g_Use_Auto_VehicleDetect is TRUE
+// use full camera data for vehicle detection
+extern int g_AutoDetect_Type;
+
+extern BOOL g_CarFound;
+
+extern BOOL g_IsOdroidStartReceived;
 ////////////////////////////////////////////////////////////////////
 ////// GLOBAL CONTROL VARIABLES end here /////////////////////////
 

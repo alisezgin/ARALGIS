@@ -60,8 +60,6 @@ protected:
 
 	// Implementation
 protected:
-	void DeletePTSImage();
-	void SetTimerDisplay();
 	void GetTestImageAsByte();
 
 	// called to update the vehicle info boxes upon the retrieval of a new license plate number
@@ -207,6 +205,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	afx_msg LRESULT OnCameraDataReady(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT GetTestImage(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnDBaseCarInfoReady(WPARAM wParam, LPARAM lParam); 
 	afx_msg LRESULT Filter1Available(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT Filter2Available(WPARAM wParam, LPARAM lParam);
@@ -251,6 +250,8 @@ public:
 	afx_msg void OnBnClickedButtonChangeDetect();
 	afx_msg void OnCbnSelchangeFormCboxVisitlist();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnBnClickedButtonExit();
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

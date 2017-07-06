@@ -56,7 +56,7 @@ public:
 
 		//if (matches1.size() >= matches2.size()) //==> keypoints2.size() > keypoints1.size()
 		//{
-		//	printf("\nYYYYYYYYY matches1.size() >= matches2.size()\n");
+		//	DEBUG_PRINT("\nYYYYYYYYY matches1.size() >= matches2.size()\n");
 		cv::drawMatches(image1, keypoints1, image2, keypoints2,
 			matchB2, resMatches,
 			cv::Scalar::all(-1), cv::Scalar::all(-1),
@@ -120,8 +120,9 @@ public:
 			i++;
 		}
 
-		printf("After Ratio Test Num Matches1 %d III %d KP11 %d KP21 %d KKK %d\n", matchB.size(), i, KP1.size(), KP2.size(), k);
-
+#ifdef DEBUG_PRINT_FINAL10
+		DEBUG_PRINT("\nAfter Ratio Test Num Matches1 %d III %d KP11 %d KP21 %d KKK %d\n", matchB.size(), i, KP1.size(), KP2.size(), k);
+#endif
 		cv::drawMatches(image1, KP1, image2, KP2,
 			matchB, resMatches,
 			cv::Scalar::all(-1), cv::Scalar::all(-1),
@@ -155,7 +156,9 @@ public:
 		std::vector<cv::DMatch> matchB;
 		std::vector<cv::KeyPoint> KP1, KP2;
 
-		printf("\n displayMatchesSymetryTest SIZE1 %d SIZE2 %d\n", keypoints1.size(), keypoints2.size());
+#ifdef DEBUG_PRINT_FINAL1
+		DEBUG_PRINT("\n displayMatchesSymetryTest SIZE1 %d SIZE2 %d\n", keypoints1.size(), keypoints2.size());
+#endif
 
 		int k = 0;
 		for (std::vector<cv::DMatch>::iterator matchIterator = symMatches.begin();
@@ -174,7 +177,9 @@ public:
 			}
 		}
 
-		printf("\nAfter Symetry Test Num Matches1 %d IIII %d KP111 %d KP2111 %d\n", symMatches.size(), k, KP1.size(), KP2.size());
+#ifdef DEBUG_PRINT_FINAL1
+		DEBUG_PRINT("\nAfter Symetry Test Num Matches1 %d IIII %d KP111 %d KP2111 %d\n", symMatches.size(), k, KP1.size(), KP2.size());
+#endif
 
 		if (m_bIsSeqDisp == true)
 		{
@@ -247,7 +252,9 @@ public:
 			k++;
 		}
 
-		printf("After RANSAC Test Num Matches1 %d IIIII %d KP1111 %d KP2111 %d\n", matches.size(), k, KP1.size(), KP2.size());
+#ifdef DEBUG_PRINT_FINAL1
+		DEBUG_PRINT("After RANSAC Test Num Matches1 %d IIIII %d KP1111 %d KP2111 %d\n", matches.size(), k, KP1.size(), KP2.size());
+#endif
 
 		cv::drawMatches(image1, KP1, image2, KP2,
 			matchB, resMatches,
@@ -294,14 +301,15 @@ public:
 			KP1.push_back(keypoints1[matches[k].trainIdx]);
 			KP2.push_back(keypoints2[matches[k].queryIdx]);  // queryIdx
 
-			//printf("I %d QUER %d TRN %d \n", k, matches[k].queryIdx, matches[k].trainIdx);
+			//DEBUG_PRINT("I %d QUER %d TRN %d \n", k, matches[k].queryIdx, matches[k].trainIdx);
 
 			k++;
 		}
 
-		printf("\nRETURN SIZE %d\n", matches.size());
-
-		printf("After HOMO Test Num Matches1 %d IIIIII %d KP1111 %d KP2111 %d\n", matches.size(), k, KP1.size(), KP2.size());
+#ifdef DEBUG_PRINT_FINAL1
+		DEBUG_PRINT("\nRETURN SIZE %d\n", matches.size());
+		DEBUG_PRINT("After HOMO Test Num Matches1 %d IIIIII %d KP1111 %d KP2111 %d\n", matches.size(), k, KP1.size(), KP2.size());
+#endif
 
 		cv::drawMatches(image1, KP1, image2, KP2,
 			matchB, resMatches,
@@ -312,14 +320,14 @@ public:
 		for (int jj = 0; jj < (int) KP1.size(); jj++)
 		{
 			//cv::circle(resMatches, KP1[jj].pt, 2, cv::Scalar(255, 0, 0), 10);
-			//printf("\n KP1 Index %d X %.3f Y %.3f", jj, KP1[jj].pt.x, KP1[jj].pt.y);
+			//DEBUG_PRINT("\n KP1 Index %d X %.3f Y %.3f", jj, KP1[jj].pt.x, KP1[jj].pt.y);
 		}
 
 
 		for (int jj = 0; jj < (int) KP2.size(); jj++)
 		{
 			//cv::circle(resMatches, KP2[jj].pt + offset, 2, cv::Scalar(0, 255, 0), 10);
-			//printf("\n KP2 Index %d X %.3f Y %.3f", jj, KP2[jj].pt.x + offset.x, KP2[jj].pt.y + offset.y);
+			//DEBUG_PRINT("\n KP2 Index %d X %.3f Y %.3f", jj, KP2[jj].pt.x + offset.x, KP2[jj].pt.y + offset.y);
 
 		}
 
@@ -340,9 +348,10 @@ public:
 		std::vector<cv::DMatch> matchB;
 		std::vector<cv::KeyPoint> KP1, KP2;
 
-		printf("\n displayMatchesProcessor SIZE1 %d SIZE2 %d\n", keypoints1.size(), keypoints2.size());
-		printf("\n displayMatchesProcessor SIZE of MATCHES %d \n", symMatches.size());
-
+#ifdef DEBUG_PRINT_FINAL1
+		DEBUG_PRINT("\n displayMatchesProcessor SIZE1 %d SIZE2 %d\n", keypoints1.size(), keypoints2.size());
+		DEBUG_PRINT("\n displayMatchesProcessor SIZE of MATCHES %d \n", symMatches.size());
+#endif
 
 		int k = 0;
 		for (std::vector<cv::DMatch>::iterator matchIterator = symMatches.begin();

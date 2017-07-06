@@ -179,7 +179,7 @@ BOOL CImageFilterProcessing::Start(CMainFrame* pFrame)
 		return FALSE;
 	}
 
-	TRACE("ThreadRefFilter3Processing ThreadID %x ...\n", ThreadRefID1);
+	TRACE("ThreadRefFilter3Processing ThreadID %x ...\n", ThreadRefID3);
 
 
 	return TRUE;

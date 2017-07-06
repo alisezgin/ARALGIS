@@ -38,13 +38,15 @@ public:
 			hist[value] = hist[value] + 1;
 		}
 
-		printf("Total # of pixels: %ld\n", N);
+#ifdef DEBUG_PRINT_FINAL10
+		DEBUG_PRINT("Total # of pixels: %ld\n", N);
+#endif
 
-		// printf("Printing normalized histogram\n");
+		// DEBUG_PRINT("Printing normalized histogram\n");
 		// for (int i = 0; i <= 255; i++){
-		//   // printf("%d\t%d\n", i, (int)(hist[i]*N));
+		//   // DEBUG_PRINT("%d\t%d\n", i, (int)(hist[i]*N));
 		//   // Normalized histogram
-		//   printf("%d\t%f\n", i, hist[i]);
+		//   DEBUG_PRINT("%d\t%f\n", i, hist[i]);
 		// }
 	}
 
@@ -89,8 +91,9 @@ public:
 		}
 
 
-		printf("OTSU Threshold is: %d\n", threshold);
-
+#ifdef DEBUG_PRINT_FINAL1
+		DEBUG_PRINT("OTSU Threshold is: %d\n", threshold);
+#endif
 		// Modify output image
 
 		uchar *in = &(input.at<uchar>(0, 0)); // Image value
@@ -103,11 +106,11 @@ public:
 
 			if (value > threshold)
 			{
-				out[i] = (uchar)255.0; 
+				out[i] = (uchar)0.0f; 
 			}
 			else
 			{
-				out[i] = (uchar) 0.0f; 
+				out[i] = (uchar) 255.0f; 
 			}
 		}
 	}

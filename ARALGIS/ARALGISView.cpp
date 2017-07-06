@@ -58,6 +58,7 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 	ON_MESSAGE(WM_CAMERA_DATA_READY, &CARALGISView::OnCameraDataReady)
+	ON_MESSAGE(WM_VEHICLEDETECT_FINISHED, &CARALGISView::GetTestImage)
 	ON_MESSAGE(WM_DBASE_CAR_INFO_READY, &CARALGISView::OnDBaseCarInfoReady)
 	ON_MESSAGE(WM_FILTER1_READY, &CARALGISView::Filter1Available)
 	ON_MESSAGE(WM_FILTER2_READY, &CARALGISView::Filter2Available)
@@ -98,6 +99,8 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_BN_CLICKED(IDC_BUTTON_CHANGE_DETECT, &CARALGISView::OnBnClickedButtonChangeDetect)
 	ON_CBN_SELCHANGE(IDC_FORM_CBOX_VISITLIST, &CARALGISView::OnCbnSelchangeFormCboxVisitlist)
 	ON_WM_CTLCOLOR()
+	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON_EXIT, &CARALGISView::OnBnClickedButtonExit)
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -136,6 +139,7 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 	m_iDisplayRefImageColourType = (int)0;
 
 	m_AutoFit = false;
+	g_dCarDetectCount = 0;
 
 	// ali : ARALGISCarsDir is an environment variable which should be set
 	// (at the time of the installation of ARALGIS)
@@ -146,20 +150,24 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 	// because the contents were modified via the buffer, it must be released
 	// before further modification to the contents of the CString variable.
 	m_PathToCars.ReleaseBuffer();
+	
+	/// bora2ali bug-fix begins
 	// the environment variable does not contain the trailing directory separator
-	m_PathToCars += _T("\\");
+	//m_PathToCars += _T("\\");
 	// currently we have two image subdirectories:
 	// FrontalView and ChassisBottom
 	// we may very well end up removing the former.
-	m_PathToCars += _T("ChassisBottom\\");
+	//m_PathToCars += _T("ChassisBottom\\");
 	//strcpy(m_PathToCars, "\\");
-
+	/// bora2ali bug-fix ends
 
 	// Prepare the driver list to be displayed in the Driver List Combo box
 	PrepareDriverList();
 
 	// set the background color variable
-	m_brush.CreateSolidBrush(RGB(255, 255, 255));
+	m_brush.CreateSolidBrush(RGB(240, 240, 240));
+
+	g_IsOdroidStartReceived = FALSE;
 }
 
 CARALGISView::~CARALGISView()
@@ -565,6 +573,9 @@ void CARALGISView::OnInitialUpdate()
 							 _T("Arial")));                 // lpszFacename
 
 	m_PlakaDisplayControl.SetFont(&m_Font);
+
+	// start 1 second interval timer
+	SetTimer(DISPLAY_TIMER_ID, TIMER_PERIOD_IN_MS, NULL);
 }
 
 
@@ -616,125 +627,271 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 
 	cv::Mat dMat3;
 
-
-	if (g_dEndIndex - g_dBeginIndex > 0)
+	if (g_AutoDetect_Type != NO_AUTO_VEHICLE_DETECT)
 	{
-		cv::Rect region_of_interest = cv::Rect(0, g_dBeginIndex, g_CVImageTest.cols, g_dEndIndex - g_dBeginIndex);
+		if (g_dEndIndex - g_dBeginIndex > 0)
+		{
+			cv::Rect region_of_interest = cv::Rect(0, g_dBeginIndex, g_CVImageTest.cols, g_dEndIndex - g_dBeginIndex);
 
-		dMat3 = g_CVImageTest(region_of_interest).clone();
-	}
+			dMat3 = g_CVImageTest(region_of_interest).clone();
 
 #ifdef DEBUG_BORA
-	cv::imwrite("C:\\Users\\bora\\Desktop\\sil\\boraDeneme.bmp", dMat3);
+			cv::imwrite("C:\\Users\\bora\\Desktop\\sil\\boraDeneme.bmp", dMat3);
 #endif
 
-	transpose(dMat3, dMat1);
-	flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
-	//dMat2.copyTo(g_CVImageTest);
-	g_CVImageTest = dMat2.clone();
+			transpose(dMat3, dMat1);
+			flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
+			//dMat2.copyTo(g_CVImageTest);
+			g_CVImageTest = dMat2.clone();
 
-	GetTestImageAsByte();
+			GetTestImageAsByte();
 
-	if (m_MatToGDITest != NULL)
-	{
-		delete m_MatToGDITest;
-		m_MatToGDITest = NULL;
-	}
+			if (m_MatToGDITest != NULL)
+			{
+				delete m_MatToGDITest;
+				m_MatToGDITest = NULL;
+			}
 
-	if (m_TestCVMat.rows != 0 || m_TestCVMat.cols != 0)
-	{
-		m_TestCVMat.release();
-	}
+			if (m_TestCVMat.rows != 0 || m_TestCVMat.cols != 0)
+			{
+				m_TestCVMat.release();
+			}
 
-	m_TestCVMat = g_CVImageTest.clone();
-	m_MatToGDITest = new PkMatToGDI(m_TestImgBMP, m_AutoFit);
-	m_MatToGDITest->DrawImg(m_TestCVMat);
+			m_iDisplayTestImageFilterType = (int)0;
+			m_iDisplayRefImageFilterType = (int)0;
+			m_iDisplayRefImageColourType = (int)0;
+			m_iDisplayTestImageColourType = (int)0;
 
-	//dMat1.release();
-	//dMat2.release();
-	//dMat3.release();
+			m_RefImgBMP->SetFocus();
 
-	// ali: update the database with the current image
-	// ali: this has to go to the VehiclePassage table
+			m_TestCVMat = g_CVImageTest.clone();
+			m_MatToGDITest = new PkMatToGDI(m_TestImgBMP, m_AutoFit);
+			m_MatToGDITest->DrawImg(m_TestCVMat);
 
-	//// code to be deleted when dbase handler
-	//// thread is added
-	//// code deletion starts here
-	//LPARAM pLparam;
-	//pLparam = reinterpret_cast<LPARAM>("ARALGIS");
-	//SendMessage(WM_DBASE_CAR_INFO_READY, 0, pLparam);
-	//// code deletion ends here
+			//dMat1.release();
+			//dMat2.release();
+			//dMat3.release();
 
-	if (g_CVImageTest.cols > 0)
-	{
-		if (g_CVImageTestFilter1.rows != 0 || g_CVImageTestFilter1.cols != 0)
-		{
-			g_CVImageTestFilter1.release();
+			// ali: update the database with the current image
+			// ali: this has to go to the VehiclePassage table
+
+			//// code to be deleted when dbase handler
+			//// thread is added
+			//// code deletion starts here
+			//LPARAM pLparam;
+			//pLparam = reinterpret_cast<LPARAM>("ARALGIS");
+			//SendMessage(WM_DBASE_CAR_INFO_READY, 0, pLparam);
+			//// code deletion ends here
+
+			if (g_CVImageTest.cols > 0)
+			{
+				if (g_CVImageTestFilter1.rows != 0 || g_CVImageTestFilter1.cols != 0)
+				{
+					g_CVImageTestFilter1.release();
+				}
+
+				if (g_CVImageTestFilter2.rows != 0 || g_CVImageTestFilter2.cols != 0)
+				{
+					g_CVImageTestFilter2.release();
+				}
+
+				if (g_CVImageTestFilter3.rows != 0 || g_CVImageTestFilter3.cols != 0)
+				{
+					g_CVImageTestFilter3.release();
+				}
+
+				m_FilterRadioOriginal.EnableWindow(TRUE);
+				m_FilterRadioOriginal.SetCheck(1);
+
+				CButton* dRadioB;
+				dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_FILTER1));
+				dRadioB->SetCheck(0);
+				dRadioB->EnableWindow(FALSE);
+
+				dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_FILTER2));
+				dRadioB->EnableWindow(FALSE);
+				dRadioB->SetCheck(0);
+
+				dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_FILTER3));
+				dRadioB->EnableWindow(FALSE);
+				dRadioB->SetCheck(0);
+
+				m_ColourRadioOriginal.EnableWindow(FALSE);
+				m_ColourRadioOriginal.SetCheck(1);
+
+				dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR2));
+				dRadioB->SetCheck(0);
+				dRadioB->EnableWindow(FALSE);
+
+				dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR3));
+				dRadioB->EnableWindow(FALSE);
+				dRadioB->SetCheck(0);
+
+				SetEvent(g_ProcessFilter1Event);
+				SetEvent(g_ProcessFilter2Event);
+				SetEvent(g_ProcessFilter3Event);
+			}
+
+			if (g_ChangeDetectActive == 1)
+			{
+				if (g_CVTestChangeDetect.rows != 0 || g_CVTestChangeDetect.cols != 0)
+				{
+					g_CVTestChangeDetect.release();
+				}
+				g_CVTestChangeDetect.create(g_CVImageTest.size(), g_CVImageTest.type());
+
+				CButton* dRadioB;
+				dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_BUTTON_CHANGE_DETECT));
+				dRadioB->EnableWindow(FALSE);
+
+				SetEvent(g_StartChangeDetectEvent);
+			}
 		}
-
-		if (g_CVImageTestFilter2.rows != 0 || g_CVImageTestFilter2.cols != 0)
+		else
 		{
-			g_CVImageTestFilter2.release();
+			TRACE(L"\n\nOnCameraDataReady NO NEW IMAGE ACQUIRED\n\n");
 		}
-
-		if (g_CVImageTestFilter3.rows != 0 || g_CVImageTestFilter3.cols != 0)
-		{
-			g_CVImageTestFilter3.release();
-		}
-
-		m_iDisplayTestImageFilterType = (int)0;
-		m_iDisplayRefImageFilterType = (int)0;
-		m_iDisplayRefImageColourType = (int)0;
-		m_iDisplayTestImageColourType = (int)0;
-
-		m_FilterRadioOriginal.EnableWindow(TRUE);
-		m_FilterRadioOriginal.SetCheck(1);
-
-		CButton* dRadioB;
-		dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_FILTER1));
-		dRadioB->SetCheck(0);
-		dRadioB->EnableWindow(FALSE);
-
-		dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_FILTER2));
-		dRadioB->EnableWindow(FALSE);
-		dRadioB->SetCheck(0);
-
-		dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_FILTER3));
-		dRadioB->EnableWindow(FALSE);
-		dRadioB->SetCheck(0);
-
-		m_ColourRadioOriginal.EnableWindow(FALSE);
-		m_ColourRadioOriginal.SetCheck(1);
-
-		dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR2));
-		dRadioB->SetCheck(0);
-		dRadioB->EnableWindow(FALSE);
-
-		dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR3));
-		dRadioB->EnableWindow(FALSE);
-		dRadioB->SetCheck(0);
-
-		SetEvent(g_ProcessFilter1Event);
-		SetEvent(g_ProcessFilter2Event);
-		SetEvent(g_ProcessFilter3Event);
 	}
-
-
-	
-	if (g_CVTestChangeDetect.rows != 0 || g_CVTestChangeDetect.cols != 0)
+	else
 	{
-		g_CVTestChangeDetect.release();
+		TRACE(L"OnCameraDataReady SetEvent(g_IntermediateImageReadyEvent)\n");
+		SetEvent(g_IntermediateImageReadyEvent);
 	}
-	g_CVTestChangeDetect.create(g_CVImageTest.size(), g_CVImageTest.type());
+	return 0;
+}
 
-	CButton* dRadioB;
-	dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_BUTTON_CHANGE_DETECT));
-	dRadioB->EnableWindow(FALSE);
+afx_msg LRESULT CARALGISView::GetTestImage(WPARAM wParam, LPARAM lParam)
+{
+	cv::Mat dMat1, dMat2;
 
-	// get Singleton ChangeDetectionController and start the change detection process
-	//CChangeDetectController::getInstance()->process(m_FilenameRef, m_FilenameTest);
-	SetEvent(g_StartChangeDetectEvent);
-	//CChangeDetectController::getInstance()->process(m_RefCVMat, m_TestCVMat);
+	cv::Mat dMat3;
+	if (g_AutoDetect_Type == NO_AUTO_VEHICLE_DETECT)
+	{
+		if (g_dEndIndex - g_dBeginIndex > 0)
+		{
+			cv::Rect region_of_interest = cv::Rect(0, g_dBeginIndex, g_CVImageTest.cols, g_dEndIndex - g_dBeginIndex);
+
+			dMat3 = g_CVImageTest(region_of_interest).clone();
+
+
+			transpose(dMat3, dMat1);
+			flip(dMat1, dMat2, 1); //transpose+flip(1)=CW
+			//dMat2.copyTo(g_CVImageTest);
+			g_CVImageTest = dMat2.clone();
+
+			GetTestImageAsByte();
+
+			if (m_MatToGDITest != NULL)
+			{
+				delete m_MatToGDITest;
+				m_MatToGDITest = NULL;
+			}
+
+			if (m_TestCVMat.rows != 0 || m_TestCVMat.cols != 0)
+			{
+				m_TestCVMat.release();
+			}
+
+			m_iDisplayTestImageFilterType = (int)0;
+			m_iDisplayRefImageFilterType = (int)0;
+			m_iDisplayRefImageColourType = (int)0;
+			m_iDisplayTestImageColourType = (int)0;
+
+			m_RefImgBMP->SetFocus();
+
+			m_TestCVMat = g_CVImageTest.clone();
+			m_MatToGDITest = new PkMatToGDI(m_TestImgBMP, m_AutoFit);
+			m_MatToGDITest->DrawImg(m_TestCVMat);
+
+
+			if (m_TestCVMat.rows != 0 || m_TestCVMat.cols != 0)
+			{
+				m_TestCVMat.release();
+			}
+
+			m_TestCVMat = g_CVImageTest.clone();
+
+
+			if (g_CVImageTest.cols > 0)
+			{
+				if (g_CVImageTestFilter1.rows != 0 || g_CVImageTestFilter1.cols != 0)
+				{
+					g_CVImageTestFilter1.release();
+				}
+
+				if (g_CVImageTestFilter2.rows != 0 || g_CVImageTestFilter2.cols != 0)
+				{
+					g_CVImageTestFilter2.release();
+				}
+
+				if (g_CVImageTestFilter3.rows != 0 || g_CVImageTestFilter3.cols != 0)
+				{
+					g_CVImageTestFilter3.release();
+				}
+
+				m_FilterRadioOriginal.EnableWindow(TRUE);
+				m_FilterRadioOriginal.SetCheck(1);
+
+				CButton* dRadioB;
+				dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_FILTER1));
+				dRadioB->SetCheck(0);
+				dRadioB->EnableWindow(FALSE);
+
+				dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_FILTER2));
+				dRadioB->EnableWindow(FALSE);
+				dRadioB->SetCheck(0);
+
+				dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_FILTER3));
+				dRadioB->EnableWindow(FALSE);
+				dRadioB->SetCheck(0);
+
+				m_ColourRadioOriginal.EnableWindow(FALSE);
+				m_ColourRadioOriginal.SetCheck(1);
+
+				dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR2));
+				dRadioB->SetCheck(0);
+				dRadioB->EnableWindow(FALSE);
+
+				dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR3));
+				dRadioB->EnableWindow(FALSE);
+				dRadioB->SetCheck(0);
+
+				SetEvent(g_ProcessFilter1Event);
+				SetEvent(g_ProcessFilter2Event);
+				SetEvent(g_ProcessFilter3Event);
+			}
+
+			if (g_CVTestChangeDetect.rows != 0 || g_CVTestChangeDetect.cols != 0)
+			{
+				g_CVTestChangeDetect.release();
+			}
+			g_CVTestChangeDetect.create(g_CVImageTest.size(), g_CVImageTest.type());
+
+			CButton* dRadioB;
+			dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_BUTTON_CHANGE_DETECT));
+			dRadioB->EnableWindow(FALSE);
+
+			// start the change detection process
+			if (g_CarFound == TRUE)
+			{
+				if (g_ChangeDetectActive == 1)
+				{
+					if (g_CVTestChangeDetect.rows != 0 || g_CVTestChangeDetect.cols != 0)
+					{
+						g_CVTestChangeDetect.release();
+					}
+					g_CVTestChangeDetect.create(g_CVImageTest.size(), g_CVImageTest.type());
+
+
+					SetEvent(g_StartChangeDetectEvent);
+				}
+			}
+		}
+	}
+	else
+	{
+		TRACE(L"\n\n GetTestImage NO NEW IMAGE ACQUIRED\n\n");
+	}
 
 	return 0;
 }
@@ -864,6 +1021,8 @@ afx_msg LRESULT CARALGISView::DisplayPlakaNo(WPARAM wParam, LPARAM lParam)
 	m_iDisplayRefImageColourType = (int)0;
 	m_iDisplayTestImageColourType = (int)0;
 
+	m_RefImgBMP->SetFocus();
+
 	dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR2));
 	dRadioB->SetCheck(0);
 	dRadioB->EnableWindow(FALSE);
@@ -876,41 +1035,6 @@ afx_msg LRESULT CARALGISView::DisplayPlakaNo(WPARAM wParam, LPARAM lParam)
 	SetEvent(g_ProcessFilter5Event);
 	SetEvent(g_ProcessFilter6Event);
 
-	//CFont font;
-	//VERIFY(font.CreateFont(
-	//	40,                        // nHeight
-	//	20,                         // nWidth
-	//	0,                         // nEscapement
-	//	0,                         // nOrientation
-	//	FW_NORMAL,                 // nWeight
-	//	FALSE,                     // bItalic
-	//	FALSE,                     // bUnderline
-	//	0,                         // cStrikeOut
-	//	ANSI_CHARSET,              // nCharSet
-	//	OUT_DEFAULT_PRECIS,        // nOutPrecision
-	//	CLIP_DEFAULT_PRECIS,       // nClipPrecision
-	//	DEFAULT_QUALITY,           // nQuality
-	//	DEFAULT_PITCH | FF_SWISS,  // nPitchAndFamily
-	//	_T("Arial")));                 // lpszFacename
-
-
-
-	//// Done with the font.  Delete the font object.
-
-	//RECT r;
-	//CWnd* h = GetDlgItem(IDC_STATIC_PLAKA_STR);
-	//h->GetWindowRect(&r); //get window rect of control relative to screen
-	//POINT pt = { r.left, r.top }; //new point object using rect x, y
-	//ScreenToClient(&pt); //convert screen co-ords to client based points
-
-	//// Do something with the font just created...
-	//CClientDC dc(this);
-	//CFont* def_font = dc.SelectObject(&font);
-	//dc.TextOut(pt.x, pt.y, bCString, 9);
-	//dc.TextOut(pt.x, pt.y, aCString, 8);
-	//dc.SelectObject(def_font);
-
-	//font.DeleteObject();
 
 	return 0;
 }
@@ -920,14 +1044,15 @@ afx_msg LRESULT CARALGISView::DisplayPTSImage(WPARAM wParam, LPARAM lParam)
 	// TODO: Add your command handler code here
 	m_CarPlakaImageStatic.Load(g_CarPlakaImage, (size_t)g_CarPlakaImageLenght);
 
-	SetTimerDisplay();
-	return 0;
-}
+	if (g_PTS_Producer_ID == PTS_BY_DIVIT)
+	{
+		//WPARAM wParam; 
+		LPARAM pLparam;
+		pLparam = reinterpret_cast<LPARAM>("ARALGIS");
+		DisplayPlakaNo(0, pLparam);
+	}
 
-void CARALGISView::DeletePTSImage()
-{
-	// TODO: Add your command handler code here
-	//m_CarPlakaImageStatic.FreeData();
+	return 0;
 }
 
 
@@ -1015,16 +1140,6 @@ void CARALGISView::OnBnClickedButtonAlarmOff()
 	// TODO: Add your control notification handler code here
 	SetEvent(g_OdroidStopAlarmEvent);
 }
-
-
-void CARALGISView::SetTimerDisplay()
-{
-	// added by bora, start 1 second interval timer
-	m_TimerSecondCounter = 0;
-	KillTimer(DISPLAY_TIMER_ID);
-	SetTimer(DISPLAY_TIMER_ID, TIMER_PERIOD_IN_MS, NULL);
-}
-
 
 void CARALGISView::OnPaint()
 {
@@ -1347,6 +1462,67 @@ void CARALGISView::FillDriverList()
 // called to update the vehicle info boxes upon the retrieval of a new license plate number
 void CARALGISView::OnLPUpdateInfo(CString strLP)
 {
+	if (m_MatToGDIRef != nullptr)
+	{
+		m_MatToGDIRef->BackgroundClear();
+		delete m_MatToGDIRef;
+		m_MatToGDIRef = nullptr;
+	}
+
+	if (g_CVImageRef.rows != 0 || g_CVImageRef.cols != 0)
+	{
+		g_CVImageRef.release();
+	}
+
+	m_iDisplayTestImageFilterType = (int)0;
+	m_iDisplayRefImageFilterType = (int)0;
+	m_iDisplayRefImageColourType = (int)0;
+	m_iDisplayTestImageColourType = (int)0;
+
+	m_RefImgBMP->SetFocus();
+
+	// ali: reset the preview box; by default no visit date is selected
+	// BackgroundClear() is a private function of PkMatToGdi,
+	// so CARALGISView has been made a friend of PkMatToGdi.
+	if (m_MatToGDIPrev != nullptr)
+	{
+		m_MatToGDIPrev->BackgroundClear();
+
+		delete m_MatToGDIPrev;
+		m_MatToGDIPrev = nullptr;
+	}
+
+	if (m_MatToGDITest != nullptr)
+	{
+		m_MatToGDITest->BackgroundClear();
+
+		delete m_MatToGDITest;
+		m_MatToGDITest = NULL;
+	}
+
+	if (m_TestCVMat.rows != 0 || m_TestCVMat.cols != 0)
+	{
+		m_TestCVMat.release();
+	}
+
+	m_Ref1FilterOK = FALSE;
+	m_Ref2FilterOK = FALSE;
+	m_Ref3FilterOK = FALSE;
+
+	m_ColourRadioOriginal.EnableWindow(FALSE);
+	m_ColourRadioOriginal.SetCheck(1);
+
+	CButton* dRadioB;
+	dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR2));
+	dRadioB->SetCheck(0);
+	dRadioB->EnableWindow(FALSE);
+
+	dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR3));
+	dRadioB->EnableWindow(FALSE);
+	dRadioB->SetCheck(0);
+	/////////////////////
+
+	strLP.Remove(_T(' '));
 	m_formCBoxVisitList.ResetContent();
 	FillDriverList();
 
@@ -1464,51 +1640,62 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	}
 
 	//g_CVImageRef.create(pTemp.size(), pTemp.type());
-	
-	if (m_MatToGDIRef != nullptr)
-	{
-		delete m_MatToGDIRef;
-		m_MatToGDIRef = nullptr;
-	}
+
+
+	//if (m_MatToGDIRef != nullptr)
+	//{
+	//	m_MatToGDIRef->BackgroundClear();
+	//	delete m_MatToGDIRef;
+	//	m_MatToGDIRef = nullptr;
+	//}
 	m_RefCVMat = g_CVImageRef.clone();
 	m_MatToGDIRef = new PkMatToGDI(m_RefImgBMP, m_AutoFit);
 
+	//m_iDisplayTestImageFilterType = (int)0;
+	//m_iDisplayRefImageFilterType = (int)0;
+	//m_iDisplayRefImageColourType = (int)0;
+	//m_iDisplayTestImageColourType = (int)0;
 
-	EnterCriticalSection(&RefImageCS);
-	m_MatToGDIRef->DrawImg(g_CVImageRef);
-	LeaveCriticalSection(&RefImageCS);
+	//m_RefImgBMP->SetFocus();
+
+	//EnterCriticalSection(&RefImageCS);
+	m_MatToGDIRef->DrawImg(m_RefCVMat);
+	//LeaveCriticalSection(&RefImageCS);
 
 	// ali: reset the preview box; by default no visit date is selected
 	// BackgroundClear() is a private function of PkMatToGdi,
 	// so CARALGISView has been made a friend of PkMatToGdi.
-	if (m_MatToGDIPrev != nullptr)
-	{
-		m_MatToGDIPrev->BackgroundClear();
+	//if (m_MatToGDIPrev != nullptr)
+	//{
+	//	m_MatToGDIPrev->BackgroundClear();
 
-		delete m_MatToGDIPrev;
-		m_MatToGDIPrev = nullptr;
-	}
+	//	delete m_MatToGDIPrev;
+	//	m_MatToGDIPrev = nullptr;
+	//}
 
-	m_Ref1FilterOK = FALSE;
-	m_Ref2FilterOK = FALSE;
-	m_Ref3FilterOK = FALSE;
+	//if (m_MatToGDITest != nullptr)
+	//{
+	//	m_MatToGDITest->BackgroundClear();
 
-	m_ColourRadioOriginal.EnableWindow(FALSE);
-	m_ColourRadioOriginal.SetCheck(1);
+	//	delete m_MatToGDITest;
+	//	m_MatToGDITest = NULL;
+	//}
 
-	m_iDisplayTestImageFilterType = (int)0;
-	m_iDisplayRefImageFilterType = (int)0;
-	m_iDisplayRefImageColourType = (int)0;
-	m_iDisplayTestImageColourType = (int)0;
+	//m_Ref1FilterOK = FALSE;
+	//m_Ref2FilterOK = FALSE;
+	//m_Ref3FilterOK = FALSE;
 
-	CButton* dRadioB;
-	dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR2));
-	dRadioB->SetCheck(0);
-	dRadioB->EnableWindow(FALSE);
+	//m_ColourRadioOriginal.EnableWindow(FALSE);
+	//m_ColourRadioOriginal.SetCheck(1);
 
-	dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR3));
-	dRadioB->EnableWindow(FALSE);
-	dRadioB->SetCheck(0);
+	//CButton* dRadioB;
+	//dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR2));
+	//dRadioB->SetCheck(0);
+	//dRadioB->EnableWindow(FALSE);
+
+	//dRadioB = reinterpret_cast<CButton*>(GetDlgItem(IDC_RADIO_COLOUR3));
+	//dRadioB->EnableWindow(FALSE);
+	//dRadioB->SetCheck(0);
 	
 	UpdateData(FALSE);
 	// m_formCBoxVisitList.AddString(strLP);
@@ -1542,19 +1729,21 @@ void CARALGISView::OnBnClickedFormBdnQuery()
 
 void CARALGISView::GetTestImageAsByte()
 {
-	if (g_ByteImageTest)
+	if (g_PTS_Producer_ID == PTS_BY_ISSD)
 	{
-		delete[] g_ByteImageTest;
+		if (g_ByteImageTest)
+		{
+			delete[] g_ByteImageTest;
+		}
+
+		g_ByteImageSize = (unsigned int)((int)g_CVImageTest.step[0] * (int)g_CVImageTest.rows);
+
+		g_ByteImageTest = new BYTE[g_ByteImageSize];
+
+		memcpy(g_ByteImageTest, g_CVImageTest.data, g_ByteImageSize);
+
+		SetEvent(g_SendUVSSImageEvent);
 	}
-
-	g_ByteImageSize = (unsigned int)((int)g_CVImageTest.step[0] * (int)g_CVImageTest.rows);
-
-	g_ByteImageTest = new BYTE[g_ByteImageSize];
-
-	memcpy(g_ByteImageTest, g_CVImageTest.data, g_ByteImageSize);
-
-	SetEvent(SendUVSSImageEvent);
-
 }
 
 // returns the full path for the default image
@@ -1792,54 +1981,59 @@ void CARALGISView::OnBnClickedRadioColour1()
 	// TODO: Add your control notification handler code here
 	m_iDisplayTestImageColourType = (int)0;
 
-	if (m_iDisplayTestImageFilterType == (int)0)
+	if ((m_TestCVMat.rows != 0) && (m_TestCVMat.cols != 0))
 	{
-		//g_CVImageTest.copyTo(m_TestCVMat);
-		m_TestCVMat = g_CVImageTest.clone();
-	}
-	else if (m_iDisplayTestImageFilterType == (int)1)
-	{
-		//g_CVImageTestFilter1.copyTo(m_TestCVMat);
-		m_TestCVMat = g_CVImageTestFilter1.clone();
-	}
-	else if (m_iDisplayTestImageFilterType == (int)2)
-	{
-		//g_CVImageTestFilter2.copyTo(m_TestCVMat);
-		m_TestCVMat = g_CVImageTestFilter2.clone();
-	}
-	else if (m_iDisplayTestImageFilterType == (int)3)
-	{
-		//g_CVImageTestFilter3.copyTo(m_TestCVMat);
-		m_TestCVMat = g_CVImageTestFilter3.clone();
-	}
+		if (m_iDisplayTestImageFilterType == (int)0)
+		{
+			//g_CVImageTest.copyTo(m_TestCVMat);
+			m_TestCVMat = g_CVImageTest.clone();
+		}
+		else if (m_iDisplayTestImageFilterType == (int)1)
+		{
+			//g_CVImageTestFilter1.copyTo(m_TestCVMat);
+			m_TestCVMat = g_CVImageTestFilter1.clone();
+		}
+		else if (m_iDisplayTestImageFilterType == (int)2)
+		{
+			//g_CVImageTestFilter2.copyTo(m_TestCVMat);
+			m_TestCVMat = g_CVImageTestFilter2.clone();
+		}
+		else if (m_iDisplayTestImageFilterType == (int)3)
+		{
+			//g_CVImageTestFilter3.copyTo(m_TestCVMat);
+			m_TestCVMat = g_CVImageTestFilter3.clone();
+		}
 
-	m_MatToGDITest->DrawImg(m_TestCVMat);
+		m_MatToGDITest->DrawImg(m_TestCVMat);
+	}
 ///////////////////////////////////////////////////////
 	m_iDisplayRefImageColourType = (int)0;
 
-	if (m_iDisplayRefImageFilterType == (int)0)
+	if ((g_CVImageRef.rows != 0) && (g_CVImageRef.cols != 0))
 	{
-		//g_CVImageRef.copyTo(m_RefCVMat);
-		m_RefCVMat = g_CVImageRef.clone();
-	}
-	else if (m_iDisplayRefImageFilterType == (int)1)
-	{
-		//g_CVImageRefFilter1.copyTo(m_RefCVMat);
-		m_RefCVMat = g_CVImageRefFilter1.clone();
-	}
-	else if (m_iDisplayRefImageFilterType == (int)2)
-	{
-		//g_CVImageRefFilter2.copyTo(m_RefCVMat);
-		m_RefCVMat = g_CVImageRefFilter2.clone();
-	}
-	else if (m_iDisplayRefImageFilterType == (int)3)
-	{
-		//g_CVImageRefFilter3.copyTo(m_RefCVMat);
-		m_RefCVMat = g_CVImageRefFilter3.clone();
-	}
+		if (m_iDisplayRefImageFilterType == (int)0)
+		{
+			//g_CVImageRef.copyTo(m_RefCVMat);
+			m_RefCVMat = g_CVImageRef.clone();
+		}
+		else if (m_iDisplayRefImageFilterType == (int)1)
+		{
+			//g_CVImageRefFilter1.copyTo(m_RefCVMat);
+			m_RefCVMat = g_CVImageRefFilter1.clone();
+		}
+		else if (m_iDisplayRefImageFilterType == (int)2)
+		{
+			//g_CVImageRefFilter2.copyTo(m_RefCVMat);
+			m_RefCVMat = g_CVImageRefFilter2.clone();
+		}
+		else if (m_iDisplayRefImageFilterType == (int)3)
+		{
+			//g_CVImageRefFilter3.copyTo(m_RefCVMat);
+			m_RefCVMat = g_CVImageRefFilter3.clone();
+		}
 
-	m_MatToGDIRef->DrawImg(m_RefCVMat);
-
+		m_MatToGDIRef->DrawImg(m_RefCVMat);
+	}
 }
 
 
@@ -1849,61 +2043,65 @@ void CARALGISView::OnBnClickedRadioColour2()
 	cv::Mat dTempCV;
 	m_iDisplayTestImageColourType = (int)1;
 
-	if (m_iDisplayTestImageFilterType == (int)0)
+	if ((m_TestCVMat.rows != 0) && (m_TestCVMat.cols != 0))
 	{
-		m_TestCVMat = g_CVImageTest.clone();
-		cv::applyColorMap(g_CVImageTest, dTempCV, cv::COLORMAP_RAINBOW);
-	}
-	else if (m_iDisplayTestImageFilterType == (int)1)
-	{
-		m_TestCVMat = g_CVImageTestFilter1.clone();
-		cv::applyColorMap(g_CVImageTestFilter1, dTempCV, cv::COLORMAP_RAINBOW);
-	}
-	else if (m_iDisplayTestImageFilterType == (int)2)
-	{
-		m_TestCVMat = g_CVImageTestFilter2.clone();
-		cv::applyColorMap(g_CVImageTestFilter2, dTempCV, cv::COLORMAP_RAINBOW);
-	}
-	else if (m_iDisplayTestImageFilterType == (int)3)
-	{
-		m_TestCVMat = g_CVImageTestFilter3.clone();
-		cv::applyColorMap(g_CVImageTestFilter3, dTempCV, cv::COLORMAP_RAINBOW);
-	}
+		if (m_iDisplayTestImageFilterType == (int)0)
+		{
+			//m_TestCVMat = g_CVImageTest.clone();
+			cv::applyColorMap(g_CVImageTest, dTempCV, cv::COLORMAP_RAINBOW);
+		}
+		else if (m_iDisplayTestImageFilterType == (int)1)
+		{
+			//m_TestCVMat = g_CVImageTestFilter1.clone();
+			cv::applyColorMap(g_CVImageTestFilter1, dTempCV, cv::COLORMAP_RAINBOW);
+		}
+		else if (m_iDisplayTestImageFilterType == (int)2)
+		{
+			//m_TestCVMat = g_CVImageTestFilter2.clone();
+			cv::applyColorMap(g_CVImageTestFilter2, dTempCV, cv::COLORMAP_RAINBOW);
+		}
+		else if (m_iDisplayTestImageFilterType == (int)3)
+		{
+			//m_TestCVMat = g_CVImageTestFilter3.clone();
+			cv::applyColorMap(g_CVImageTestFilter3, dTempCV, cv::COLORMAP_RAINBOW);
+		}
 
-	//dTempCV.copyTo(m_TestCVMat);
-	m_TestCVMat = dTempCV.clone();
+		m_TestCVMat = dTempCV.clone();
 
-	m_MatToGDITest->DrawImg(m_TestCVMat);
+		m_MatToGDITest->DrawImg(m_TestCVMat);
+	}
 
 	////////////////////////////////////////////////////////
 
 	m_iDisplayRefImageColourType = (int)1;
 
-	if (m_iDisplayRefImageFilterType == (int)0)
+	if ((g_CVImageRef.rows != 0) && (g_CVImageRef.cols != 0))
 	{
-		m_RefCVMat = g_CVImageRef.clone();
-		cv::applyColorMap(g_CVImageRef, dTempCV, cv::COLORMAP_RAINBOW);
-	}
-	else if (m_iDisplayRefImageFilterType == (int)1)
-	{
-		m_RefCVMat = g_CVImageRefFilter1.clone();
-		cv::applyColorMap(g_CVImageRefFilter1, dTempCV, cv::COLORMAP_RAINBOW);
-	}
-	else if (m_iDisplayRefImageFilterType == (int)2)
-	{
-		m_RefCVMat = g_CVImageRefFilter2.clone();
-		cv::applyColorMap(g_CVImageRefFilter2, dTempCV, cv::COLORMAP_RAINBOW);
-	}
-	else if (m_iDisplayRefImageFilterType == (int)3)
-	{
-		m_RefCVMat = g_CVImageRefFilter3.clone();
-		cv::applyColorMap(g_CVImageRefFilter3, dTempCV, cv::COLORMAP_RAINBOW);
-	}
+		if (m_iDisplayRefImageFilterType == (int)0)
+		{
+			//m_RefCVMat = g_CVImageRef.clone();
+			cv::applyColorMap(g_CVImageRef, dTempCV, cv::COLORMAP_RAINBOW);
+		}
+		else if (m_iDisplayRefImageFilterType == (int)1)
+		{
+			//m_RefCVMat = g_CVImageRefFilter1.clone();
+			cv::applyColorMap(g_CVImageRefFilter1, dTempCV, cv::COLORMAP_RAINBOW);
+		}
+		else if (m_iDisplayRefImageFilterType == (int)2)
+		{
+			//m_RefCVMat = g_CVImageRefFilter2.clone();
+			cv::applyColorMap(g_CVImageRefFilter2, dTempCV, cv::COLORMAP_RAINBOW);
+		}
+		else if (m_iDisplayRefImageFilterType == (int)3)
+		{
+			//m_RefCVMat = g_CVImageRefFilter3.clone();
+			cv::applyColorMap(g_CVImageRefFilter3, dTempCV, cv::COLORMAP_RAINBOW);
+		}
 
-	m_RefCVMat = dTempCV.clone();
+		m_RefCVMat = dTempCV.clone();
 
-	m_MatToGDIRef->DrawImg(m_RefCVMat);
-
+		m_MatToGDIRef->DrawImg(m_RefCVMat);
+	}
 }
 
 
@@ -1914,60 +2112,65 @@ void CARALGISView::OnBnClickedRadioColour3()
 	m_iDisplayTestImageColourType = (int)2;
 
 
-	if (m_iDisplayTestImageFilterType == (int)0)
+	if ((m_TestCVMat.rows != 0) && (m_TestCVMat.cols != 0))
 	{
-		m_TestCVMat = g_CVImageTest.clone();
-		cv::applyColorMap(g_CVImageTest, dTempCV, cv::COLORMAP_JET);
-	}
-	else if (m_iDisplayTestImageFilterType == (int)1)
-	{
-		m_TestCVMat = g_CVImageTestFilter1.clone();
-		cv::applyColorMap(g_CVImageTestFilter1, dTempCV, cv::COLORMAP_JET);
-	}
-	else if (m_iDisplayTestImageFilterType == (int)2)
-	{
-		m_TestCVMat = g_CVImageTestFilter2.clone();
-		cv::applyColorMap(g_CVImageTestFilter2, dTempCV, cv::COLORMAP_JET);
-	}
-	else if (m_iDisplayTestImageFilterType == (int)3)
-	{
-		m_TestCVMat = g_CVImageTestFilter3.clone();
-		cv::applyColorMap(g_CVImageTestFilter3, dTempCV, cv::COLORMAP_JET);
-	}
+		if (m_iDisplayTestImageFilterType == (int)0)
+		{
+			//m_TestCVMat = g_CVImageTest.clone();
+			cv::applyColorMap(g_CVImageTest, dTempCV, cv::COLORMAP_JET);
+		}
+		else if (m_iDisplayTestImageFilterType == (int)1)
+		{
+			//m_TestCVMat = g_CVImageTestFilter1.clone();
+			cv::applyColorMap(g_CVImageTestFilter1, dTempCV, cv::COLORMAP_JET);
+		}
+		else if (m_iDisplayTestImageFilterType == (int)2)
+		{
+			//m_TestCVMat = g_CVImageTestFilter2.clone();
+			cv::applyColorMap(g_CVImageTestFilter2, dTempCV, cv::COLORMAP_JET);
+		}
+		else if (m_iDisplayTestImageFilterType == (int)3)
+		{
+			//m_TestCVMat = g_CVImageTestFilter3.clone();
+			cv::applyColorMap(g_CVImageTestFilter3, dTempCV, cv::COLORMAP_JET);
+		}
 
-	//dTempCV.copyTo(m_TestCVMat);
-	m_TestCVMat = dTempCV.clone();
+		m_TestCVMat = dTempCV.clone();
 
-	m_MatToGDITest->DrawImg(m_TestCVMat);
+		m_MatToGDITest->DrawImg(m_TestCVMat);
+	}
 
 	////////////////////////////////////////////////////////
 
 	m_iDisplayRefImageColourType = (int)2;
 
-	if (m_iDisplayRefImageFilterType == (int)0)
+	if ((g_CVImageRef.rows != 0) && (g_CVImageRef.cols != 0))
 	{
-		m_RefCVMat = g_CVImageRef.clone();
-		cv::applyColorMap(g_CVImageRef, dTempCV, cv::COLORMAP_JET);
-	}
-	else if (m_iDisplayRefImageFilterType == (int)1)
-	{
-		m_RefCVMat = g_CVImageRefFilter1.clone();
-		cv::applyColorMap(g_CVImageRefFilter1, dTempCV, cv::COLORMAP_JET);
-	}
-	else if (m_iDisplayRefImageFilterType == (int)2)
-	{
-		m_RefCVMat = g_CVImageRefFilter2.clone();
-		cv::applyColorMap(g_CVImageRefFilter2, dTempCV, cv::COLORMAP_JET);
-	}
-	else if (m_iDisplayRefImageFilterType == (int)3)
-	{
-		m_RefCVMat = g_CVImageRefFilter3.clone();
-		cv::applyColorMap(g_CVImageRefFilter3, dTempCV, cv::COLORMAP_JET);
-	}
+		if (m_iDisplayRefImageFilterType == (int)0)
+		{
+			//m_RefCVMat = g_CVImageRef.clone();
+			cv::applyColorMap(g_CVImageRef, dTempCV, cv::COLORMAP_JET);
+		}
+		else if (m_iDisplayRefImageFilterType == (int)1)
+		{
+			//m_RefCVMat = g_CVImageRefFilter1.clone();
+			cv::applyColorMap(g_CVImageRefFilter1, dTempCV, cv::COLORMAP_JET);
+		}
+		else if (m_iDisplayRefImageFilterType == (int)2)
+		{
+			//m_RefCVMat = g_CVImageRefFilter2.clone();
+			cv::applyColorMap(g_CVImageRefFilter2, dTempCV, cv::COLORMAP_JET);
+		}
+		else if (m_iDisplayRefImageFilterType == (int)3)
+		{
+			//m_RefCVMat = g_CVImageRefFilter3.clone();
+			cv::applyColorMap(g_CVImageRefFilter3, dTempCV, cv::COLORMAP_JET);
+		}
 
-	m_RefCVMat = dTempCV.clone();
+		m_RefCVMat = dTempCV.clone();
 
-	m_MatToGDIRef->DrawImg(m_RefCVMat);
+		m_MatToGDIRef->DrawImg(m_RefCVMat);
+	}
 }
 
 
@@ -2102,71 +2305,74 @@ void CARALGISView::OnBnClickedButtonChangeDetect()
 
 	cv::Mat AA1, AA2, AA3, AA4, AA5, AA6;
 
-	transpose(g_CVTestWrapped, AA1);
-	flip(AA1, AA2, 1); //transpose+flip(1)=CW
-	AA2.copyTo(AA3);
+	if (g_CVTestWrapped.rows != 0 && g_CVTestWrapped.cols != 0)
+	{
+		transpose(g_CVTestWrapped, AA1);
+		flip(AA1, AA2, 1); //transpose+flip(1)=CW
+		AA2.copyTo(AA3);
 
-	transpose(g_CVTestChangeDetect, AA4);
-	flip(AA4, AA5, 1); //transpose+flip(1)=CW
-	AA5.copyTo(AA6);
+		transpose(g_CVTestChangeDetect, AA4);
+		flip(AA4, AA5, 1); //transpose+flip(1)=CW
+		AA5.copyTo(AA6);
 
-	dTestImage.create(AA3.size(), AA3.type());
-	dTestImage = AA3.clone();
+		dTestImage.create(AA3.size(), AA3.type());
+		dTestImage = AA3.clone();
 
-	// 1. create wrapped image first as grey since it is calculated with false colour
-	// 2. change it to colour (it is grey in fact) so that it has 3 channels again
-	// it will be ready for blending  
-	cvtColor(AA3, dMat3, CV_BGR2GRAY);
+		// 1. create wrapped image first as grey since it is calculated with false colour
+		// 2. change it to colour (it is grey in fact) so that it has 3 channels again
+		// it will be ready for blending  
+		cvtColor(AA3, dMat3, CV_BGR2GRAY);
 
-	cvtColor(dMat3, dMat1, CV_GRAY2BGR);
-	////// end of wrapped image preparation
+		cvtColor(dMat3, dMat1, CV_GRAY2BGR);
+		////// end of wrapped image preparation
 
-	// create detected changes as 
-	// red colour image with 3 channels
-	dMat2.create(AA6.size(), CV_8UC3);
+		// create detected changes as 
+		// red colour image with 3 channels
+		dMat2.create(AA6.size(), CV_8UC3);
 
-	std::vector<cv::Mat> bgr_planes(3);
-	cv::split(dMat2, bgr_planes);  
+		std::vector<cv::Mat> bgr_planes(3);
+		cv::split(dMat2, bgr_planes);
 
-	bgr_planes[2] = AA6.clone();
-	cv::merge(bgr_planes, dMat2);
-	// red colour image creation ends
+		bgr_planes[2] = AA6.clone();
+		cv::merge(bgr_planes, dMat2);
+		// red colour image creation ends
 
-	float fBlend = 0.75;
-	dMat4 = fBlend*dMat1 + (1.0 - fBlend)*dMat2;
+		float fBlend = 0.75;
+		dMat4 = fBlend*dMat1 + (1.0 - fBlend)*dMat2;
 
 
-	//cv::namedWindow("g_CVTestWrapped", cv::WINDOW_NORMAL);
-	//cv::imshow("g_CVTestWrapped", AA3);
-	//cv::waitKey(0);
+		//cv::namedWindow("g_CVTestWrapped", cv::WINDOW_NORMAL);
+		//cv::imshow("g_CVTestWrapped", AA3);
+		//cv::waitKey(0);
 
-	//cv::namedWindow("dTestImage", cv::WINDOW_NORMAL);
-	//cv::imshow("dTestImage", dTestImage);
-	//cv::waitKey(0);
+		//cv::namedWindow("dTestImage", cv::WINDOW_NORMAL);
+		//cv::imshow("dTestImage", dTestImage);
+		//cv::waitKey(0);
 
-	//cv::namedWindow("dMat3", cv::WINDOW_NORMAL);
-	//cv::imshow("dMat3", dMat3);
-	//cv::waitKey(0);
+		//cv::namedWindow("dMat3", cv::WINDOW_NORMAL);
+		//cv::imshow("dMat3", dMat3);
+		//cv::waitKey(0);
 
-	//cv::namedWindow("dMat1", cv::WINDOW_NORMAL);
-	//cv::imshow("dMat1", dMat1);
-	//cv::waitKey(0);
+		//cv::namedWindow("dMat1", cv::WINDOW_NORMAL);
+		//cv::imshow("dMat1", dMat1);
+		//cv::waitKey(0);
 
-	//cv::namedWindow("g_CVTestChangeDetect", cv::WINDOW_NORMAL);
-	//cv::imshow("g_CVTestChangeDetect", AA6);
-	//cv::waitKey(0);
+		//cv::namedWindow("g_CVTestChangeDetect", cv::WINDOW_NORMAL);
+		//cv::imshow("g_CVTestChangeDetect", AA6);
+		//cv::waitKey(0);
 
-	//cv::namedWindow("dMat2", cv::WINDOW_NORMAL);
-	//cv::imshow("dMat2", dMat2);
-	//cv::waitKey(0);
+		//cv::namedWindow("dMat2", cv::WINDOW_NORMAL);
+		//cv::imshow("dMat2", dMat2);
+		//cv::waitKey(0);
 
-	//cv::namedWindow("dMat4", cv::WINDOW_NORMAL);
-	//cv::imshow("dMat4", dMat4);
-	//cv::waitKey(0);
+		//cv::namedWindow("dMat4", cv::WINDOW_NORMAL);
+		//cv::imshow("dMat4", dMat4);
+		//cv::waitKey(0);
 
-	CBitmapDlg dlgBitmap;
-	dlgBitmap.SetCVMat(dMat4);
-	dlgBitmap.DoModal();
+		CBitmapDlg dlgBitmap;
+		dlgBitmap.SetCVMat(dMat4);
+		dlgBitmap.DoModal();
+	}
 }
 
 
@@ -2258,4 +2464,27 @@ HBRUSH CARALGISView::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 	// TODO:  Return a different brush if the default is not desired
 	return (HBRUSH)m_brush;
+}
+
+
+void CARALGISView::OnTimer(UINT_PTR nIDEvent)
+{
+	if (nIDEvent == DISPLAY_TIMER_ID)
+	{
+		SetEvent(g_ControlHardDiskSpaceEvent);
+	} // End if.
+	CColorFormView::OnTimer(nIDEvent);
+}
+
+
+void CARALGISView::OnBnClickedButtonExit()
+{
+	if (::MessageBox(GetSafeHwnd(),
+		(LPCWSTR)L"Do you want to close the application?",
+		(LPCWSTR)WARNINGWINDOW_TITLE,
+		MB_OKCANCEL | MB_ICONQUESTION)
+		== IDCANCEL)
+		return;
+
+	AfxGetMainWnd()->PostMessage(WM_CLOSE, 0, 0);
 }

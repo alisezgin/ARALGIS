@@ -123,8 +123,8 @@ public:
 
 		if (width*height < 256 * 256)
 		{
-			printf("WARNING: small image\n");
-			printf("++++++++ dynamic selection of bin width has not yet been implemented\n");
+			DEBUG_PRINT("WARNING: small image\n");
+			DEBUG_PRINT("++++++++ dynamic selection of bin width has not yet been implemented\n");
 		}
 
 		long int N = input.cols * input.rows;
@@ -175,7 +175,7 @@ public:
 		{
 			pk = find_start(hist, MAX_HIST);
 			hist[pk] = 0;
-			printf("deleting largest bin: %d\n", pk);
+			DEBUG_PRINT("deleting largest bin: %d\n", pk);
 		}
 
 		iCounter++; //5
@@ -193,16 +193,17 @@ public:
 		if ((d1 < 0) || (d2 < 0))
 		{
 			fprintf(stderr, "ERROR: histogram peak in strange location\n");
-			printf("ST %d  PK %d  FI %d\n", st, pk, fi);
-			printf("D %d %d\n", d1, d2);
-			exit(-1);
+			DEBUG_PRINT("ST %d  PK %d  FI %d\n", st, pk, fi);
+			DEBUG_PRINT("D %d %d\n", d1, d2);
+			//exit(-1);
+			return 0;
 		}
 
 		if (!suppress_invert)
 			if (d1 > d2)
 			{
 				do_invert = TRUE;
-				printf("inverting histogram\n");
+				DEBUG_PRINT("inverting histogram\n");
 			}
 
 		/* invert image - actually just invert histogram */
@@ -233,8 +234,8 @@ public:
 
 		if (ratio > 10)
 		{
-			printf("WARNING: ratio of largest to second largest histogram bin = %f\n", ratio);
-			printf("++++++++ maybe you should delete the largest histogram bin using the -D option\n");
+			DEBUG_PRINT("WARNING: ratio of largest to second largest histogram bin = %f\n", ratio);
+			DEBUG_PRINT("++++++++ maybe you should delete the largest histogram bin using the -D option\n");
 		}
 
 		if (big_peak)
@@ -250,7 +251,9 @@ public:
 			st = 0;
 		}
 
-		printf("starting from peak at position %d\n", st);
+#ifdef DEBUG_PRINT_FINAL10
+		DEBUG_PRINT("starting from peak at position %d\n", st);
+#endif
 
 		if (cumulative)
 		{
@@ -268,8 +271,9 @@ public:
 			thresh = 255 - thresh;
 		}
 
-		printf("ROSIN thresholding at %d (= %d)\n", thresh, thresh*divide);
-
+#ifdef DEBUG_PRINT_FINAL10
+		DEBUG_PRINT("ROSIN thresholding at %d (= %d)\n", thresh, thresh*divide);
+#endif
 		return thresh;
 	}
 
@@ -305,7 +309,7 @@ public:
 		//for (int i = 0; i < MAX_HIST; i++)
 		//{
 		//	out[i] = (int)b_hist[i];
-		//	printf("\n HIST %d %d %d", i, out[i], (int)b_hist[i]);
+		//	DEBUG_PRINT("\n HIST %d %d %d", i, out[i], (int)b_hist[i]);
 
 		//}
 
@@ -318,10 +322,10 @@ public:
 
 		// Iterate image
 
-		//printf("\n\n");
+		//DEBUG_PRINT("\n\n");
 		//for (int i = 0; i < MAX_HIST; i++)
 		//{
-		//	printf("\n HIST %d %f", i, out1[i]);
+		//	DEBUG_PRINT("\n HIST %d %f", i, out1[i]);
 
 		//}
 
@@ -355,8 +359,9 @@ public:
 	{
 		long int N = input.cols * input.rows;
 
-		printf("ROSIN Threshold is: %d\n", threshold);
-
+#ifdef DEBUG_PRINT_FINAL1
+		DEBUG_PRINT("ROSIN Threshold is: %d\n", threshold);
+#endif
 		// Modify output image
 
 		uchar *in = &(input.at<uchar>(0, 0)); // Image value
@@ -522,8 +527,9 @@ public:
 		x2 = X[st]; y2 = Y[st];
 		xi = (x1 + m*(m*x2 + y1 - y2)) / (1 + SQR(m));
 		yi = (m*x1 - m*x2 + SQR(m)*y1 + y2) / (1 + SQR(m));
-		printf("intersection point %f %f\n", xi, yi);
-
+#ifdef DEBUG_PRINT_FINAL10
+		DEBUG_PRINT("intersection point %f %f\n", xi, yi);
+#endif
 		return thresh;
 	}
 
@@ -588,7 +594,7 @@ public:
 		long int N = imageTrackbar.cols * imageTrackbar.rows;
 
 
-		printf("Threshold is: %d\n", thresholdSelected);
+		DEBUG_PRINT("Threshold is: %d\n", thresholdSelected);
 
 		// Modify output image
 

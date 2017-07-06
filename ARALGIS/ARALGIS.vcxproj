@@ -117,7 +117,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir);$(OPENCV_DIR)\include;$(OPENCV_DIR)\include\opencv2;$(OPENCV_DIR)\include\opencv;C:\Program Files\Teledyne DALSA\Sapera\Include;C:\Program Files\Teledyne DALSA\Sapera\Classes\Basic;C:\Program Files\Teledyne DALSA\Sapera\Classes\Gui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
@@ -129,7 +129,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OPENCV_DIR)\x64\vc11\lib;$(SAPERADIR)\Lib\Win64;$(SAPERADIR)\Lib\Win64\VS2013;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>odbc32.lib;SapClassBasic.lib;SapClassGUI.lib;opencv_calib3d2411d.lib;opencv_contrib2411d.lib;opencv_core2411d.lib;opencv_features2d2411d.lib;opencv_flann2411d.lib;opencv_gpu2411d.lib;opencv_highgui2411d.lib;opencv_imgproc2411d.lib;opencv_legacy2411d.lib;opencv_ml2411d.lib;opencv_objdetect2411d.lib;opencv_ts2411d.lib;opencv_video2411d.lib;opencv_nonfree2411d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;SapClassBasic.lib;SapClassGUId.lib;opencv_calib3d2411d.lib;opencv_contrib2411d.lib;opencv_core2411d.lib;opencv_features2d2411d.lib;opencv_flann2411d.lib;opencv_gpu2411d.lib;opencv_highgui2411d.lib;opencv_imgproc2411d.lib;opencv_legacy2411d.lib;opencv_ml2411d.lib;opencv_objdetect2411d.lib;opencv_ts2411d.lib;opencv_video2411d.lib;opencv_nonfree2411d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <StackCommitSize>131072</StackCommitSize>
     </Link>
@@ -248,6 +248,7 @@
     <ClInclude Include="Database\HeaderFiles\VehiclePassageSet.h" />
     <ClInclude Include="Database\HeaderFiles\VehicleSet.h" />
     <ClInclude Include="DBUpdateAckDlg.h" />
+    <ClInclude Include="DiskSpaceController\HeaderFiles\FreeDiskSpaceController.h" />
     <ClInclude Include="DriverAckDlg.h" />
     <ClInclude Include="ImageFiltering\HeaderFiles\cvt.hpp" />
     <ClInclude Include="ImageFiltering\HeaderFiles\Includes.h" />
@@ -272,8 +273,10 @@
     <ClInclude Include="MiniIni\Processing\HeaderFiles\IniFileProcessing.h" />
     <ClInclude Include="OdroidCommunicator\HeaderFiles\OdroidCommunicator.h" />
     <ClInclude Include="OdroidCommunicator\HeaderFiles\OdroidMessageDefinitions.h" />
-    <ClInclude Include="PTSCommunicator\HeaderFiles\PTSMessageDefinitions.h" />
-    <ClInclude Include="PTSCommunicator\HeaderFiles\PTSCommunicator.h" />
+    <ClInclude Include="PTSCommunicatorDVIT\HeaderFiles\PTSCommunicatorDVIT.h" />
+    <ClInclude Include="PTSCommunicatorDVIT\HeaderFiles\PTSMessageDefinitionsDVIT.h" />
+    <ClInclude Include="PTSCommunicatorISSD\HeaderFiles\PTSCommunicatorISSD.h" />
+    <ClInclude Include="PTSCommunicatorISSD\HeaderFiles\PTSMessageDefinitionsISSD.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -306,70 +309,37 @@
     <ClCompile Include="Database\SourceFiles\VehiclePassageSet.cpp" />
     <ClCompile Include="Database\SourceFiles\VehicleSet.cpp" />
     <ClCompile Include="DBUpdateAckDlg.cpp" />
+    <ClCompile Include="DiskSpaceController\SourceFiles\FreeDiskSpaceController.cpp" />
     <ClCompile Include="DriverAckDlg.cpp" />
     <ClCompile Include="ImageFiltering\ImageFilterProcessing\SourceFiles\ImageFilterProcessing.cpp" />
-    <ClCompile Include="ImageFiltering\SourceFiles\CelikTjahjadi2012.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\comp.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\cvt.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\DBSBTC2011.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\enhancement.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\filtering.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\iCLUDMS2016.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\IW_PSNR.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\IW_SSIM.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\LAT2011.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\MSRCP2014.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\NADD.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\NRCIR2009.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\PGF1999.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\pohe.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\retinex.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\WangZhengHuLi2013.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\CelikTjahjadi2012.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\comp.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\cvt.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\DBSBTC2011.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\enhancement.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\filtering.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\iCLUDMS2016.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\IW_PSNR.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\IW_SSIM.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\LAT2011.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\MSRCP2014.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\NADD.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\NRCIR2009.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\PGF1999.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\pohe.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\retinex.cpp" />
+    <ClCompile Include="ImageFiltering\SourceFiles\WangZhengHuLi2013.cpp" />
     <ClCompile Include="InitGlobalVars.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MiniIni\Implementation\SourceFiles\allocator.cpp" />
-    <ClCompile Include="MiniIni\Implementation\SourceFiles\benchmark.cpp" />
     <ClCompile Include="MiniIni\Implementation\SourceFiles\globals.cpp" />
     <ClCompile Include="MiniIni\Implementation\SourceFiles\inifile.cpp" />
     <ClCompile Include="MiniIni\Implementation\SourceFiles\inisection.cpp" />
     <ClCompile Include="MiniIni\Implementation\SourceFiles\log.cpp" />
     <ClCompile Include="MiniIni\Processing\SourceFiles\IniFileProcessing.cpp" />
     <ClCompile Include="OdroidCommunicator\SourceFiles\OdroidCommunicator.cpp" />
-    <ClCompile Include="PTSCommunicator\SourceFiles\PTSCommunicator.cpp" />
+    <ClCompile Include="PTSCommunicatorDVIT\SourceFiles\PTSCommunicatorDVIT.cpp" />
+    <ClCompile Include="PTSCommunicatorISSD\SourceFiles\PTSCommunicatorISSD.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "..\HeaderFiles\Includes.h"
 
 void gaussianweight(int &blocksize,double &sigma,double **kernel){

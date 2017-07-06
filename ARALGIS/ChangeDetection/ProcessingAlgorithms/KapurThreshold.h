@@ -56,14 +56,16 @@ public:
 		double *P1;			/* cumulative normalized histogram */
 		double *P2;			/* see below */
 		Histo *norm_histo;		/* normalized histogram */
+		Histo *int_histo;		/* integer histogram */
 
 		if (img.channels() != 1)
 		{
 			//ERROR_RET("Not a grayscale image !", INT_MIN);
 		}
 
+		int_histo = create_histo(img);
 		/* Calculate the normalized histogram */
-		norm_histo = normalize_histo(create_histo(img));
+		norm_histo = normalize_histo(int_histo);
 		if (IS_NULL(norm_histo))
 		{
 			//ERROR_RET("normalize_histo() failed !", INT_MIN);
@@ -139,11 +141,16 @@ public:
 		}
 
 		free_histo(norm_histo);
+		free(norm_histo);
+
+		free_histo(int_histo);
+		free(int_histo);
 		free(P1);
 		free(P2);
 
-		printf("Kapur Threshold is: %d\n", threshold);
-
+#ifdef DEBUG_PRINT_FINAL1
+		DEBUG_PRINT("Kapur Threshold is: %d\n", threshold);
+#endif
 		computeKapursSegmentation(img, thresholdedImg, threshold);
 
 	};

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "../HeaderFiles/pixkit-image.hpp"
 
 bool pixkit::comp::BTC(const cv::Mat &src,cv::Mat &dst,int blockSize){

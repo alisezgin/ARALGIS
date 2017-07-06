@@ -92,13 +92,19 @@ BOOL IniFileProcessing::ReadIniFile()
 	
 	const char* cOdroidPort;
 	const char* cPTSPort;
+	const char* cPTSIP;
 
 	const char* cRefImageFilePath;
 
-	int dImageOnScreen;
+	const char* dChangeDetectActive;
+
+	const char* cPTSProducer;
+	const char* cPTSMode;
+
+	const char* cAutoVehicleDetect;
 
 	INIFile ini;
-	if (!ini.OpenFile("C:\\ali\\github-home\\ARALGIS\\ARALGISConfig.ini"))
+	if (!ini.OpenFile("C:\\Users\\bora\\Desktop\\ARALGIS-GitHub\\ARALGIS\\ConfigFiles\\ARALGISConfig.ini"))
 	{
 		::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasý Bulunamadý.\nProgram Kapanýyor!!!!!",
 			         WARNINGWINDOW_TITLE, MB_ICONSTOP);
@@ -176,6 +182,13 @@ BOOL IniFileProcessing::ReadIniFile()
 					WARNINGWINDOW_TITLE, MB_ICONSTOP);
 				return FALSE;
 			}
+
+			if (!ethernet_parameters->ReadString("PTS_IP", cPTSIP))
+			{
+				::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasýnda Hata.\nKamera Parametreleri: PTS_Port.\nProgram Kapanýyor!!!!!",
+					WARNINGWINDOW_TITLE, MB_ICONSTOP);
+				return FALSE;
+			}
 		}
 	}
 
@@ -198,19 +211,64 @@ BOOL IniFileProcessing::ReadIniFile()
 		}
 	}
 
-	INISection* various_parameters = ini.GetSection("VARIOUS");
+	INISection* changeDetect_parameters = ini.GetSection("CHANGE_DETECT");
 	{
-		if (!various_parameters)
+		if (!changeDetect_parameters)
 		{
-			::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasýnda Hata.\nDiðer Parametreler.\nProgram Kapanýyor!!!!!",
+			::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasýnda Hata.\nDeðiþiklik Tespiti Parametreleri.\nProgram Kapanýyor!!!!!",
 				WARNINGWINDOW_TITLE, MB_ICONSTOP);
 			return FALSE;
 		}
 		else
 		{
-			if (!various_parameters->ReadInt("Image_On_Screen_Duration", dImageOnScreen))
+			if (!changeDetect_parameters->ReadString("Use_Change_Detect", dChangeDetectActive))
 			{
-				::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasýnda Hata.\nDiðer Parametreler: Image_On_Screen.\nProgram Kapanýyor!!!!!",
+				::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasýnda Hata.\nDeðiþiklik Tespiti Parametreleri: Use_Change_Detect.\nProgram Kapanýyor!!!!!",
+					WARNINGWINDOW_TITLE, MB_ICONSTOP);
+				return FALSE;
+			}
+		}
+	}
+
+	INISection* ptsmodel_parameters = ini.GetSection("PTS_PARAMETERS");
+	{
+		if (!ptsmodel_parameters)
+		{
+			::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasýnda Hata.\nPTS Markasý Parametreleri.\nProgram Kapanýyor!!!!!",
+				WARNINGWINDOW_TITLE, MB_ICONSTOP);
+			return FALSE;
+		}
+		else
+		{
+			if (!ptsmodel_parameters->ReadString("PTS_Producer", cPTSProducer))
+			{
+				::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasýnda Hata.\nPTS Markasý Parametreleri: PTS_Producer.\nProgram Kapanýyor!!!!!",
+					WARNINGWINDOW_TITLE, MB_ICONSTOP);
+				return FALSE;
+			}
+
+			if (!ptsmodel_parameters->ReadString("PTS_Mode", cPTSMode))
+			{
+				::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasýnda Hata.\nPTS Markasý Parametreleri: PTS_Producer.\nProgram Kapanýyor!!!!!",
+					WARNINGWINDOW_TITLE, MB_ICONSTOP);
+				return FALSE;
+			}
+		}
+	}
+
+	INISection* autovehicledetect_parameters = ini.GetSection("AUTOMATIC_VEHICLE_DETECTION");
+	{
+		if (!autovehicledetect_parameters)
+		{
+			::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasýnda Hata.\nOtomatik Araç Tanýma Parametreleri.\nProgram Kapanýyor!!!!!",
+				WARNINGWINDOW_TITLE, MB_ICONSTOP);
+			return FALSE;
+		}
+		else
+		{
+			if (!autovehicledetect_parameters->ReadString("Use_Automatic_Detection", cAutoVehicleDetect))
+			{
+				::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasýnda Hata.\nOtomatik Araç Tanýma Parametreleri: Use_Automatic_Detection.\nProgram Kapanýyor!!!!!",
 					WARNINGWINDOW_TITLE, MB_ICONSTOP);
 				return FALSE;
 			}
@@ -221,15 +279,86 @@ BOOL IniFileProcessing::ReadIniFile()
 	g_CameraHeight = dCameraHeight;
 	g_CameraPixelBits = dCameraPixelBits;
 	g_CameraBufferSize = dCameraBuffer;
-	strncpy_s(g_ConfigFilename, (size_t)(MAX_FILENAME_LENGTH + 1), dCameraConfigFile, (size_t)(MAX_FILENAME_LENGTH));
+	strncpy_s(g_CameraConfigFilename, (size_t)(MAX_FILENAME_LENGTH + 1), dCameraConfigFile, (size_t)(MAX_FILENAME_LENGTH));
 
 	strncpy_s(g_Odroid_Port, (size_t)(PORT_BYTE_LEN + 1), cOdroidPort, (size_t)(PORT_BYTE_LEN));
 	strncpy_s(g_PTSPort, (size_t)(PORT_BYTE_LEN + 1), cPTSPort, (size_t)(PORT_BYTE_LEN));
+	strncpy_s(g_PTSIP, (size_t)(IP_BYTE_LEN + 1), cPTSIP, (size_t)(IP_BYTE_LEN));
 
 	strncpy_s(g_ReferenceFilePath, (size_t)(MAX_DIR_PATH_LENGTH + 1), cRefImageFilePath, (size_t)(MAX_DIR_PATH_LENGTH));
 
-	g_ImageOnScreenDuration = dImageOnScreen;
+	if (strcmp(dChangeDetectActive, "Yes") == 0)
+	{
+		g_ChangeDetectActive = true;
+	}
+	else if (strcmp(dChangeDetectActive, "No") == 0)
+	{
+		g_ChangeDetectActive = false;
+	}
+	else
+	{
+		return FALSE;
+	}
 
+	if (strcmp(cPTSProducer, "ISSD") == 0)
+	{
+		g_PTS_Producer_ID = PTS_BY_ISSD;
+	}
+	else if (strcmp(cPTSProducer, "DIVIT") == 0)
+	{
+		g_PTS_Producer_ID = PTS_BY_DIVIT;
+	}
+	else
+	{
+		::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasýnda Hata.\nPTS Markasý Parametreleri: PTS_Producer: Bilinmeyen Marka.\nProgram Kapanýyor!!!!!",
+			WARNINGWINDOW_TITLE, MB_ICONSTOP);
+		return FALSE;
+	}
+
+	if (strcmp(cPTSMode, "Trigger") == 0)
+	{
+		g_PTS_Mode = PTS_MODE_TRIGGER;
+	}
+	else if (strcmp(cPTSMode, "Continuous") == 0)
+	{
+		g_PTS_Mode = PTS_MODE_CONTINUOUS;
+	}
+	else
+	{
+		::MessageBox(NULL, (LPCWSTR)L"Baþlangýc Dosyasýnda Hata.\nPTS Markasý Parametreleri: PTS_Producer: Bilinmeyen Marka.\nProgram Kapanýyor!!!!!",
+			WARNINGWINDOW_TITLE, MB_ICONSTOP);
+		return FALSE;
+	}
+
+	if (strcmp(cAutoVehicleDetect, "Yes") == 0)
+	{
+		g_Use_Auto_VehicleDetect = true;
+	}
+	else if (strcmp(cAutoVehicleDetect, "No") == 0)
+	{
+		g_Use_Auto_VehicleDetect = false;
+	}
+	else
+	{
+		return FALSE;
+	}
+
+	if ((g_PTS_Producer_ID == PTS_BY_DIVIT) && (g_Use_Auto_VehicleDetect == true))
+	{
+		g_AutoDetect_Type = AUTO_VEHICLEDETECT_WITH_DIVIT;
+	}
+	else if ((g_PTS_Producer_ID == PTS_BY_ISSD) && (g_Use_Auto_VehicleDetect == true))
+	{
+		g_AutoDetect_Type = AUTO_VEHICLEDETECT_WITH_ISSD;
+	}
+	else if (g_Use_Auto_VehicleDetect == false)
+	{
+		g_AutoDetect_Type = NO_AUTO_VEHICLE_DETECT;
+	}
+	else
+	{
+		return false;
+	}
 
 	return TRUE;
 }

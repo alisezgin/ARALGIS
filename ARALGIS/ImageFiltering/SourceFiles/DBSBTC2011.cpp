@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "..\HeaderFiles\Includes.h"
 #include <time.h>
 

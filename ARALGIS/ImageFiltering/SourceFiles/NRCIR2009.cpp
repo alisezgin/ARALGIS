@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES // for C
 
+#include "stdafx.h"
 #include "..\HeaderFiles\Includes.h"
 
 #include<math.h>

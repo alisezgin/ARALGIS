@@ -151,7 +151,7 @@ BOOL CReceiveCameraImage::InitSAPERA(void)
 
 				//CString configFile(_T("E:\\FuzyonSoft\\CamFiles\\default_withGain.ccf"));
 
-				CString configFile(g_ConfigFilename);
+				CString configFile(g_CameraConfigFilename);
 
 				char dummy[1000];
 				size_t i = configFile.GetLength();
@@ -583,9 +583,12 @@ void CReceiveCameraImage::CheckForLastFrame(void)
 	int AA = m_Buffers->GetIndex();
 	int BB = m_Buffers->GetCount();
 
-	EnterCriticalSection(&g_IntermediateTestImgCS);
-	GetCameraIntermediateDataAsMat();
-	LeaveCriticalSection(&g_IntermediateTestImgCS);
+	if (g_AutoDetect_Type != NO_AUTO_VEHICLE_DETECT)
+	{
+		EnterCriticalSection(&g_IntermediateTestImgCS);
+		GetCameraIntermediateDataAsMat();
+		LeaveCriticalSection(&g_IntermediateTestImgCS);
+	}
 
 
 	if (m_Buffers->GetIndex() == m_Buffers->GetCount() - 1)

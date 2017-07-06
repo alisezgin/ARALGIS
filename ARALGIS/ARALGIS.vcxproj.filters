@@ -55,21 +55,6 @@
     <Filter Include="ImageFiltering">
       <UniqueIdentifier>{04b80714-dad7-4efa-b49a-db505b44c5f4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ImageFiltering\HeaderFiles">
-      <UniqueIdentifier>{f31daa7e-c87c-4b07-b5a7-f13da58c0914}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ImageFiltering\SourceFiles">
-      <UniqueIdentifier>{f84cc144-f068-4d32-bb1f-c05b616ebe67}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PTSCommunicator">
-      <UniqueIdentifier>{ff57ab9e-5279-4cb2-921b-dace8ea14fad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PTSCommunicator\HeaderFiles">
-      <UniqueIdentifier>{ba300e27-917a-4128-8e63-dfbef316d180}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PTSCommunicator\SourceFiles">
-      <UniqueIdentifier>{5be9f997-8911-4154-be21-225843778041}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Database">
       <UniqueIdentifier>{e668c1f8-385b-42c1-928b-150c93055f4a}</UniqueIdentifier>
     </Filter>
@@ -117,6 +102,39 @@
     </Filter>
     <Filter Include="VehicleDetection\SourceFiles">
       <UniqueIdentifier>{cda50bd8-d717-441a-a9f8-d74f607d4b97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageFiltering\HeaderFiles">
+      <UniqueIdentifier>{f31b8d30-a03b-4c14-91ba-9f18ea28032e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageFiltering\SourceFiles">
+      <UniqueIdentifier>{5c20e2c7-46ae-44da-895d-ec61f6a55f9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PTSCommunicatorISSD">
+      <UniqueIdentifier>{ff57ab9e-5279-4cb2-921b-dace8ea14fad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PTSCommunicatorISSD\HeaderFiles">
+      <UniqueIdentifier>{ba300e27-917a-4128-8e63-dfbef316d180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PTSCommunicatorISSD\SourceFiles">
+      <UniqueIdentifier>{5be9f997-8911-4154-be21-225843778041}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PTSCommunicatorDVIT">
+      <UniqueIdentifier>{251b4817-3377-4f66-9ccb-9874cf88980d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PTSCommunicatorDVIT\HeaderFiles">
+      <UniqueIdentifier>{d67da126-8f2c-486c-978f-4cd43eb4b1ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PTSCommunicatorDVIT\SourceFiles">
+      <UniqueIdentifier>{78709098-4a2d-4b00-9365-349ba53dd2f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DiskSpaceController">
+      <UniqueIdentifier>{6f2482b8-72e3-4bfc-b859-ee470b09e4bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DiskSpaceController\HeaderFiles">
+      <UniqueIdentifier>{0b8c120c-5a25-4444-bcb3-0d5cab2c02e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DiskSpaceController\SourceFiles">
+      <UniqueIdentifier>{6f6f8dea-407e-4d89-822a-41e417ef5d23}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -237,23 +255,8 @@
     <ClInclude Include="WndResizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ImageFiltering\HeaderFiles\cvt.hpp">
-      <Filter>ImageFiltering\HeaderFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-image.hpp">
-      <Filter>ImageFiltering\HeaderFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageFiltering\HeaderFiles\Includes.h">
-      <Filter>ImageFiltering\HeaderFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="PTSCommunicator\HeaderFiles\PTSCommunicator.h">
-      <Filter>PTSCommunicator\HeaderFiles</Filter>
-    </ClInclude>
     <ClInclude Include="BitmapDisplay\HeaderFiles\PictureCtrl.h">
       <Filter>BitmapDisplay\HeaderFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="PTSCommunicator\HeaderFiles\PTSMessageDefinitions.h">
-      <Filter>PTSCommunicator\HeaderFiles</Filter>
     </ClInclude>
     <ClInclude Include="OdroidCommunicator\HeaderFiles\OdroidMessageDefinitions.h">
       <Filter>OdroidCommunicator\HeaderFiles</Filter>
@@ -360,6 +363,30 @@
     <ClInclude Include="Database\HeaderFiles\UserSet.h">
       <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
+    <ClInclude Include="ImageFiltering\HeaderFiles\cvt.hpp">
+      <Filter>ImageFiltering\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFiltering\HeaderFiles\Includes.h">
+      <Filter>ImageFiltering\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-image.hpp">
+      <Filter>ImageFiltering\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="PTSCommunicatorDVIT\HeaderFiles\PTSCommunicatorDVIT.h">
+      <Filter>PTSCommunicatorDVIT\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="PTSCommunicatorDVIT\HeaderFiles\PTSMessageDefinitionsDVIT.h">
+      <Filter>PTSCommunicatorDVIT\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="PTSCommunicatorISSD\HeaderFiles\PTSCommunicatorISSD.h">
+      <Filter>PTSCommunicatorISSD\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="PTSCommunicatorISSD\HeaderFiles\PTSMessageDefinitionsISSD.h">
+      <Filter>PTSCommunicatorISSD\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="DiskSpaceController\HeaderFiles\FreeDiskSpaceController.h">
+      <Filter>DiskSpaceController\HeaderFiles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -404,60 +431,6 @@
     <ClCompile Include="WndResizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\CelikTjahjadi2012.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\comp.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\cvt.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\DBSBTC2011.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\enhancement.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\filtering.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\iCLUDMS2016.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\IW_PSNR.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\IW_SSIM.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\LAT2011.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\MSRCP2014.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\NADD.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\NRCIR2009.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\PGF1999.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\pohe.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\retinex.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageFiltering\SourceFiles\WangZhengHuLi2013.cpp">
-      <Filter>ImageFiltering\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="PTSCommunicator\SourceFiles\PTSCommunicator.cpp">
-      <Filter>PTSCommunicator\SourceFiles</Filter>
-    </ClCompile>
     <ClCompile Include="BitmapDisplay\SourceFiles\PictureCtrl.cpp">
       <Filter>BitmapDisplay\SourceFiles</Filter>
     </ClCompile>
@@ -474,9 +447,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MiniIni\Implementation\SourceFiles\allocator.cpp">
-      <Filter>miniIni\Implementation\SourceFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="MiniIni\Implementation\SourceFiles\benchmark.cpp">
       <Filter>miniIni\Implementation\SourceFiles</Filter>
     </ClCompile>
     <ClCompile Include="MiniIni\Implementation\SourceFiles\globals.cpp">
@@ -535,6 +505,66 @@
     </ClCompile>
     <ClCompile Include="Database\SourceFiles\UserSet.cpp">
       <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\CelikTjahjadi2012.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\comp.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\cvt.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\DBSBTC2011.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\enhancement.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\filtering.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\iCLUDMS2016.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\IW_PSNR.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\IW_SSIM.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\LAT2011.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\MSRCP2014.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\NADD.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\NRCIR2009.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\PGF1999.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\pohe.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\retinex.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFiltering\SourceFiles\WangZhengHuLi2013.cpp">
+      <Filter>ImageFiltering\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="PTSCommunicatorISSD\SourceFiles\PTSCommunicatorISSD.cpp">
+      <Filter>PTSCommunicatorISSD\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="PTSCommunicatorDVIT\SourceFiles\PTSCommunicatorDVIT.cpp">
+      <Filter>PTSCommunicatorDVIT\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="DiskSpaceController\SourceFiles\FreeDiskSpaceController.cpp">
+      <Filter>DiskSpaceController\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

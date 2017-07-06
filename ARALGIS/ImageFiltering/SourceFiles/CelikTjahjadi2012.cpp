@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "..\HeaderFiles\Includes.h"
 
 bool EM_Alg(cv::Mat src,std::vector<float> &Mean, std::vector<float> &Sd, std::vector<float> &W){

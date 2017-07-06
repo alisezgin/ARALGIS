@@ -108,7 +108,7 @@ public:
 			k++;
 		}
 #ifdef  DISPLAY_PRINTS_DEBUG
-		std::printf("\n processMatches # of METHOD-1 Keypoints %d", k);
+		std::DEBUG_PRINT("\n processMatches # of METHOD-1 Keypoints %d", k);
 #endif
 
 		int i = 0;
@@ -129,7 +129,7 @@ public:
 		// end of combination
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-		std::printf("\n processMatches # of METHOD-2 Keypoints %d", i);
+		std::DEBUG_PRINT("\n processMatches # of METHOD-2 Keypoints %d", i);
 #endif
 
 
@@ -151,7 +151,7 @@ public:
 			i++;
 		}
 #ifdef  DISPLAY_PRINTS_DEBUG
-		std::printf("\n processMatches # of METHOD-3 Keypoints %d", i);
+		std::DEBUG_PRINT("\n processMatches # of METHOD-3 Keypoints %d", i);
 #endif
 
 		i = 0;
@@ -172,11 +172,12 @@ public:
 		// end of combination
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-		std::printf("\n processMatches # of METHOD-4 Keypoints %d", i);
-		std::printf("\n processMatches # of TOTAL Keypoints %d\n", k);
+		DEBUG_PRINT("\n processMatches # of METHOD-4 Keypoints %d", i);
+		DEBUG_PRINT("\n processMatches # of TOTAL Keypoints %d\n", k);
 #endif
-		std::printf("\n processMatches # of TOTAL Keypoints %d\n", k);
-
+#ifdef DEBUG_PRINT_FINAL1
+		DEBUG_PRINT("processMatches # of TOTAL Keypoints %d\n", k);
+#endif
 		/////////////
 
 #ifdef  DISPLAY_IMAGES_DEBUG_FINAL_PROCESS
@@ -244,11 +245,12 @@ public:
 			if (KKKprev - KKK < 10)
 				KKK = 99;
 	}
-
-		std::printf("\n AFTERRRRRRRR of TOTAL Keypoints %d\n", matchesCombinedCleaned->size());
+#ifdef DEBUG_PRINT_FINAL1
+		DEBUG_PRINT("AFTERRRRRRRR of TOTAL Keypoints %d\n", matchesCombinedCleaned->size());
+#endif
 
 #ifdef PRINT_DEBUG_FP
-		printf("\nRemaining %d Points in FINAL Response-Recurrence Processing!!!!\n", matchesCombinedCleaned->size());
+		DEBUG_PRINT("\nRemaining %d Points in FINAL Response-Recurrence Processing!!!!\n", matchesCombinedCleaned->size());
 #endif
 
 #ifdef  DISPLAY_IMAGES_DEBUG_FINAL_PROCESS
@@ -293,7 +295,7 @@ public:
 		int k = 0;
 
 #ifdef PRINT_DEBUG_FP
-		printf("\n");
+		DEBUG_PRINT("\n");
 #endif
 
 		float aThreshold;
@@ -312,9 +314,9 @@ public:
 		{
 #ifdef PRINT_DEBUG_FP
 			if (shallDeleteIndex[i] == false)
-				printf("\nI %d KEPT", i);
+				DEBUG_PRINT("\nI %d KEPT", i);
 			else 
-				printf("\nI %d DELETED", i);
+				DEBUG_PRINT("\nI %d DELETED", i);
 #endif
 
 			isBreak = false;
@@ -332,18 +334,18 @@ public:
 					Point2 = m_keypointsRefCombinedCleaned[matchIterator1->trainIdx].pt;
 					dResponse2 = m_keypointsRefCombinedCleaned[matchIterator1->trainIdx].response;
 
-					//printf("\n KP1 X %.1f  Y %.1f KP2 X %.1f Y %.1f RESP1 %f RESP2 %f", Point1.x, Point1.y, Point2.x, Point2.y, dResponse1, dResponse2);
+					//DEBUG_PRINT("\n KP1 X %.1f  Y %.1f KP2 X %.1f Y %.1f RESP1 %f RESP2 %f", Point1.x, Point1.y, Point2.x, Point2.y, dResponse1, dResponse2);
 					if (((float)fabs(Point1.x - Point2.x) <= aThreshold) &&
 						((float)fabs(Point1.y - Point2.y) <= aThreshold) &&
 						(dResponse1 >= dResponse2))
 					{
 #ifdef PRINT_DEBUG_FP
-						printf("\n%d %d  DELETING NEXT KP1 X %.1f  Y %.1f KP2 X %.1f Y %.1f RESP1 %f RESP2 %f", i, i + j + 1, Point1.x, Point1.y, Point2.x, Point2.y, dResponse1, dResponse2);
+						DEBUG_PRINT("\n%d %d  DELETING NEXT KP1 X %.1f  Y %.1f KP2 X %.1f Y %.1f RESP1 %f RESP2 %f", i, i + j + 1, Point1.x, Point1.y, Point2.x, Point2.y, dResponse1, dResponse2);
 #endif
 						shallDeleteIndex[i + j + 1] = true;
 						k++;
 
-						//printf("J %d ",j);
+						//DEBUG_PRINT("J %d ",j);
 
 						//isBreak = true;
 					}
@@ -352,16 +354,16 @@ public:
 							(dResponse1 <= dResponse2))
 					{
 #ifdef PRINT_DEBUG_FP
-						printf("\n%d %d  DELETING CURRENT KP1 X %.1f  Y %.1f KP2 X %.1f Y %.1f RESP1 %f RESP2 %f", i, i + j + 1, Point1.x, Point1.y, Point2.x, Point2.y, dResponse1, dResponse2);
+						DEBUG_PRINT("\n%d %d  DELETING CURRENT KP1 X %.1f  Y %.1f KP2 X %.1f Y %.1f RESP1 %f RESP2 %f", i, i + j + 1, Point1.x, Point1.y, Point2.x, Point2.y, dResponse1, dResponse2);
 #endif
 						shallDeleteIndex[i] = true;
 						k++;
 
-						//printf("J %d ",j);
+						//DEBUG_PRINT("J %d ",j);
 
 						isBreak = true;
 					}
-					//printf("%d ",j);
+					//DEBUG_PRINT("%d ",j);
 					j++;
 
 					if (isBreak)
@@ -377,7 +379,7 @@ public:
 
 		}
 
-		//printf("\n For Reference KPs Found %d Same Points\n", k);
+		//DEBUG_PRINT("\n For Reference KPs Found %d Same Points\n", k);
 
 		i = 0;
 		j = 0;
@@ -392,7 +394,7 @@ public:
 		k = 0;
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-		printf("\n");
+		DEBUG_PRINT("\n");
 #endif
 		for (std::vector<cv::DMatch>::iterator matchIterator = m_matchesCombinedCleaned.begin();
 			matchIterator != m_matchesCombinedCleaned.end();
@@ -416,8 +418,8 @@ public:
 		}
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-		printf("\nDeleted %d Points in FINAL Response-Recurrence Processing!!!!", k);
-		printf("\nRemaining %d Points in FINAL Response-Recurrence Processing!!!!\n", j);
+		DEBUG_PRINT("\nDeleted %d Points in FINAL Response-Recurrence Processing!!!!", k);
+		DEBUG_PRINT("\nRemaining %d Points in FINAL Response-Recurrence Processing!!!!\n", j);
 
 #endif
 
@@ -470,7 +472,7 @@ public:
 			matchIterator != m_matchesCombinedCleaned.end();
 			++matchIterator)
 		{
-			//printf("\n Index %d LOOP_CNT %d", matchIterator->trainIdx, m_matchesCombinedCleaned.size());
+			//DEBUG_PRINT("\n Index %d LOOP_CNT %d", matchIterator->trainIdx, m_matchesCombinedCleaned.size());
 			assert(matchIterator->trainIdx < (int) m_matchesCombinedCleaned.size() + 1);
 			dYPoint = m_keypointsRefCombinedCleaned[matchIterator->trainIdx].pt.y;
 			tmpPair.first = i;
@@ -535,7 +537,7 @@ public:
 			matchIterator != matchesCombinedCleanedTmp.end();
 			++matchIterator)
 		{
-			printf("\n KP1 %d X %.5f  Y %.5f", k, keypointsRefCombinedCleanedTmp[k].pt.x, keypointsRefCombinedCleanedTmp[k].pt.y);
+			DEBUG_PRINT("\n KP1 %d X %.5f  Y %.5f", k, keypointsRefCombinedCleanedTmp[k].pt.x, keypointsRefCombinedCleanedTmp[k].pt.y);
 			k++;
 		}
 		k = 0;
@@ -543,7 +545,7 @@ public:
 			matchIterator != matchesCombinedCleanedTmp.end();
 			++matchIterator)
 		{
-			printf("\n KP2 %d X %.5f  Y %.5f", k, keypointsTestCombinedCleanedTmp[k].pt.x, keypointsTestCombinedCleanedTmp[k].pt.y);
+			DEBUG_PRINT("\n KP2 %d X %.5f  Y %.5f", k, keypointsTestCombinedCleanedTmp[k].pt.x, keypointsTestCombinedCleanedTmp[k].pt.y);
 			k++;
 		}
 #endif
@@ -612,12 +614,12 @@ public:
 			try
 			{
 				slope = (float)calculateSlope(Point1, Point2, offset);
-				//std::printf("\nFeature %d Slope %.5f", i, slope);
+				//std::DEBUG_PRINT("\nFeature %d Slope %.5f", i, slope);
 			}
 			catch (const std::invalid_argument& e)
 			{
 				// do stuff with exception... 
-				std::printf("\nException in slope calculation\n");
+				DEBUG_PRINT("\nException in slope calculation\n");
 			}
 
 			slopes.push_back(slope);
@@ -652,7 +654,7 @@ public:
 		// end of standart deviation calculation
 
 #ifdef DISPLAY_PRINTS_DEBUG
-		std::printf("\nstarting Slope MEAN %.5f STDEV %.5f", fMean, fStDev);
+		std::DEBUG_PRINT("\nstarting Slope MEAN %.5f STDEV %.5f", fMean, fStDev);
 #endif
 
 		// create temporary variables
@@ -680,7 +682,7 @@ public:
 			double dDiff = fabs(inputSlopes[i] - fMean);
 
 #ifdef DISPLAY_PRINTS_DEBUG
-			//std::printf("\nFEATURE %d SLOPE %.5f DIFFERENCE %.5f THRESHOLd %.5f", i, inputSlopes[i], dDiff, aThrsh);
+			//std::DEBUG_PRINT("\nFEATURE %d SLOPE %.5f DIFFERENCE %.5f THRESHOLd %.5f", i, inputSlopes[i], dDiff, aThrsh);
 #endif
 			if (dDiff <= aThrsh)
 			{
@@ -697,7 +699,7 @@ public:
 		}
 
 #ifdef DISPLAY_PRINTS_DEBUG
-		std::printf("\n%d Features will be used for SLOPE Calculation", k);
+		std::DEBUG_PRINT("\n%d Features will be used for SLOPE Calculation", k);
 #endif
 
 #ifdef  DISPLAY_IMAGES_DEBUG_FINAL

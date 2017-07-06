@@ -1,4 +1,5 @@
-﻿#include "..\HeaderFiles\Includes.h"
+﻿#include "stdafx.h"
+#include "..\HeaderFiles\Includes.h"
 
 using namespace cv;
 using namespace std;

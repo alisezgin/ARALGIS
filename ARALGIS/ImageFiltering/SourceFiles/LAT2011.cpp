@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "..\HeaderFiles\Includes.h"
 
 void new_integral(const cv::Mat &src, int **integral_image)

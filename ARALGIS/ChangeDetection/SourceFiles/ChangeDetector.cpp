@@ -9,10 +9,8 @@
 #include <iomanip>
 #include <opencv2\core\core.hpp>
 #include <opencv2\highgui\highgui.hpp>
-#include "opencv2\imgproc\imgproc.hpp"
 #include "opencv2\features2d\features2d.hpp"
 #include "opencv2\nonfree\features2d.hpp"
-#include "opencv2\calib3d\calib3d.hpp"
 #include "opencv2/opencv.hpp"
 
 #include "..\ProcessingAlgorithms\TransformImage.h" 
@@ -38,6 +36,16 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	cv::Mat imgTest;
 
 	cv::Mat AA1, AA2, AA3, AA4, AA5, AA6;
+
+	if (aImgReference.rows == 0 || aImgReference.cols == 0)
+	{
+		return -1;
+	}
+
+	if (aImgTest.rows == 0 || aImgTest.cols == 0)
+	{
+		return -1;
+	}
 
 	transpose(aImgReference, AA1);
 	flip(AA1, AA2, 0); //transpose+flip(1)=CW
@@ -72,11 +80,11 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 
 	if (!imgReference.data || !imgTest.data)
 	{
-		TRACE(" --(!) Error reading images "); 
+		DEBUG_PRINT(" --(!) Error reading images "); 
 		return -1;
 	}
-	//TRACE("\n\n Image 1 Width %d  Height %d\n", imgReference.cols, imgReference.rows);
-	//TRACE("\n Image 2 Width %d  Height %d\n\n", imgTest.cols, imgTest.rows);
+	//DEBUG_PRINT("\n\n Image 1 Width %d  Height %d\n", imgReference.cols, imgReference.rows);
+	//DEBUG_PRINT("\n Image 2 Width %d  Height %d\n\n", imgTest.cols, imgTest.rows);
 
 	cv::Mat img1, img2;
 	imgReference.copyTo(img1);
@@ -110,16 +118,23 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	PreprocessImage preImg;
 	preImg.PreprocessStage(&imgReference, &imgTest);
 
-	TRACE("\n Preprocess Gray Image 1 Width %d  Height %d\n", imgReference.cols, imgReference.rows);
-	TRACE("\n Preprocess Gray  Image 2 Width %d  Height %d\n\n", imgTest.cols, imgTest.rows);
+#ifdef DEBUG_PRINT_FINAL1
+	DEBUG_PRINT("Preprocess Gray Image 1 Width %d  Height %d\n", imgReference.cols, imgReference.rows);
+	DEBUG_PRINT("Preprocess Gray  Image 2 Width %d  Height %d\n\n", imgTest.cols, imgTest.rows);
+#endif
+
+	cv::applyColorMap(imgReference, imgReferenceClr, cv::COLORMAP_RAINBOW);
+	cv::applyColorMap(imgTest, imgTestClr, cv::COLORMAP_RAINBOW);
 
 	/// Preprocess Colour Image
 	/// Includes only resize and scale down if selected
 	PreprocessImage preImgClr;
 	preImgClr.PreprocessStageColour(&imgReferenceClr, &imgTestClr);
 
-	TRACE("\n Preprocess Colour Image 1 Width %d  Height %d\n", imgReferenceClr.cols, imgReferenceClr.rows);
-	TRACE("\n Preprocess Colour  Image 2 Width %d  Height %d\n\n", imgTestClr.cols, imgTestClr.rows);
+#ifdef DEBUG_PRINT_FINAL10
+	DEBUG_PRINT("\n Preprocess Colour Image 1 Width %d  Height %d\n", imgReferenceClr.cols, imgReferenceClr.rows);
+	DEBUG_PRINT("\n Preprocess Colour  Image 2 Width %d  Height %d\n\n", imgTestClr.cols, imgTestClr.rows);
+#endif
 
 #ifdef  DISPLAY_CONCAN_IMAGE_INTERMEDIATE
 	ImageDisplayer imageDisplayerClr3;
@@ -223,7 +238,9 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 
 
 #ifdef INCLUDE_SURF
-	TRACE("\n SURF Matcher begins");
+#ifdef DEBUG_PRINT_FINAL1
+	DEBUG_PRINT("SURF Matcher begins\n");
+#endif
 	/// SURF MATCHER begins
 	rmatcherSURF.match(imgReference, imgTest,
 		matchesSURF, keypointsRefSURF, keypointsTestSURF,
@@ -243,8 +260,9 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 #endif
 
 #ifdef INCLUDE_ORB
-	TRACE("\n ORB Matcher begins");
-
+#ifdef DEBUG_PRINT_FINAL1
+	DEBUG_PRINT("ORB Matcher begins\n");
+#endif
 	/// ORB MATCHER begins
 	rmatcherORB.match(imgReference, imgTest,
 		matchesORB, keypointsRefORB, keypointsTestORB,
@@ -264,11 +282,14 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 #endif
 
 	cv::Point2f offset((float)imgReference.cols, 0);
-	TRACE("\n OFFSET %d\n", imgReference.cols);
-
+#ifdef DEBUG_PRINT_FINAL10
+	DEBUG_PRINT("\n OFFSET %d\n", imgReference.cols);
+#endif
 
 #ifdef INCLUDE_STAR
-	TRACE("\n STAR Matcher begins");
+#ifdef DEBUG_PRINT_FINAL1
+	DEBUG_PRINT("STAR Matcher begins\n");
+#endif
 
 	/// FAST MATCHER begins
 	RobustMatcher rmatcherSTAR;
@@ -296,12 +317,14 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 #endif
 
 #ifdef INCLUDE_FAST
-	TRACE("\n FAST Matcher begins");
+#ifdef DEBUG_PRINT_FINAL1
+	DEBUG_PRINT("\n FAST Matcher begins\n");
+#endif
 
 	int64 tick3333 = cv::getTickCount();
 	// time in miliseconds
 	double time3333 = ((tick3333 - tick1) / cv::getTickFrequency());
-	TRACE("\nExecution Time After STAR Calculation %.3f seconds\n", time3333);
+	DEBUG_PRINT("\nExecution Time After STAR Calculation %.3f seconds\n", time3333);
 
 	/// STAR MATCHER begins
 	RobustMatcher rmatcherFAST;
@@ -331,7 +354,9 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	int64 tick333 = cv::getTickCount();
 	// time in miliseconds
 	double time333 = ((tick333 - tick1) / cv::getTickFrequency());
-	TRACE("\nExecution Time After STAR-FAST Calculation %.3f seconds\n", time333);
+#ifdef DEBUG_PRINT_FINAL1
+	DEBUG_PRINT("\nExecution Time After STAR-FAST Calculation %.3f seconds\n", time333);
+#endif
 
 	// Match the two images begins
 	MatchCombinerEliminator matchProcessor2;
@@ -402,9 +427,9 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	int64 tick33 = cv::getTickCount();
 	// time in miliseconds
 	double time33 = ((tick33 - tick1) / cv::getTickFrequency());
-	TRACE("\nExecution Time After STAR-FAST PROCESSING %.3f seconds\n", time33);
-
-
+#ifdef DEBUG_PRINT_FINAL1
+	DEBUG_PRINT("Execution Time After Elimination Processing %.3f seconds\n", time33);
+#endif
 
 	std::vector<cv::DMatch> matchesCombined3;
 	std::vector<cv::KeyPoint> keypointsRefCombined3, keypointsTestCombined3;
@@ -447,11 +472,19 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 
 #endif
 
+	tick333 = cv::getTickCount();
+	// time in miliseconds
+	time333 = ((tick333 - tick1) / cv::getTickFrequency());
+#ifdef DEBUG_PRINT_FINAL1
+	DEBUG_PRINT("\nExecution Time After Cluster Clean %.3f seconds\n", time333);
+#endif
+
 	//#ifdef USE_CLUSTERING
 	if (dRowDiff > 500)
 	{
-		TRACE("\nCLUSTERING Begins for %d CLUSTERS\n", (int)MAX_CLUSTERS);
-
+#ifdef DEBUG_PRINT_FINAL1
+		DEBUG_PRINT("CLUSTERING Begins for %d CLUSTERS\n", (int)MAX_CLUSTERS);
+#endif
 		ImagePartitioner zzz;
 
 
@@ -473,7 +506,9 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	//#else
 	else // process whole image
 	{
-		TRACE("\nSINGLE PARTITION HOMOGRAPHY\n");
+#ifdef DEBUG_PRINT_FINAL1
+		DEBUG_PRINT("\nSINGLE PARTITION HOMOGRAPHY\n");
+#endif
 
 		cv::Mat homographyRefined1;
 		HomographyEstimator homographyEstimator;
@@ -491,24 +526,37 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 
 			if (ishomogCalculated == false)
 			{
-				TRACE("\n\n\n HOMOGRAPHY can not be calculated!!!! Exiting..................");
+#ifdef DEBUG_PRINT_FINAL1
+				DEBUG_PRINT("\n\n\n HOMOGRAPHY can not be calculated!!!! Exiting..................");
+#endif
 				//getchar();
 				//exit(0);
 			}
 			else
 			{
-				TRACE("\n Size after homography %d\n\n", matchesCombined3.size());
+#ifdef DEBUG_PRINT_FINAL1
+				DEBUG_PRINT("\n Size after homography %d\n", matchesCombined3.size());
+#endif
 				int ii = 0;
 				for (std::vector<cv::DMatch>::iterator matchIterator = matchesCombined3.begin();
 					matchIterator != matchesCombined3.end();
 					++matchIterator)
 				{
-					//std::printf("\n DIST Index %d X %.5f ", ii, matchIterator->distance);
+					//std::DEBUG_PRINT("\n DIST Index %d X %.5f ", ii, matchIterator->distance);
 					ii++;
 				}
-				TRACE("\n\n");
+#ifdef DEBUG_PRINT_FINAL10
+				DEBUG_PRINT("\n\n");
+#endif
 			}
 		}
+
+		int64 tick333 = cv::getTickCount();
+		// time in miliseconds
+		double time333 = ((tick333 - tick1) / cv::getTickFrequency());
+#ifdef DEBUG_PRINT_FINAL1
+		DEBUG_PRINT("\nExecution Time After Cluster Clean %.3f seconds\n", time333);
+#endif
 
 		cv::Mat* testImageNormalized;
 		testImageNormalized = new cv::Mat;
@@ -542,6 +590,8 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 			keypointsTestCombined3,
 			1);
 
+		delete testImageNormalized;
+
 #ifdef  DISPLAY_IMAGES_DEBUG
 		cv::namedWindow("WARPED TEST IMAGE NORMALIZED ", cv::WINDOW_NORMAL);
 		cv::imshow("WARPED TEST IMAGE NORMALIZED ", imgTestWarpedPersNormClr);
@@ -560,11 +610,18 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	int resizedImgNo;
 	resizedImage = preImgClr.resizeSmallImage(imgReferenceClr, imgTestWarpedPersNormClr, &resizedImgNo);
 
+	tick333 = cv::getTickCount();
+	// time in miliseconds
+	time333 = ((tick333 - tick1) / cv::getTickFrequency());
+#ifdef DEBUG_PRINT_FINAL1
+	DEBUG_PRINT("\nExecution Time After Perspective Transform and Resize %.3f seconds\n", time333);
+#endif
+
 	if (resizedImgNo == 1)
 	{
 #ifdef DISPLAY_CONCAN_IMAGE
-		printf("\nRESIZED REFERENCE SIZE W %d H %d", resizedImage.cols, resizedImage.rows);
-		printf("\nTEST SIZE W %d H %d", imgTestWarpedPersNormClr.cols, imgTestWarpedPersNormClr.rows);
+		DEBUG_PRINT("\nRESIZED REFERENCE SIZE W %d H %d", resizedImage.cols, resizedImage.rows);
+		DEBUG_PRINT("\nTEST SIZE W %d H %d", imgTestWarpedPersNormClr.cols, imgTestWarpedPersNormClr.rows);
 
 		ImageDisplayer imageDisplayerClr2;
 		char titleClr2[1000];
@@ -584,8 +641,8 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	else if (resizedImgNo == 2)
 	{
 #ifdef DISPLAY_CONCAN_IMAGE
-		printf("\nREFERENCE SIZE W %d H %d", imgReferenceClr.cols, imgReferenceClr.rows);
-		printf("\nRESIZED nTEST SIZE W %d H %d", resizedImage.cols, resizedImage.rows);
+		DEBUG_PRINT("\nREFERENCE SIZE W %d H %d", imgReferenceClr.cols, imgReferenceClr.rows);
+		DEBUG_PRINT("\nRESIZED nTEST SIZE W %d H %d", resizedImage.cols, resizedImage.rows);
 
 		ImageDisplayer imageDisplayerClr2;
 		char titleClr2[1000];
@@ -620,9 +677,10 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 
 	// time in miliseconds
 	double time55 = ((tick2 - tick1) / cv::getTickFrequency());
-	printf("\n\n TOTaL Execution Time %.3f seconds\n\n", time55);
-
-	getchar();
+#ifdef DEBUG_PRINT_FINAL1
+	DEBUG_PRINT("\n\n TOTaL Execution Time %.3f seconds\n", time55);
+#endif
+	//getchar();
 
 	return 0;
 

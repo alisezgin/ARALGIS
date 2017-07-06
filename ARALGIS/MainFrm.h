@@ -6,13 +6,16 @@
 
 
 #include ".\\CameraInterface\\HeaderFiles\\CameraDataReceiver.h"
-#include ".\\PTSCommunicator\\HeaderFiles\\PTSCommunicator.h"
+#include ".\\PTSCommunicatorISSD\\HeaderFiles\\PTSCommunicatorISSD.h"
+#include ".\\PTSCommunicatorDVIT\\HeaderFiles\\PTSCommunicatorDVIT.h"
 #include ".\\OdroidCommunicator\\HeaderFiles\\OdroidCommunicator.h"
 #include ".\\Database\\HeaderFiles\\CameraDBServer.h"
 #include ".\\ImageFiltering\\ImageFilterProcessing\\HeaderFiles\\ImageFilterProcessing.h"
 #include ".\\miniIni\\Processing\\HeaderFiles\\IniFileProcessing.h"
 #include ".\\VehicleDetection\\HeaderFiles\\VehicleDetection.h"
 #include ".\\ChangeDetection\\HeaderFiles\\ChangeDetectController.h"
+#include ".\\DiskSpaceController\\HeaderFiles\\FreeDiskSpaceController.h"
+
 
 
 
@@ -26,13 +29,15 @@ protected: // create from serialization only
 	// Attributes
 public:
 
-	CCameraDataReceiver    *m_CameraDataReceiver;
-	CPTSCommunicator       *m_PTSCommunicator;
-	COdroidCommunicator    *m_OdroidCommunicator;
-	CCameraDBServer        *m_CameraDatabaseServer;
-	CImageFilterProcessing *m_ImageFilterProcessing;
-	CVehicleDetection      *m_VehicleDetector;
-	CChangeDetectController *m_ChangeDetector;
+	CCameraDataReceiver      *m_CameraDataReceiver;
+	CPTSCommunicatorISSD     *m_PTSCommunicatorISSD;
+	CPTSCommunicatorDVIT     *m_PTSCommunicatorDVIT;
+	COdroidCommunicator      *m_OdroidCommunicator;
+	CCameraDBServer          *m_CameraDatabaseServer;
+	CImageFilterProcessing   *m_ImageFilterProcessing;
+	CVehicleDetection        *m_VehicleDetector;
+	CChangeDetectController  *m_ChangeDetector;
+	CFreeDiskSpaceController *m_DiskSpaceController;
 
 
 protected:  // control bar embedded members

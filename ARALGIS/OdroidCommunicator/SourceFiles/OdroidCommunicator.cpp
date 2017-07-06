@@ -130,6 +130,8 @@ BOOL COdroidCommunicator::Shutdown()
 	CloseHandle(ThreadOdroidCommunicator);
 	CloseHandle(ThreadComm);
 
+	closesocket(ClientSocket);
+	closesocket(ListenSocket);
 
 	WSACleanup();
 
@@ -219,8 +221,9 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 	{
 		TRACE("ioctlsocket failed with error: %d failure COdroidCommunicator::OdroidCommunicatorThread\n", WSAGetLastError());
 		closesocket(pOdroidCommunicator->ListenSocket);
+		freeaddrinfo(resultAddr);
 		WSACleanup();
-		exit(1);
+		return THREADEXIT_SUCCESS;
 	}
 
 	freeaddrinfo(resultAddr);
@@ -264,7 +267,7 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 	{
 		TRACE("WSACreateEvent(NotificationEventClient) %d failure for Event COdroidCommunicator::OdroidCommunicatorThread\n",
 			WSAGetLastError());
-		closesocket(pOdroidCommunicator->ClientSocket);
+		closesocket(pOdroidCommunicator->ListenSocket);
 		return THREADEXIT_SUCCESS;
 	}
 
@@ -272,10 +275,10 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 	for (;;)
 	{
 		DWORD EventCaused = WSAWaitForMultipleEvents(2,
-			Handles,
-			FALSE,
-			100,  //WSA_INFINITE, 
-			FALSE);
+													 Handles,
+													 FALSE,
+													 100,  //WSA_INFINITE, 
+													 FALSE);
 
 		if (EventCaused == WAIT_FAILED || EventCaused == WAIT_OBJECT_0)
 		{
@@ -283,7 +286,7 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 				TRACE("WaitForMultipleObjects(...) %d failure COdroidCommunicator::OdroidCommunicatorThread\n",
 				GetLastError());
 			TRACE("OdroidCommunicatorThread Shutting Down ...\n");
-			closesocket(pOdroidCommunicator->ClientSocket);
+			closesocket(pOdroidCommunicator->ListenSocket);
 			return THREADEXIT_SUCCESS;
 		}
 		else
@@ -291,6 +294,7 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 			if (WaitForSingleObject(pOdroidCommunicator->ShutdownEvent, 0) == WAIT_OBJECT_0)
 			{
 				TRACE("OdroidCommunicatorThread Shutting Down normally ...\n");
+				closesocket(pOdroidCommunicator->ListenSocket);
 				return THREADEXIT_SUCCESS;
 			}
 
@@ -298,14 +302,14 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 			if (EventCaused == WAIT_OBJECT_0 + 1)
 			{
 				result = WSAEnumNetworkEvents(pOdroidCommunicator->ListenSocket,
-					NotificationEventListen,
-					&NetworkEvents);
+											  NotificationEventListen,
+											  &NetworkEvents);
 
 				if (result == SOCKET_ERROR)
 				{
 					TRACE("WSAEnumNetworkEvents(...) %d failure COdroidCommunicator::OdroidCommunicatorThread\n",
 						WSAGetLastError());
-					closesocket(pOdroidCommunicator->ClientSocket);
+					closesocket(pOdroidCommunicator->ListenSocket);
 					return THREADEXIT_SUCCESS;
 				}
 
@@ -329,12 +333,13 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 
 					// selects the READ, CONNECT and CLOSE operations for Client Socket
 					result = WSAEventSelect(pOdroidCommunicator->ClientSocket, NotificationEventClient,
-						FD_READ | FD_CLOSE | FD_CONNECT);
+											FD_READ | FD_CLOSE | FD_CONNECT);
 					if (result == SOCKET_ERROR)
 					{
 						TRACE("WSAEventSelect(...) %d failure COdroidCommunicator::OdroidCommunicatorThread\n",
 							WSAGetLastError());
 						closesocket(pOdroidCommunicator->ClientSocket);
+						closesocket(pOdroidCommunicator->ListenSocket);
 						return THREADEXIT_SUCCESS;
 					}
 
@@ -359,6 +364,7 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 							GetLastError());
 						TRACE("OdroidCommunicatorThread Shutting Down ...\n");
 						closesocket(pOdroidCommunicator->ClientSocket);
+						closesocket(pOdroidCommunicator->ListenSocket);
 						return THREADEXIT_SUCCESS;
 					}
 					else
@@ -366,6 +372,8 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 						if (WaitForSingleObject(pOdroidCommunicator->ShutdownEvent, 0) == WAIT_OBJECT_0)
 						{
 							TRACE("OdroidCommunicatorThread Shutting Down normally ...\n");
+							closesocket(pOdroidCommunicator->ClientSocket);
+							closesocket(pOdroidCommunicator->ListenSocket);
 							return THREADEXIT_SUCCESS;
 						}
 
@@ -373,14 +381,15 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 						if (EventCaused == WAIT_OBJECT_0 + 1)
 						{
 							result = WSAEnumNetworkEvents(pOdroidCommunicator->ClientSocket,
-								NotificationEventClient,
-								&NetworkEvents);
+														  NotificationEventClient,
+														  &NetworkEvents);
 
 							if (result == SOCKET_ERROR)
 							{
 								TRACE("WSAEnumNetworkEvents(...) %d failure COdroidCommunicator::OdroidCommunicatorThread\n",
 									WSAGetLastError());
 								closesocket(pOdroidCommunicator->ClientSocket);
+								closesocket(pOdroidCommunicator->ListenSocket);
 								return THREADEXIT_SUCCESS;
 							}
 
@@ -405,7 +414,17 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 									// start processing the received message
 									if (buffer[MESSAGE_ID_POS] == MESSAGE_CAR_DETECTED_NO) 
 									{
-										SetEvent(g_CameraStartDataRecieveEvent);
+										if (g_PTS_Producer_ID == PTS_BY_DIVIT) 
+										{
+											g_IsOdroidStartReceived = TRUE;
+											SetEvent(g_CameraStartDataRecieveEvent);
+										}
+
+										if ( (g_PTS_Producer_ID == PTS_BY_DIVIT) &&
+											(g_PTS_Mode == PTS_MODE_TRIGGER))
+										{
+											SetEvent(g_PTSTriggerEvent);
+										}
 										
 										// here start a timer to control the car stay time on camera.
 										// if for example greater than 3 seconds, declare error
@@ -413,7 +432,11 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 
 									if (buffer[MESSAGE_ID_POS] == MESSAGE_CAR_FINISHED_NO)
 									{
-										SetEvent(g_CameraStopDataRecieveEvent);
+										if (g_PTS_Producer_ID == PTS_BY_DIVIT)
+										{
+											g_IsOdroidStartReceived = FALSE;
+											SetEvent(g_CameraStopDataRecieveEvent);
+										}
 									}
 
 									if (buffer[MESSAGE_ID_POS] == MESSAGE_CAR_SPEED_NO)
@@ -440,6 +463,9 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 			} // listen socket event
 		} // wait failed
 	} // infite for loop
+
+	closesocket(pOdroidCommunicator->ClientSocket);
+	closesocket(pOdroidCommunicator->ListenSocket);
 
 	return THREADEXIT_SUCCESS;
 }
@@ -587,14 +613,14 @@ BOOL COdroidCommunicator::ControlMessage(BYTE *message)
 	else
 		retVal = FALSE;
 
-	if ( (int) message[MESSAGE_RESERVED1_POS] != (int) 0XF)
+	if ( (int) message[MESSAGE_RESERVED1_POS] != (int) 0XFf)
 		return FALSE;
-	if ( (int) message[MESSAGE_RESERVED1_POS+1] != (int)0XF)
+	if ( (int) message[MESSAGE_RESERVED1_POS+1] != (int)0XFF)
 		return FALSE;
 
 	if ( ( (int) message[MESSAGE_ID_POS]      != (int) MESSAGE_CAR_SPEED_NO) &&
-	     ( (int) message[MESSAGE_VAL_POS]     != (int) 0XF) && 
-	     ( (int) message[MESSAGE_VAL_POS + 1] != (int) 0XF) )
+	     ( (int) message[MESSAGE_VAL_POS]     != (int) 0XFF) && 
+	     ( (int) message[MESSAGE_VAL_POS + 1] != (int) 0XFF) )
 		return FALSE;
 
 	if ( (int) message[MESSAGE_RESERVED2_POS] != (int) 0X0)
@@ -661,15 +687,15 @@ void COdroidCommunicator::SendOdroidOpenBarrierMessage()
 
 	messageToSend.messageFrom = ARALGIS_MESSAGE_INDICATOR;
 	messageToSend.messageID = MESSAGE_OPEN_BARRIER_NO;
-	messageToSend.reserved1[0] = 0xF;
-	messageToSend.reserved1[1] = 0xF;
-	messageToSend.valueContent[0] = 0xF;
-	messageToSend.valueContent[1] = 0xF;
+	messageToSend.reserved1[0] = 0xFF;
+	messageToSend.reserved1[1] = 0xFF;
+	messageToSend.valueContent[0] = 0xFF;
+	messageToSend.valueContent[1] = 0xFF;
 	messageToSend.reserved2[0] = 0x0;
 	messageToSend.reserved2[1] = 0x0;
 
 	for (int i = 0; i < TIME_SIZE; i++)
-		messageToSend.messageTime[i] = 0xF;
+		messageToSend.messageTime[i] = 0xFF;
 
 	memcpy_s(data, size_t(MESSAGE_LENGTH), &messageToSend, size_t(MESSAGE_LENGTH));
 	
@@ -718,15 +744,15 @@ void COdroidCommunicator::SendOdroidCloseBarrierMessage()
 
 	messageToSend.messageFrom = ARALGIS_MESSAGE_INDICATOR;
 	messageToSend.messageID = MESSAGE_CLOSE_BARRIRER_NO;
-	messageToSend.reserved1[0] = 0xF;
-	messageToSend.reserved1[1] = 0xF;
-	messageToSend.valueContent[0] = 0xF;
-	messageToSend.valueContent[1] = 0xF;
+	messageToSend.reserved1[0] = 0xFF;
+	messageToSend.reserved1[1] = 0xFF;
+	messageToSend.valueContent[0] = 0xFF;
+	messageToSend.valueContent[1] = 0xFF;
 	messageToSend.reserved2[0] = 0x0;
 	messageToSend.reserved2[1] = 0x0;
 
 	for (int i = 0; i < TIME_SIZE; i++)
-		messageToSend.messageTime[i] = 0xF;
+		messageToSend.messageTime[i] = 0xFF;
 
 	memcpy_s(data, size_t(MESSAGE_LENGTH), &messageToSend, size_t(MESSAGE_LENGTH));
 
@@ -775,15 +801,15 @@ void COdroidCommunicator::SendOdroidStartHeatingMessage()
 
 	messageToSend.messageFrom = ARALGIS_MESSAGE_INDICATOR;
 	messageToSend.messageID = MESSAGE_START_HEATING_NO;
-	messageToSend.reserved1[0] = 0xF;
-	messageToSend.reserved1[1] = 0xF;
-	messageToSend.valueContent[0] = 0xF;
-	messageToSend.valueContent[1] = 0xF;
+	messageToSend.reserved1[0] = 0xFF;
+	messageToSend.reserved1[1] = 0xFF;
+	messageToSend.valueContent[0] = 0xFF;
+	messageToSend.valueContent[1] = 0xFF;
 	messageToSend.reserved2[0] = 0x0;
 	messageToSend.reserved2[1] = 0x0;
 
 	for (int i = 0; i < TIME_SIZE; i++)
-		messageToSend.messageTime[i] = 0xF;
+		messageToSend.messageTime[i] = 0xFF;
 
 	memcpy_s(data, size_t(MESSAGE_LENGTH), &messageToSend, size_t(MESSAGE_LENGTH));
 
@@ -832,15 +858,15 @@ void COdroidCommunicator::SendOdroidStopHeatingMessage()
 
 	messageToSend.messageFrom = ARALGIS_MESSAGE_INDICATOR;
 	messageToSend.messageID = MESSAGE_STOP_HEATING_NO;
-	messageToSend.reserved1[0] = 0xF;
-	messageToSend.reserved1[1] = 0xF;
-	messageToSend.valueContent[0] = 0xF;
-	messageToSend.valueContent[1] = 0xF;
+	messageToSend.reserved1[0] = 0xFF;
+	messageToSend.reserved1[1] = 0xFF;
+	messageToSend.valueContent[0] = 0xFF;
+	messageToSend.valueContent[1] = 0xFF;
 	messageToSend.reserved2[0] = 0x0;
 	messageToSend.reserved2[1] = 0x0;
 
 	for (int i = 0; i < TIME_SIZE; i++)
-		messageToSend.messageTime[i] = 0xF;
+		messageToSend.messageTime[i] = 0xFF;
 
 	memcpy_s(data, size_t(MESSAGE_LENGTH), &messageToSend, size_t(MESSAGE_LENGTH));
 
@@ -889,15 +915,15 @@ void COdroidCommunicator::SendOdroidStartAlarmMessage()
 
 	messageToSend.messageFrom = ARALGIS_MESSAGE_INDICATOR;
 	messageToSend.messageID = MESSAGE_START_ALARM_NO;
-	messageToSend.reserved1[0] = 0xF;
-	messageToSend.reserved1[1] = 0xF;
-	messageToSend.valueContent[0] = 0xF;
-	messageToSend.valueContent[1] = 0xF;
+	messageToSend.reserved1[0] = 0xFF;
+	messageToSend.reserved1[1] = 0xFF;
+	messageToSend.valueContent[0] = 0xFF;
+	messageToSend.valueContent[1] = 0xFF;
 	messageToSend.reserved2[0] = 0x0;
 	messageToSend.reserved2[1] = 0x0;
 
 	for (int i = 0; i < TIME_SIZE; i++)
-		messageToSend.messageTime[i] = 0xF;
+		messageToSend.messageTime[i] = 0xFF;
 
 	memcpy_s(data, size_t(MESSAGE_LENGTH), &messageToSend, size_t(MESSAGE_LENGTH));
 
@@ -946,15 +972,15 @@ void COdroidCommunicator::SendOdroidStopAlarmMessage()
 
 	messageToSend.messageFrom = ARALGIS_MESSAGE_INDICATOR;
 	messageToSend.messageID = MESSAGE_STOP_ALARM_NO;
-	messageToSend.reserved1[0] = 0xF;
-	messageToSend.reserved1[1] = 0xF;
-	messageToSend.valueContent[0] = 0xF;
-	messageToSend.valueContent[1] = 0xF;
+	messageToSend.reserved1[0] = 0xFF;
+	messageToSend.reserved1[1] = 0xFF;
+	messageToSend.valueContent[0] = 0xFF;
+	messageToSend.valueContent[1] = 0xFF;
 	messageToSend.reserved2[0] = 0x0;
 	messageToSend.reserved2[1] = 0x0;
 
 	for (int i = 0; i < TIME_SIZE; i++)
-		messageToSend.messageTime[i] = 0xF;
+		messageToSend.messageTime[i] = 0xFF;
 
 	memcpy_s(data, size_t(MESSAGE_LENGTH), &messageToSend, size_t(MESSAGE_LENGTH));
 

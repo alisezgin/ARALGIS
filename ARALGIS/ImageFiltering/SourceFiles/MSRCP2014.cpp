@@ -1,6 +1,7 @@
 /*
 MSRCP
 */
+#include "stdafx.h"
 #include "..\HeaderFiles\Includes.h"
 
 

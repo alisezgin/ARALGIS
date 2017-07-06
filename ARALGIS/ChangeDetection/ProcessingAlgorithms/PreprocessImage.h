@@ -144,8 +144,8 @@ public:
 		meanVal2 = (uchar)(mean2.at<double>(0, 0) + 0.5);
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-		std::printf("\n normalizedImage MEAN1 %d STDDEV1 %d", meanVal1, stddevValue1);
-		std::printf("\n normalizedImage MEAN2 %d STDDEV2 %d\n", meanVal2, stddevValue2);
+		std::DEBUG_PRINT("\n normalizedImage MEAN1 %d STDDEV1 %d", meanVal1, stddevValue1);
+		std::DEBUG_PRINT("\n normalizedImage MEAN2 %d STDDEV2 %d\n", meanVal2, stddevValue2);
 #endif
 
 		float dTemp;
@@ -167,7 +167,7 @@ public:
 				{
 					*itout = 255;
 #ifdef  DISPLAY_PRINTS_DEBUG
-					//printf("%d %.3f ", *it, dTemp);
+					//DEBUG_PRINT("%d %.3f ", *it, dTemp);
 					//getchar();
 #endif
 				}
@@ -175,7 +175,7 @@ public:
 				{
 					*itout = 0;
 #ifdef  DISPLAY_PRINTS_DEBUG
-					//printf("%d %.3f", *it, dTemp);
+					//DEBUG_PRINT("%d %.3f", *it, dTemp);
 #endif
 				}
 				else
@@ -207,7 +207,7 @@ public:
 				{
 					*itout = 0;
 #ifdef  DISPLAY_PRINTS_DEBUG
-					//printf("%d %.3f", *it, dTemp);
+					//DEBUG_PRINT("%d %.3f", *it, dTemp);
 #endif
 				}
 				else
@@ -346,8 +346,8 @@ public:
 			imgTestDown1.copyTo(*imgTest);
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-			printf("\n\n Image 1 Width %d  Height %d\n", imgRefDown1.cols, imgRefDown1.rows);
-			printf("\n Image 2 Width %d  Height %d\n\n", imgTestDown1.cols, imgTestDown1.rows);
+			DEBUG_PRINT("\n\n Image 1 Width %d  Height %d\n", imgRefDown1.cols, imgRefDown1.rows);
+			DEBUG_PRINT("\n Image 2 Width %d  Height %d\n\n", imgTestDown1.cols, imgTestDown1.rows);
 #endif
 		}
 		else if (imgReference->rows < 500) 
@@ -361,8 +361,8 @@ public:
 			imgTestDown1.copyTo(*imgTest);
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-			printf("\n\n Image 1 Width %d  Height %d\n", imgRefDown1.cols, imgRefDown1.rows);
-			printf("\n Image 2 Width %d  Height %d\n\n", imgTestDown1.cols, imgTestDown1.rows);
+			DEBUG_PRINT("\n\n Image 1 Width %d  Height %d\n", imgRefDown1.cols, imgRefDown1.rows);
+			DEBUG_PRINT("\n Image 2 Width %d  Height %d\n\n", imgTestDown1.cols, imgTestDown1.rows);
 #endif
 		}
 #endif //PREPROCESS_SCALEDOWN_IMAGES
@@ -465,8 +465,8 @@ public:
 		ImageDisplayer imageDisplayer;
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-		printf("\nOriginal imgReference Width %d  Height %d\n", imgReference->cols, imgReference->rows);
-		printf("\nOriginal imgTest Width %d  Height %d\n\n", imgTest->cols, imgTest->rows);
+		DEBUG_PRINT("\nOriginal imgReference Width %d  Height %d\n", imgReference->cols, imgReference->rows);
+		DEBUG_PRINT("\nOriginal imgTest Width %d  Height %d\n\n", imgTest->cols, imgTest->rows);
 #endif
 
 #ifdef PREPROCESS_RESIZE_IMAGES
@@ -485,8 +485,8 @@ public:
 		// end of Resizing The Image
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-		printf("\n\n Resized imgReference Width %d  Height %d\n", imgReference->cols, imgReference->rows);
-		printf("\n Resized imgTest Width %d  Height %d\n\n", imgTest->cols, imgTest->rows);
+		DEBUG_PRINT("\n\n Resized imgReference Width %d  Height %d\n", imgReference->cols, imgReference->rows);
+		DEBUG_PRINT("\n Resized imgTest Width %d  Height %d\n\n", imgTest->cols, imgTest->rows);
 #endif
 
 #ifdef DISPLAY_IMAGES_DEBUG_FINAL
@@ -516,8 +516,8 @@ public:
 				imgTestDown1.copyTo(*imgTest);
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-				printf("\n\n Pyramid imgReference  Width %d  Height %d\n", imgRefDown1.cols, imgRefDown1.rows);
-				printf("\n Pyramid imgTest Width %d  Height %d\n\n", imgTestDown1.cols, imgTestDown1.rows);
+				DEBUG_PRINT("\n\n Pyramid imgReference  Width %d  Height %d\n", imgRefDown1.cols, imgRefDown1.rows);
+				DEBUG_PRINT("\n Pyramid imgTest Width %d  Height %d\n\n", imgTestDown1.cols, imgTestDown1.rows);
 #endif
 			}
 			else if (imgReference->rows < 750)
@@ -531,8 +531,8 @@ public:
 				imgTestDown1.copyTo(*imgTest);
 
 #ifdef  DISPLAY_PRINTS_DEBUG
-				printf("\n\n Pyramid imgReference Width %d  Height %d\n", imgRefDown1.cols, imgRefDown1.rows);
-				printf("\n Pyramid imgTest Width %d  Height %d\n\n", imgTestDown1.cols, imgTestDown1.rows);
+				DEBUG_PRINT("\n\n Pyramid imgReference Width %d  Height %d\n", imgRefDown1.cols, imgRefDown1.rows);
+				DEBUG_PRINT("\n Pyramid imgTest Width %d  Height %d\n\n", imgTestDown1.cols, imgTestDown1.rows);
 #endif
 			}
 		}

@@ -30,15 +30,6 @@ public:
 
 	void thresholdImage(cv::Mat& imagetoThreshold)
 	{
-//		cv::Mat thresholdedImageCV;
-//		cv::threshold(imagetoThreshold, thresholdedImageCV, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
-//
-//#ifdef  DISPLAY_IMAGES_THRESHOLD
-//		cv::namedWindow("OTSU THRESHOLDED SAM", cv::WINDOW_NORMAL);
-//		cv::imshow("OTSU THRESHOLDED SAM", thresholdedImageCV);
-//		cv::waitKey(0);
-//#endif
-
 		KapurThreshold KapurthresholdProcessor;
 		cv::Mat imageThresholdedKapur;
 		imagetoThreshold.copyTo(imageThresholdedKapur);
@@ -82,6 +73,11 @@ public:
 		cv::Mat imageThresholdedOtsu;
 		imagetoThreshold.copyTo(imageThresholdedOtsu);
 		OtsuthresholdProcessor.ComputeOtsuThreshold(imageThresholdedOtsu, thresholdedImageCV2);
+
+		//cv::Mat thresholdedImageCV2;
+		//cv::Mat imageThresholdedOtsu;
+		//imagetoThreshold.copyTo(imageThresholdedOtsu);
+		//cv::threshold(imagetoThreshold, thresholdedImageCV2, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
 
 #ifdef  DISPLAY_IMAGES_THRESHOLD
 		cv::namedWindow("OTSU THRESHOLDED SAM ", cv::WINDOW_NORMAL);

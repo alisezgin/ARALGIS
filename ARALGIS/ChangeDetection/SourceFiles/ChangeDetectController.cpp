@@ -37,6 +37,7 @@ CChangeDetectController::CChangeDetectController()
 CChangeDetectController::~CChangeDetectController()
 {
 	Shutdown();
+	DeleteCriticalSection(&g_ChangeDetectCS);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -94,9 +95,10 @@ bool CChangeDetectController::Shutdown()
 	// wait for the thread to stop
 	WaitForSingleObject(ThreadChangeDetector, INFINITE);
 
+	EnterCriticalSection(&g_ChangeDetectCS);
 	CloseHandle(ShutdownEvent);
 	CloseHandle(ThreadChangeDetector);
-
+	LeaveCriticalSection(&g_ChangeDetectCS);
 	return TRUE;
 }
 
@@ -168,7 +170,9 @@ UINT __stdcall CChangeDetectController::ChangeDetectorThread(LPVOID pParam)
 			testImg = g_CVImageTest.clone();
 
 
+			EnterCriticalSection(&g_ChangeDetectCS);
 			pChangeDetector->m_MyChangeDetector.process(refImg, testImg);
+			LeaveCriticalSection(&g_ChangeDetectCS);
 
 			pView->SendMessage(WM_CHANGEDETECT_FINISHED, 0, pLparam);
 		}

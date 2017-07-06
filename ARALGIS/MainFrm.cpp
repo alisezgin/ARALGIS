@@ -40,12 +40,14 @@ CMainFrame::CMainFrame()
 	m_IsFirstTime = true;
 
 	m_CameraDataReceiver = NULL;
-	m_PTSCommunicator = NULL;
+	m_PTSCommunicatorISSD = NULL;
+	m_PTSCommunicatorDVIT = NULL;
 	m_OdroidCommunicator = NULL;
 	m_CameraDatabaseServer = NULL;
 	m_ImageFilterProcessing = NULL;
 	m_VehicleDetector = NULL;
 	m_ChangeDetector = NULL;
+	m_DiskSpaceController = NULL;
 }
 
 CMainFrame::~CMainFrame()
@@ -55,9 +57,14 @@ CMainFrame::~CMainFrame()
 		delete m_CameraDataReceiver;
 	}
 
-	if (m_PTSCommunicator)
+	if (m_PTSCommunicatorISSD)
 	{
-		delete m_PTSCommunicator;
+		delete m_PTSCommunicatorISSD;
+	}
+
+	if (m_PTSCommunicatorDVIT)
+	{
+		delete m_PTSCommunicatorDVIT;
 	}
 
 	if (m_OdroidCommunicator)
@@ -83,6 +90,11 @@ CMainFrame::~CMainFrame()
 	if (m_ChangeDetector)
 	{
 		delete m_ChangeDetector;
+	}
+
+	if (m_DiskSpaceController)
+	{
+		delete m_DiskSpaceController;
 	}
 
 	// Don't forget to release the semaphore
@@ -216,17 +228,37 @@ void CMainFrame::Activate()
 			}
 
 			// start the thread for PTS communication
-			m_PTSCommunicator = new CPTSCommunicator;
-			if (!m_PTSCommunicator->Start(this))
+			if (g_PTS_Producer_ID == PTS_BY_ISSD)
 			{
-				delete m_PTSCommunicator;
-				m_PTSCommunicator = NULL;
+				// start the thread for PTS communication
+				m_PTSCommunicatorISSD = new CPTSCommunicatorISSD;
+				if (!m_PTSCommunicatorISSD->Start(this))
+				{
+					delete m_PTSCommunicatorISSD;
+					m_PTSCommunicatorISSD = NULL;
 
-				::MessageBox(NULL,
-					(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Plaka Tanýma Sistemi",
-					(LPCWSTR)WARNINGWINDOW_TITLE,
-					MB_OK | MB_ICONERROR
-					);
+					::MessageBox(NULL,
+						(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Plaka Tanýma Sistemi",
+						(LPCWSTR)WARNINGWINDOW_TITLE,
+						MB_OK | MB_ICONERROR
+						);
+				}
+			}
+			else if (g_PTS_Producer_ID == PTS_BY_DIVIT)
+			{
+				// start the thread for PTS communication
+				m_PTSCommunicatorDVIT = new CPTSCommunicatorDVIT;
+				if (!m_PTSCommunicatorDVIT->Start(this))
+				{
+					delete m_PTSCommunicatorDVIT;
+					m_PTSCommunicatorDVIT = NULL;
+
+					::MessageBox(NULL,
+						(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Plaka Tanýma Sistemi",
+						(LPCWSTR)WARNINGWINDOW_TITLE,
+						MB_OK | MB_ICONERROR
+						);
+				}
 			}
 
 			// start the thread for Odroid communication
@@ -271,7 +303,7 @@ void CMainFrame::Activate()
 					);
 			}
 
-			// start the threads for VehicleDetection
+			// start the thread for VehicleDetection
 			m_VehicleDetector = new CVehicleDetection;
 			if (!m_VehicleDetector->Start(this))
 			{
@@ -285,7 +317,7 @@ void CMainFrame::Activate()
 					);
 			}
 
-			// start the threads for VehicleDetection
+			// start the thread for Change Detection
 			m_ChangeDetector = new CChangeDetectController;
 			if (!m_ChangeDetector->Start(this))
 			{
@@ -294,6 +326,20 @@ void CMainFrame::Activate()
 
 				::MessageBox(NULL,
 					(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Deðiþiklik Tespiti",
+					(LPCWSTR)WARNINGWINDOW_TITLE,
+					MB_OK | MB_ICONERROR
+					);
+			}
+
+			// start the threads for Disc Space Control
+			m_DiskSpaceController = new CFreeDiskSpaceController;
+			if (!m_DiskSpaceController->Start())
+			{
+				delete m_DiskSpaceController;
+				m_DiskSpaceController = NULL;
+
+				::MessageBox(NULL,
+					(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Boþ Disk Alaný Kontrolü",
 					(LPCWSTR)WARNINGWINDOW_TITLE,
 					MB_OK | MB_ICONERROR
 					);

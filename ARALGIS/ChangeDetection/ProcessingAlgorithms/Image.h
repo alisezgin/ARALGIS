@@ -10,6 +10,9 @@
 #include <string.h>
 #include <time.h>
 
+#include "Settings.h"  
+
+
 /* DEFINE CONSTANTS */
 
 #define MAX_LINE_LEN 80	    /**< Max. line length */

@@ -35,8 +35,11 @@ HANDLE g_SetTimerFrameRateEvent;
 // event used for killing timer 
 HANDLE g_KillTimerEvent;
 
+// event used for triggering PTS 
+HANDLE g_PTSTriggerEvent;
+
 // event used for sending UVSS image to PTS 
-HANDLE SendUVSSImageEvent;
+HANDLE g_SendUVSSImageEvent;
 
 // event used for triggering PTS 
 HANDLE g_PTSLostEvent;
@@ -58,6 +61,18 @@ HANDLE g_OdroidStartAlarmEvent;
 
 // event used for sending stop alarm message to odroid 
 HANDLE g_OdroidStopAlarmEvent;
+
+// event used for sending critical disk space message to odroid 
+HANDLE g_OdroidDiskSpaceEvent;
+
+// event used for sending PTS file written message to odroid 
+HANDLE g_OdroidPTSFileWrittenEvent;
+
+// event used for sending Image file written message to odroid 
+HANDLE g_OdroidImageFileWrittenEvent;
+
+// event used for sending error occured message to odroid 
+HANDLE g_OdroidErrorOccuredEvent;
 
 // event used for triggering CameraDBServer
 HANDLE g_CameraDBServerPlakaDataReadyEvent;
@@ -86,6 +101,8 @@ HANDLE g_IntermediateImageReadyEvent;
 // event used for starting change detection 
 HANDLE g_StartChangeDetectEvent;
 
+// event used for starting free disc space control 
+HANDLE g_ControlHardDiskSpaceEvent;
 ///////////////////////////////////////////////////
 ////////// GLOBAL EVENTS ends here ////////////////
 
@@ -160,6 +177,7 @@ char g_RefImageFileName[MAX_DIR_PATH_LENGTH];
 // test image indices
 int g_dBeginIndex;
 int g_dEndIndex;
+int g_dCarDetectCount;
 
 // configuration file (INI file) variables starts here
 int  g_CameraWidth;
@@ -170,8 +188,9 @@ char g_Odroid_Port[PORT_BYTE_LEN + 1];
 char g_PTSPort[PORT_BYTE_LEN + 1];
 char g_PTSIP[IP_BYTE_LEN + 1];
 char g_ReferenceFilePath[MAX_DIR_PATH_LENGTH + 1];
-char g_ConfigFilename[MAX_FILENAME_LENGTH + 1];
-int  g_ImageOnScreenDuration;
+char g_CameraConfigFilename[MAX_FILENAME_LENGTH + 1];
+
+bool g_ChangeDetectActive;
 // boraN INI ends
 
 /////////////////////////////////////////////////////
@@ -194,6 +213,25 @@ CRITICAL_SECTION   RefImageCS;
 // Critical Section to protect TestImage 
 CRITICAL_SECTION   TestImageCS;
 
+// Critical Section to shutdown after change detection is finished
+CRITICAL_SECTION g_ChangeDetectCS;
+
+// defines what type of code will be used for PTS comm
+int g_PTS_Producer_ID;
+
+// defines operation mode of PTS (trigger/continuous)
+int g_PTS_Mode;
+
+// defines is automatic vehicle will be used
+bool g_Use_Auto_VehicleDetect;
+
+// defines if PTS is DIVIT and g_Use_Auto_VehicleDetect is TRUE
+// use full camera data for vehicle detection
+int g_AutoDetect_Type;
+
+BOOL g_CarFound;
+
+BOOL g_IsOdroidStartReceived;
 ////////////////////////////////////////////////////////////////////
 ////// GLOBAL CONTROL VARIABLES end here /////////////////////////
 
