@@ -106,7 +106,7 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 //, m_PlakaStr(_T(""))
 
 , m_FormLPEntry(_T(""))
-, m_FormELPI(_T(""))
+, m_FormELP(_T(""))
 , m_FormEFVI(_T(""))
 //, m_FormECBCI(_T(""))
 //, m_FormECBRI(_T(""))
@@ -116,6 +116,7 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 , m_FormEGID(_T(""))
 , m_FormEUID(_T(""))
 , m_FormCBDriverList{}
+, m_bVehiclePassageUpdated( TRUE )
 {
 	// TODO: add construction code here
 
@@ -1310,6 +1311,30 @@ void CARALGISView::ClearPreviewBox()
 	
 }
 
+void CARALGISView::ClearPictureBoxes()
+{
+	if (m_MatToGDITest != nullptr)
+	{
+		m_MatToGDITest->BackgroundClear();
+		delete m_MatToGDITest;
+		m_MatToGDITest = nullptr;
+	}
+	if (m_MatToGDIRef != nullptr)
+	{
+		m_MatToGDIRef->BackgroundClear();
+		delete m_MatToGDIRef;
+		m_MatToGDIRef = nullptr;
+	}
+
+	if (m_MatToGDIPrev != nullptr)
+	{
+		m_MatToGDIPrev->BackgroundClear();
+		delete m_MatToGDIPrev;
+		m_MatToGDIPrev = nullptr;
+	}
+
+}
+
 
 void CARALGISView::PrepareDriverList()
 {
@@ -1347,6 +1372,16 @@ void CARALGISView::FillDriverList()
 // called to update the vehicle info boxes upon the retrieval of a new license plate number
 void CARALGISView::OnLPUpdateInfo(CString strLP)
 {
+	// new entry; check whether the previous car has been inserted
+	if (!m_bVehiclePassageUpdated)
+		UpdateVehiclePassage();
+	m_bVehiclePassageUpdated = FALSE;
+
+	// clear picture boxes
+	ClearPictureBoxes();
+	// m_MatToGDIPrev, m_MatToGDITest and m_MatToGDIRef
+	// are set to nullptr at this point.
+
 	m_formCBoxVisitList.ResetContent();
 	FillDriverList();
 
@@ -1360,6 +1395,13 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	m_FormEDT = CTime::GetCurrentTime();
 	strLP.MakeUpper();
 	m_FormELP = strLP;
+
+	///////////////////////////// sils il sil sil sil 
+	CString sil{ m_FormELP };
+	int silmin = m_FormEDT.GetMinute();
+	TRACE("sil: %s\nsilmin: %d", sil, silmin);
+	///////////////////////////// sils il sil sil sil 
+
 
 	// before executing the query;
 	// it may be beneficial to bound the resulting record set
@@ -1465,11 +1507,11 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 
 	//g_CVImageRef.create(pTemp.size(), pTemp.type());
 	
-	if (m_MatToGDIRef != nullptr)
-	{
-		delete m_MatToGDIRef;
-		m_MatToGDIRef = nullptr;
-	}
+	//if (m_MatToGDIRef != nullptr)
+	//{
+	//	delete m_MatToGDIRef;
+	//	m_MatToGDIRef = nullptr;
+	//}
 	m_RefCVMat = g_CVImageRef.clone();
 	m_MatToGDIRef = new PkMatToGDI(m_RefImgBMP, m_AutoFit);
 
@@ -1478,16 +1520,16 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	m_MatToGDIRef->DrawImg(g_CVImageRef);
 	LeaveCriticalSection(&RefImageCS);
 
-	// ali: reset the preview box; by default no visit date is selected
-	// BackgroundClear() is a private function of PkMatToGdi,
-	// so CARALGISView has been made a friend of PkMatToGdi.
-	if (m_MatToGDIPrev != nullptr)
-	{
-		m_MatToGDIPrev->BackgroundClear();
+	//// ali: reset the preview box; by default no visit date is selected
+	//// BackgroundClear() is a private function of PkMatToGdi,
+	//// so CARALGISView has been made a friend of PkMatToGdi.
+	//if (m_MatToGDIPrev != nullptr)
+	//{
+	//	m_MatToGDIPrev->BackgroundClear();
 
-		delete m_MatToGDIPrev;
-		m_MatToGDIPrev = nullptr;
-	}
+	//	delete m_MatToGDIPrev;
+	//	m_MatToGDIPrev = nullptr;
+	//}
 
 	m_Ref1FilterOK = FALSE;
 	m_Ref2FilterOK = FALSE;
@@ -1661,6 +1703,65 @@ BOOL CARALGISView::UpdateRefImage(CString const & _lp)
 	return SaveImage(strRefFilename);
 }
 
+// updates the VehiclePassageTable with the on-screen contents
+void CARALGISView::UpdateVehiclePassage()
+{
+	// begin by saving the current image in m_CVImageTest
+	std::string strFilename = PrepareImageFilename(m_FormELP, m_FormEDT);
+	SaveImage(strFilename);
+
+	// update the reference image
+	UpdateRefImage(m_FormELP);
+
+	CVehiclePassageSet vPassageSet;
+	if (m_bVehiclePassageUpdated)
+	{
+		CString filter{ _T("[EntryDateTime] = '") };
+		filter += m_FormEDT.Format(_T("%Y-%m-%d %X"));
+		/*filter += _T("' AND [LastName] = '");
+		filter += strLastName;
+		*/
+		filter += _T("'");
+
+		vPassageSet.m_strFilter = filter;
+
+	}
+	else
+	{
+		//this is unnecessary; vPassageSet is automatic
+		//and cannot have residue from previous call
+		//vPassageSet.m_strFilter = _T("");
+	}
+
+	vPassageSet.Open(CRecordset::dynamic, nullptr, CRecordset::none);
+
+	// no modification of existing rows in the VehiclePassage table;
+	// always add a new row.
+	if (m_bVehiclePassageUpdated)
+	{
+		vPassageSet.Edit();
+	}
+	else
+	{
+		vPassageSet.AddNew();
+	}
+
+	vPassageSet.m_VehiclePassageLicensePlate = m_FormELP;
+	vPassageSet.m_VehiclePassageEntryDateTime = m_FormEDT;
+	vPassageSet.m_VehiclePassageUserID = m_UID;
+	vPassageSet.m_VehiclePassageGateID = m_GID;
+	vPassageSet.m_VehiclePassageDriverID = m_DID;
+	vPassageSet.m_VehiclePassagePermissionGranted = !m_FormEBL.GetCheck();
+
+	/*CString msg = _T("These will be used by AddNew():");
+	CString paramStr;
+	paramStr.Format(_T("\nLicense Plate= %s,\nDriver ID= %ld,\nGate ID= %ld,\nGate Keeper ID= %ld,\nApproved= %d.\n"), m_FormELP, m_DID, m_GID, m_UID, !m_FormEBL.GetCheck());
+
+	MessageBox(msg + paramStr); */
+
+	vPassageSet.Update();
+}
+
 void CARALGISView::OnBnClickedFormBupdatedb()
 {
 	// TODO: Add your control notification handler code here
@@ -1675,39 +1776,13 @@ void CARALGISView::OnBnClickedFormBupdatedb()
 	
 	CDBUpdateAckDlg dUpAck;
 
-	if (dUpAck.DoModal() == IDOK) { // Update operations
-		// begin by saving the current image in m_CVImageTest
-		std::string strFilename = PrepareImageFilename(m_FormELP, m_FormEDT);
-		SaveImage(strFilename);
-
-		// update the reference image
-		UpdateRefImage(m_FormELP);
-
-		CVehiclePassageSet vPassageSet;
-		vPassageSet.Open(CRecordset::dynamic, nullptr, CRecordset::none);
-
-		// no modification of existing rows in the VehiclePassage table;
-		// always add a new row.
-		vPassageSet.AddNew();
-
-		vPassageSet.m_VehiclePassageLicensePlate = m_FormELP;
-		vPassageSet.m_VehiclePassageEntryDateTime = m_FormEDT;
-		vPassageSet.m_VehiclePassageUserID = m_UID;
-		vPassageSet.m_VehiclePassageGateID = m_GID;
-		vPassageSet.m_VehiclePassageDriverID = m_DID;
-		vPassageSet.m_VehiclePassagePermissionGranted = !m_FormEBL.GetCheck();
-
-		CString msg = _T("These will be used by AddNew():");
-		CString paramStr;
-		paramStr.Format(_T("\nLicense Plate= %s,\nDriver ID= %ld,\nGate ID= %ld,\nGate Keeper ID= %ld,\nApproved= %d.\n"), m_FormELP, m_DID, m_GID, m_UID, !m_FormEBL.GetCheck());
-
-		// MessageBox(msg + paramStr);
-
-		vPassageSet.Update();
+	if (dUpAck.DoModal() == IDOK) 
+	{ // Update operations
+		UpdateVehiclePassage();
+		m_bVehiclePassageUpdated = TRUE;
 	}
-	else {
-		// nothing to do (yet)
-		return;
+	else 
+	{ // nothing to do (yet)
 	}
 }
 

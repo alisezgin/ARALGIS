@@ -70,12 +70,19 @@ protected:
 	// clears the preview box of the chassis bottom
 	void ClearPreviewBox();
 
+	// clears the Preview, Test and Ref picture control boxes
+	// uses the relevant pointers to fill associated backgrounds
+	void ClearPictureBoxes();
+
 	// prepares the image filename to be saved in the Cars/ChassisBottom directory
 	std::string PrepareImageFilename();
 	std::string PrepareImageFilename(CString const &, CTime const &);
 	std::string PrepareImageFilename(CString const &, CString const &);
 	BOOL SaveImage(std::string const &);
 	BOOL UpdateRefImage(CString const &);
+
+	// inserts the current passage info into the VehiclePassage Table
+	void UpdateVehiclePassage();
 
 	// prepares m_DriverList to be used in the driver list combo box
 	void PrepareDriverList();
@@ -152,8 +159,6 @@ protected:
 	CString m_FormEUID;
 	CString m_FormEGID;
 	CString m_FormEDID;
-	// controls the edit box for License Plate Image; eventually will be of type MyPic
-	CString m_FormELPI;
 	// controls the edit box of frontal view image in ARALGISForm; eventually will be of type MyPic
 	CString m_FormEFVI;
 	//// controls the edit box of car chassis bottom image (current) in ARALGISForm; eventually will be of type MyPic
@@ -195,6 +200,10 @@ protected:
 
 	// holds the list of gate names in the database
 	std::vector<std::pair<CString, long>> m_GateList;
+
+	// keeps track of whether the displayed information 
+	// has been inserted into the VehiclePassage Table
+	BOOL m_bVehiclePassageUpdated;
 
 	// to have a better control on the background color
 	CBrush m_brush;

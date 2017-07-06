@@ -7,7 +7,7 @@
 // code generated on 12 Haziran 2017 Pazartesi, 15:47
 
 #include "stdafx.h"
-#include "C:\ali\github-home\ARALGIS\ARALGIS\Database\HeaderFiles\UserSet.h"
+#include "UserSet.h"
 IMPLEMENT_DYNAMIC(CUserSet, CRecordset)
 
 CUserSet::CUserSet(CDatabase* pdb)
