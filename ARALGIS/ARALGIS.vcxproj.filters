@@ -360,6 +360,12 @@
     <ClInclude Include="Database\HeaderFiles\UserSet.h">
       <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\SearchDlg.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\VehicleTypeSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -534,6 +540,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Database\SourceFiles\UserSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="database\SourceFiles\SearchDlg.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\VehicleTypeSet.cpp">
       <Filter>Database\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>

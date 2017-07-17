@@ -32,6 +32,7 @@
 #define IDD_DB_MODIFY_ACK1              317
 #define IDD_DB_NEWDRIVER                317
 #define IDB_BITMAP1                     324
+#define IDD_DIALOG_SEARCH               325
 #define IDC_BITMAP                      1000
 #define IDC_GRP_TEST                    1006
 #define IDC_GRP_REF                     1007
@@ -39,7 +40,6 @@
 #define IDC_BMP_REFERENCE               1010
 #define IDC_EDIT_PLAKA_NO               1011
 #define IDC_BMP_CAR_PLAKA               1012
-//#define IDC_EDIT_PLAKA                  1013
 #define IDC_FORM_LPENTRY                1013
 #define IDC_STATIC_PLAKA                1014
 #define IDC_EDIT1                       1015
@@ -48,6 +48,7 @@
 #define IDC_FORM_ELP                    1015
 #define IDC_VEHICLE_DN                  1015
 #define IDC_DLG_DNAME                   1015
+#define IDC_SEARCH_E_LICENSEPLATE       1015
 #define IDC_BUTTON_BARRIER_OPEN         1016
 #define IDC_VEHICLE_LP                  1016
 #define IDC_BUTTON_BARRIER_CLOSE        1017
@@ -101,6 +102,7 @@
 #define IDC_FORM_SUID                   1049
 #define IDC_FORM_BDN_QUERY              1050
 #define IDC_BUTTON_ORGINAL              1051
+#define IDC_FORM_SDID2                  1051
 #define IDC_FORM_BLP_QUERY              1052
 #define IDC_FORM_BRN_QUERY              1053
 #define IDC_DLG_DLASTNAME               1053
@@ -109,7 +111,9 @@
 #define IDC_FORM_BGN_QUERY              1055
 #define IDC_DLG_DDRIVERLICENSECITY      1055
 #define IDC_DLG_DDRIVERLICENSEDISTRICT  1056
+#define IDC_FORM_SUID2                  1056
 #define IDC_STATIC_PLAKA_STR            1057
+#define IDC_FORM_SGID2                  1058
 #define IDC_STATIC_2222                 1059
 #define IDC_STATIC_BN1                  1060
 #define IDC_RADIO_COLOUR1               1061
@@ -129,6 +133,20 @@
 #define IDC_FORM_PICTCTRL_CBPREVIEW     1073
 #define IDC_COMBO1                      1075
 #define IDC_FORM_CBOX_DRIVERLIST        1075
+#define IDC_SEARCH_C_DRIVER             1075
+#define IDC_FORM_CBOX_USERLIST          1076
+#define IDC_COMBO2                      1076
+#define IDC_SEARCH_C_GATE               1076
+#define IDC_FORM_CBOX_GATELIST          1077
+#define IDC_SEARCH_C_VTYPE              1077
+#define IDC_SEARCH_DTP_DATEBEGIN        1078
+#define IDC_SEARCH_DTP_DATEEND          1079
+#define IDC_STATIC_SEARCH_DATEBEGIN     1080
+#define IDC_STATIC_SEARCH_DATEEND       1081
+#define IDC_STATIC_SEARCH_CARTYPE       1082
+#define IDC_STATIC_SEARCH_DRIVER        1083
+#define IDC_STATIC_SEARCH_GATE          1084
+#define IDC_STATIC_SEARCH_LICENSEPLATE  1085
 #define ID_KAMERA_KONFIG32771           32771
 #define ID_KAMERA_KAY32772              32772
 #define ID_KAMERA_RESIMG32773           32773
@@ -182,9 +200,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        325
+#define _APS_NEXT_RESOURCE_VALUE        326
 #define _APS_NEXT_COMMAND_VALUE         32810
-#define _APS_NEXT_CONTROL_VALUE         1076
+#define _APS_NEXT_CONTROL_VALUE         1087
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif
