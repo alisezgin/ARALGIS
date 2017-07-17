@@ -249,11 +249,20 @@
     <ClInclude Include="Database\HeaderFiles\VehicleSet.h" />
     <ClInclude Include="DBUpdateAckDlg.h" />
     <ClInclude Include="DiskSpaceController\HeaderFiles\FreeDiskSpaceController.h" />
+    <ClInclude Include="DrawRectangle\HeaderFiles\Element.h" />
+    <ClInclude Include="DrawRectangle\HeaderFiles\Rectangle.h" />
     <ClInclude Include="DriverAckDlg.h" />
+    <ClInclude Include="ErrorDisplay\HeaderFiles\ErrorDisplayer.h" />
+    <ClInclude Include="ErrorDisplay\ThreadSafeQueue\HeaderFiles\ThreadSafeQueue.h" />
+    <ClInclude Include="ImageDisplayTools\ImageControl\HeaderFiles\Icon.h" />
+    <ClInclude Include="ImageDisplayTools\ImageControl\HeaderFiles\ImageControl.h" />
+    <ClInclude Include="ImageDisplayTools\ImageControl\HeaderFiles\ResourceList.h" />
+    <ClInclude Include="ImageDisplayTools\StandardLibrary\HeaderFiles\ResizableDlg.h" />
     <ClInclude Include="ImageFiltering\HeaderFiles\cvt.hpp" />
     <ClInclude Include="ImageFiltering\HeaderFiles\Includes.h" />
     <ClInclude Include="ImageFiltering\HeaderFiles\pixkit-image.hpp" />
     <ClInclude Include="ImageFiltering\ImageFilterProcessing\HeaderFiles\ImageFilterProcessing.h" />
+    <ClInclude Include="ImageToolDialog.h" />
     <ClInclude Include="InitGlobalVars.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MiniIni\Implementation\HeaderFiles\allocator.h" />
@@ -310,7 +319,15 @@
     <ClCompile Include="Database\SourceFiles\VehicleSet.cpp" />
     <ClCompile Include="DBUpdateAckDlg.cpp" />
     <ClCompile Include="DiskSpaceController\SourceFiles\FreeDiskSpaceController.cpp" />
+    <ClCompile Include="DrawRectangle\SourceFiles\Element.cpp" />
+    <ClCompile Include="DrawRectangle\SourceFiles\Rectangle.cpp" />
     <ClCompile Include="DriverAckDlg.cpp" />
+    <ClCompile Include="ErrorDisplay\SourceFiles\ErrorDisplayer.cpp" />
+    <ClCompile Include="ErrorDisplay\ThreadSafeQueue\SourceFiles\ThreadSafeQueue.cpp" />
+    <ClCompile Include="ImageDisplayTools\ImageControl\SourceFiles\Icon.cpp" />
+    <ClCompile Include="ImageDisplayTools\ImageControl\SourceFiles\ImageControl.cpp" />
+    <ClCompile Include="ImageDisplayTools\ImageControl\SourceFiles\ResourceList.cpp" />
+    <ClCompile Include="ImageDisplayTools\StandardLibrary\SourceFiles\ResizableDlg.cpp" />
     <ClCompile Include="ImageFiltering\ImageFilterProcessing\SourceFiles\ImageFilterProcessing.cpp" />
     <ClCompile Include="ImageFiltering\SourceFiles\CelikTjahjadi2012.cpp" />
     <ClCompile Include="ImageFiltering\SourceFiles\comp.cpp" />
@@ -329,6 +346,7 @@
     <ClCompile Include="ImageFiltering\SourceFiles\pohe.cpp" />
     <ClCompile Include="ImageFiltering\SourceFiles\retinex.cpp" />
     <ClCompile Include="ImageFiltering\SourceFiles\WangZhengHuLi2013.cpp" />
+    <ClCompile Include="ImageToolDialog.cpp" />
     <ClCompile Include="InitGlobalVars.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MiniIni\Implementation\SourceFiles\allocator.cpp" />
@@ -355,6 +373,7 @@
     <ResourceCompile Include="ARALGIS.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="res\ARALGIS.rc2" />
   </ItemGroup>
   <ItemGroup>
@@ -365,7 +384,10 @@
     <Image Include="res\ARALGIS.ico" />
     <Image Include="res\ARALGISDoc.ico" />
     <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\bitmap2.bmp" />
     <Image Include="res\icon1.ico" />
+    <Image Include="res\icons8-Crop-48.bmp" />
+    <Image Include="res\icons8-Crop-48.png" />
     <Image Include="res\Toolbar.bmp" />
     <Image Include="res\UTARIT.BMP" />
   </ItemGroup>

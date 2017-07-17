@@ -22,9 +22,13 @@ public:
 
 private:
 	static UINT	__stdcall	ChangeDetectorThread(LPVOID);
-
 	HANDLE			ThreadChangeDetector;
 	unsigned int	ThreadID;
+
+	static UINT	__stdcall	ChangeDetectorCommThread(LPVOID);
+	HANDLE			ThreadComm;
+	unsigned int	ThreadIDComm;
+
 	bool			m_bInit;
 	HANDLE			ShutdownEvent;
 };

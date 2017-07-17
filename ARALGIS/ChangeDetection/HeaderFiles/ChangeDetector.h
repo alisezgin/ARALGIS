@@ -19,7 +19,7 @@ private:
 	// image containing resulting binary map
 	cv::Mat result;
 
-
+	bool m_ShallStopCDThread;
 
 public:
 
@@ -42,6 +42,7 @@ public:
 		minDist = distance;
 	}
 
+	void SetStopFlag(bool aInFlag);
 
 	// Processes the image. Returns a 1-channel binary image.
 	int process(cv::Mat &aImgReference, const cv::Mat &aImgTest);

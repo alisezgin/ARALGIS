@@ -302,9 +302,6 @@ public:
 	void PreprocessStage(cv::Mat* imgReference, cv::Mat* imgTest)
 	{
 
-		std::vector<cv::DMatch> matchesCombined;
-		std::vector<cv::KeyPoint> keypointsRefCombined, keypointsTestCombined;
-
 		ImageDisplayer imageDisplayer;
 
 #ifdef PREPROCESS_RESIZE_IMAGES
@@ -388,6 +385,13 @@ public:
 		histEq1.copyTo(*imgReference);
 		histEq2.copyTo(*imgTest);
 
+		//*imgReference = histEq1.clone();
+		//*imgTest = histEq2.clone();
+
+		//histEq1.release();
+		//histEq2.release();
+
+
 #ifdef DISPLAY_IMAGES_DEBUG_INITIAL
 		char title3[1000];
 		strcpy_s(title3, "RESIZED IMAGES TOGETHER HISTO-EQUALIZED \0");
@@ -458,10 +462,6 @@ public:
 
 	void PreprocessStageColour(cv::Mat* imgReference, cv::Mat* imgTest, bool isSmallRequired = true)
 	{
-
-		std::vector<cv::DMatch> matchesCombined;
-		std::vector<cv::KeyPoint> keypointsRefCombined, keypointsTestCombined;
-
 		ImageDisplayer imageDisplayer;
 
 #ifdef  DISPLAY_PRINTS_DEBUG

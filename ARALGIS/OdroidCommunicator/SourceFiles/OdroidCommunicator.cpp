@@ -5,6 +5,8 @@
 #include "..\\HeaderFiles\\OdroidCommunicator.h"
 #include "..\HeaderFiles\OdroidMessageDefinitions.h"
 
+#include ".\\ErrorDisplay\\ThreadSafeQueue\\HeaderFiles\\ThreadSafeQueue.h"
+
 
 COdroidCommunicator::COdroidCommunicator()
 {
@@ -19,6 +21,17 @@ COdroidCommunicator::COdroidCommunicator()
 	{
 		TRACE("WSAStartup(...) failure COdroidCommunicator::OdroidCommunicatorThread\n");
 	}
+
+	///////////////////////////// TIMER ///////////////////////////////////////
+	m_hTimer = NULL;
+
+	// Create an unnamed waitable timer.
+	m_hTimer = CreateWaitableTimer(NULL, FALSE, NULL);
+	if (NULL == m_hTimer)
+	{
+		TRACE(L"CreateWaitableTimer failed in  COdroidCommunicator (%d)\n", GetLastError());
+	}
+	///////////////////////////// TIMER ///////////////////////////////////////
 
 	bRun = FALSE;
 }
@@ -258,8 +271,10 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 	Handles[0] = pOdroidCommunicator->ShutdownEvent;
 	Handles[1] = NotificationEventListen;
 
-	WSAEVENT HandlesClient[2];
+	WSAEVENT HandlesClient[3];
 	HandlesClient[0] = pOdroidCommunicator->ShutdownEvent;
+	// HandlesClient[1] is defined below
+	HandlesClient[2] = pOdroidCommunicator->m_hTimer;
 
 	// Create Notification Event for Client Socket
 	WSAEVENT NotificationEventClient = WSACreateEvent();
@@ -351,7 +366,7 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 				while (pOdroidCommunicator->m_bClientedAccepted)
 				{
 
-					DWORD EventCaused = WSAWaitForMultipleEvents(2,
+					DWORD EventCaused = WSAWaitForMultipleEvents(3,
 						HandlesClient,
 						FALSE,
 						100,  //WSA_INFINITE, 
@@ -426,8 +441,27 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 											SetEvent(g_PTSTriggerEvent);
 										}
 										
-										// here start a timer to control the car stay time on camera.
-										// if for example greater than 3 seconds, declare error
+										/// start timer to check if PTS responds within 
+										//  a prefeined period
+										pOdroidCommunicator->m_iTimerTick = 0;
+										__int64 qwDueTime;
+										LARGE_INTEGER   liDueTime;
+										int tFrameTime = TIMER_PERIOD_IN_MS_FOR_ODROID;
+
+										qwDueTime = -10 * tFrameTime; // -10 is: negative since relative time
+										//       : multiplied by 10, since it is in 100 nanoseconds 
+										//         and  tFrameTime is in miliseconds
+
+										liDueTime.QuadPart = (long long)qwDueTime;
+
+										//Set a timer to wait for XX seconds.
+										if (!SetWaitableTimer(pOdroidCommunicator->m_hTimer, &liDueTime, tFrameTime, NULL, NULL, 0))
+										{
+											TRACE(L"SetWaitableTimer failed in OdroidCommunicator (%d)\n", GetLastError());
+											return 2;
+										}
+										TRACE(L"Timer Tick in OdroidCommunicator %d\n", pOdroidCommunicator->m_iTimerTick);
+										//// end of timer init
 									}
 
 									if (buffer[MESSAGE_ID_POS] == MESSAGE_CAR_FINISHED_NO)
@@ -437,6 +471,9 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 											g_IsOdroidStartReceived = FALSE;
 											SetEvent(g_CameraStopDataRecieveEvent);
 										}
+
+										/// stop timer
+										CancelWaitableTimer(pOdroidCommunicator->m_hTimer);
 									}
 
 									if (buffer[MESSAGE_ID_POS] == MESSAGE_CAR_SPEED_NO)
@@ -458,6 +495,52 @@ UINT __stdcall COdroidCommunicator::OdroidCommunicatorThread(LPVOID pParam)
 
 							} // FD_CLOSE
 						} // network event
+
+						else if (EventCaused == WAIT_OBJECT_0 + 2) // time event
+						{
+							pOdroidCommunicator->m_iTimerTick++;
+							TRACE(L"Timer Tick in OdroidCommunicator %d\n", pOdroidCommunicator->m_iTimerTick);
+
+							////////////////////////////////////////////////////////
+							if (pOdroidCommunicator->m_iTimerTick == TIMER_SECONDS_ERROR_FOR_PTS)
+							{
+								if (TIMER_SECONDS_ERROR_FOR_PTS > TIMER_SECONDS_ERROR_FOR_CAR_FINISHED)
+								{
+									CancelWaitableTimer(pOdroidCommunicator->m_hTimer);
+									pOdroidCommunicator->m_iTimerTick = 0;
+
+									SetEvent(g_CameraStopDataRecieveEvent);
+									SetEvent(g_StopChangeDetectionEvent);
+								}
+
+								if (g_IsAnswerReceivedFromPTS == false)
+								{
+									ERRORMESSAGETYPE dTmp;
+									char* cText = "Plaka Tanýma Sistemi Tespit Yapamadý. Lütfen Plaka Tanýma Sistemini Kontrol Ediniz";
+									strncpy_s(dTmp._OdroidText, (size_t)(MAX_PATH), cText, (size_t)(MAX_PATH));
+									CThreadSafeQueue<_errorMessageType>::getInstance().push(dTmp);
+								}
+							}
+							////////////////////////////////////////////////////////
+
+							if (pOdroidCommunicator->m_iTimerTick == TIMER_SECONDS_ERROR_FOR_CAR_FINISHED)
+							{
+								if (TIMER_SECONDS_ERROR_FOR_CAR_FINISHED >= TIMER_SECONDS_ERROR_FOR_PTS)
+								{
+									CancelWaitableTimer(pOdroidCommunicator->m_hTimer);
+									pOdroidCommunicator->m_iTimerTick = 0;
+								}
+
+								SetEvent(g_CameraStopDataRecieveEvent);
+								SetEvent(g_StopChangeDetectionEvent);
+
+								ERRORMESSAGETYPE dTmp;
+								char* cText = "Araç Bitti Sinyali Gelmedi. Lütfen Loop Detektörlerini Kontrol Ediniz";
+								strncpy_s(dTmp._OdroidText, (size_t)(MAX_PATH), cText, (size_t)(MAX_PATH));
+								CThreadSafeQueue<_errorMessageType>::getInstance().push(dTmp);
+							}
+						}
+
 					}// client socket event
 				} // while loop
 			} // listen socket event

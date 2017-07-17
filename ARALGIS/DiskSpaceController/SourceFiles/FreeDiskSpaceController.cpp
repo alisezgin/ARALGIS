@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "ARALGIS.h"
 #include "..\\HeaderFiles\\FreeDiskSpaceController.h"
+#include ".\\ErrorDisplay\\ThreadSafeQueue\\HeaderFiles\\ThreadSafeQueue.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -181,9 +182,8 @@ UINT __stdcall CFreeDiskSpaceController::FreeDiskSpaceControllerThread(LPVOID pP
 				GetLastError());
 			else
 				TRACE("FreeDiskSpaceController is shutting Down normally...\n");
-			break;
 
-			return THREADEXIT_SUCCESS;
+			break;
 		}
 
 		else if (EventCaused == (WAIT_OBJECT_0 + 1)) // ControlHardDiskSpace
@@ -215,18 +215,14 @@ UINT __stdcall CFreeDiskSpaceController::FreeDiskSpaceControllerThread(LPVOID pP
 			{
 				TRACE("\nFreeDiskSpaceController Size Alert!!!!!\n\n\n\n");
 
-				::MessageBox(NULL,
-					(LPCWSTR)L"Disk Alaný Sorunu. Lütfen Sistem Yöneticisine Haber Veriniz",
-					(LPCWSTR)WARNINGWINDOW_TITLE,
-					MB_OK | MB_ICONERROR
-					);
-
-				// do not set event here becaue of other controls at OnTimer
-				//SetEvent(DeleteExpiredFilesEvent);
+				ERRORMESSAGETYPE dTmp;
+				char* cText = "Disk Alaný Sorunu. Lütfen Sistem Yöneticisine Haber Veriniz";
+				strncpy_s(dTmp._OdroidText, (size_t)(MAX_PATH), cText, (size_t)(MAX_PATH));
+				CThreadSafeQueue<_errorMessageType>::getInstance().push(dTmp);
 			}
 			// reset the event for further processing
 			ResetEvent(g_ControlHardDiskSpaceEvent);
 		}
 	}
-	return 1;
+	return THREADEXIT_SUCCESS;
 }

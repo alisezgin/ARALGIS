@@ -28,6 +28,11 @@
 
 #include "..\HeaderFiles\ChangeDetector.h"
 
+void CChangeDetector::SetStopFlag(bool aInFlag)
+{
+	m_ShallStopCDThread = aInFlag;
+}
+
 int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 {
 	cv::Mat imgReferenceClr;
@@ -49,32 +54,35 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 
 	transpose(aImgReference, AA1);
 	flip(AA1, AA2, 0); //transpose+flip(1)=CW
-	AA2.copyTo(AA3);
+	//AA2.copyTo(AA3);
 
 	transpose(aImgTest, AA4);
 	flip(AA4, AA5, 0); //transpose+flip(1)=CW
-	AA5.copyTo(AA6);
+	//AA5.copyTo(AA6);
 
 
 	if (g_CameraPixelBits == 24)
 	{
-		cvtColor(AA3, imgReference, CV_BGR2GRAY);
-		cvtColor(AA6, imgTest, CV_BGR2GRAY);
+		cvtColor(AA2, imgReference, CV_BGR2GRAY);
+		cvtColor(AA5, imgTest, CV_BGR2GRAY);
 
-		AA3.copyTo(imgReferenceClr);
-		AA6.copyTo(imgTestClr);
+		AA2.copyTo(imgReferenceClr);
+		AA5.copyTo(imgTestClr);
 	}
 	else
 	{
-		cv::applyColorMap(AA3, imgReferenceClr, cv::COLORMAP_RAINBOW);
-		cv::applyColorMap(AA6, imgTestClr, cv::COLORMAP_RAINBOW);
+		cv::applyColorMap(AA2, imgReferenceClr, cv::COLORMAP_RAINBOW);
+		cv::applyColorMap(AA5, imgTestClr, cv::COLORMAP_RAINBOW);
 
-		AA3.copyTo(imgReference);
-		AA6.copyTo(imgTest);
+		AA2.copyTo(imgReference);
+		AA5.copyTo(imgTest);
 	}
 
-
-
+	if (m_ShallStopCDThread == true)
+	{
+		TRACE("ChangeDetection cancelling 1 ...\n");
+		return -1;
+	}
 
 	int dRowDiff = abs(imgReferenceClr.rows - imgTestClr.rows);
 
@@ -86,20 +94,6 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	//DEBUG_PRINT("\n\n Image 1 Width %d  Height %d\n", imgReference.cols, imgReference.rows);
 	//DEBUG_PRINT("\n Image 2 Width %d  Height %d\n\n", imgTest.cols, imgTest.rows);
 
-	cv::Mat img1, img2;
-	imgReference.copyTo(img1);
-	imgTest.copyTo(img2);
-
-	//ImageDisplayer imageDisplayer;
-	//char title1[1000];
-	//strcpy_s(title1, "ORIGINAL IMAGES TOGETHER--");
-	//imageDisplayer.displayImages(imgReference, imgTest, title1);
-
-
-	//ImageDisplayer imageDisplayerClr;
-	//char titleClr[1000];
-	//strcpy_s(titleClr, "ORIGINAL COLOUR IMAGES TOGETHER--");
-	//imageDisplayerClr.displayImages(imgReferenceClr, imgTestClr, titleClr);
 
 
 #ifdef  DISPLAY_DEBUG_PARTITION
@@ -111,10 +105,7 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	// calculate the duration of matching process
 	int64 tick1 = cv::getTickCount();
 
-	// Preprocessing
-	// Gaussian Smoothing -- optional
-	// Mean and Variance Equalization -- optional
-	// Resizing the small image to have equal sizes
+	// Preprocessing-histogram equalize
 	PreprocessImage preImg;
 	preImg.PreprocessStage(&imgReference, &imgTest);
 
@@ -143,6 +134,11 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	imageDisplayerClr3.displayImages(imgReference, imgTest, titleClr3);
 #endif
 
+	if (m_ShallStopCDThread == true)
+	{
+		TRACE("ChangeDetection cancelling 2 ...\n");
+		return -1;
+	}
 
 	// Matching Process ----> Image Registration
 	// Prepare the matcher
@@ -241,11 +237,18 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 #ifdef DEBUG_PRINT_FINAL1
 	DEBUG_PRINT("SURF Matcher begins\n");
 #endif
+
+	if (m_ShallStopCDThread == true)
+	{
+		TRACE("ChangeDetection cancelling 3 ...\n");
+		return -1;
+	}
+
 	/// SURF MATCHER begins
-	rmatcherSURF.match(imgReference, imgTest,
-		matchesSURF, keypointsRefSURF, keypointsTestSURF,
-		matches1SURFAll, keypoints1SURFAll,
-		matches2SURFAll, keypoints2SURFAll);
+	rmatcherSURF.match( imgReference, imgTest,
+						matchesSURF, keypointsRefSURF, keypointsTestSURF,
+						matches1SURFAll, keypoints1SURFAll,
+						matches2SURFAll, keypoints2SURFAll);
 
 #ifdef  DISPLAY_IMAGES_DEBUG_FINAL
 	char titleSURF[1000];
@@ -263,11 +266,18 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 #ifdef DEBUG_PRINT_FINAL1
 	DEBUG_PRINT("ORB Matcher begins\n");
 #endif
+
+	if (m_ShallStopCDThread == true)
+	{
+		TRACE("ChangeDetection cancelling 4 ...\n");
+		return -1;
+	}
+
 	/// ORB MATCHER begins
-	rmatcherORB.match(imgReference, imgTest,
-		matchesORB, keypointsRefORB, keypointsTestORB,
-		matches1ORBAll, keypoints1ORBAll,
-		matches2ORBAll, keypoints2ORBAll);
+	rmatcherORB.match(  imgReference, imgTest,
+						matchesORB, keypointsRefORB, keypointsTestORB,
+						matches1ORBAll, keypoints1ORBAll,
+						matches2ORBAll, keypoints2ORBAll);
 
 #ifdef  DISPLAY_IMAGES_DEBUG_FINAL
 	char titleORB[1000];
@@ -290,6 +300,12 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 #ifdef DEBUG_PRINT_FINAL1
 	DEBUG_PRINT("STAR Matcher begins\n");
 #endif
+
+	if (m_ShallStopCDThread == true)
+	{
+		TRACE("ChangeDetection cancelling 5 ...\n");
+		return -1;
+	}
 
 	/// FAST MATCHER begins
 	RobustMatcher rmatcherSTAR;
@@ -325,6 +341,12 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	// time in miliseconds
 	double time3333 = ((tick3333 - tick1) / cv::getTickFrequency());
 	DEBUG_PRINT("\nExecution Time After STAR Calculation %.3f seconds\n", time3333);
+
+	if (m_ShallStopCDThread == true)
+	{
+		TRACE("ChangeDetection cancelling 6 ...\n");
+		return -1;
+	}
 
 	/// STAR MATCHER begins
 	RobustMatcher rmatcherFAST;
@@ -365,6 +387,11 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	std::vector<cv::DMatch> matchesCombined2;
 	std::vector<cv::KeyPoint> keypointsRefCombined2, keypointsTestCombined2;
 
+	if (m_ShallStopCDThread == true)
+	{
+		TRACE("ChangeDetection cancelling 7 ...\n");
+		return -1;
+	}
 
 #ifdef USE_ALL_KEYPOINTS
 
@@ -431,6 +458,12 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	DEBUG_PRINT("Execution Time After Elimination Processing %.3f seconds\n", time33);
 #endif
 
+	if (m_ShallStopCDThread == true)
+	{
+		TRACE("ChangeDetection cancelling 8 ...\n");
+		return -1;
+	}
+
 	std::vector<cv::DMatch> matchesCombined3;
 	std::vector<cv::KeyPoint> keypointsRefCombined3, keypointsTestCombined3;
 
@@ -479,6 +512,12 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	DEBUG_PRINT("\nExecution Time After Cluster Clean %.3f seconds\n", time333);
 #endif
 
+	if (m_ShallStopCDThread == true)
+	{
+		TRACE("ChangeDetection cancelling 9 ...\n");
+		return -1;
+	}
+
 	//#ifdef USE_CLUSTERING
 	if (dRowDiff > 500)
 	{
@@ -509,6 +548,12 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 #ifdef DEBUG_PRINT_FINAL1
 		DEBUG_PRINT("\nSINGLE PARTITION HOMOGRAPHY\n");
 #endif
+
+		if (m_ShallStopCDThread == true)
+		{
+			TRACE("ChangeDetection cancelling 10 ...\n");
+			return -1;
+		}
 
 		cv::Mat homographyRefined1;
 		HomographyEstimator homographyEstimator;
@@ -558,6 +603,12 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 		DEBUG_PRINT("\nExecution Time After Cluster Clean %.3f seconds\n", time333);
 #endif
 
+		if (m_ShallStopCDThread == true)
+		{
+			TRACE("ChangeDetection cancelling 11 ...\n");
+			return -1;
+		}
+
 		cv::Mat* testImageNormalized;
 		testImageNormalized = new cv::Mat;
 		*testImageNormalized = cv::Mat::zeros(imgTest.size(), CV_8U);
@@ -592,6 +643,12 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 
 		delete testImageNormalized;
 
+		if (m_ShallStopCDThread == true)
+		{
+			TRACE("ChangeDetection cancelling 12 ...\n");
+			return -1;
+		}
+
 #ifdef  DISPLAY_IMAGES_DEBUG
 		cv::namedWindow("WARPED TEST IMAGE NORMALIZED ", cv::WINDOW_NORMAL);
 		cv::imshow("WARPED TEST IMAGE NORMALIZED ", imgTestWarpedPersNormClr);
@@ -600,6 +657,12 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 	} /// end of clustering-partitioning
 	//#endif
 	//
+
+	if (m_ShallStopCDThread == true)
+	{
+		TRACE("ChangeDetection cancelling 13 ...\n");
+		return -1;
+	}
 
 	////////////////////////////////////////////////
 	cv::Mat  dChangeImage;
@@ -682,7 +745,13 @@ int CChangeDetector::process(cv::Mat &aImgReference, const cv::Mat &aImgTest)
 #endif
 	//getchar();
 
-	return 0;
+	if (m_ShallStopCDThread == true)
+	{
+		TRACE(L"ChangeDetection cancelling 14 ...\n");
+		return -1;
+	}
+
+	return 1;
 
 }
 

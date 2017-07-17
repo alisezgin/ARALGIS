@@ -336,6 +336,10 @@ private:
 	void OnLButtonDown(UINT nFlags, CPoint point);
 	void OnMouseMove(UINT nFlags, CPoint point);
 	void OnLButtonUp(UINT nFlags, CPoint point);
+	//void OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
+	void OnMouseWheel();
+	void OnLButtonDblClk();
+
 
 	CWndResizer::CPanel * FindPanelByName(CWndResizer::CPanel * pRoot, LPCTSTR name);
 	CWndResizer::CPanel * FindSplitterFromPoint(CWndResizer::CPanel * pRoot, CPoint point);

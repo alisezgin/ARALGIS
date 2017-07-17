@@ -9,6 +9,8 @@
 
 #include "ARALGISView.h"
 
+#include ".\\ErrorDisplay\\ThreadSafeQueue\\HeaderFiles\\ThreadSafeQueue.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -48,10 +50,13 @@ CMainFrame::CMainFrame()
 	m_VehicleDetector = NULL;
 	m_ChangeDetector = NULL;
 	m_DiskSpaceController = NULL;
+	m_ErrorDisplayer = NULL;
 }
 
 CMainFrame::~CMainFrame()
 {
+	EnterCriticalSection(&g_ChangeDetectCS);
+
 	if (m_CameraDataReceiver)
 	{
 		delete m_CameraDataReceiver;
@@ -97,6 +102,17 @@ CMainFrame::~CMainFrame()
 		delete m_DiskSpaceController;
 	}
 
+	if (m_ErrorDisplayer)
+	{
+		delete m_ErrorDisplayer;
+	}
+
+	//CThreadSafeQueue<_errorMessageType>::getInstance()->destroy();
+
+
+	LeaveCriticalSection(&g_ChangeDetectCS);
+
+
 	// Don't forget to release the semaphore
 	if (!ReleaseSemaphore(m_hSemaphore,  // handle to semaphore
 						  1,           // increase count by one
@@ -104,6 +120,8 @@ CMainFrame::~CMainFrame()
 	{
 		TRACE("Failed to release semaphore\n");
 	}
+
+	DeleteCriticalSection(&g_ChangeDetectCS);
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -275,7 +293,7 @@ void CMainFrame::Activate()
 					);
 			}
 
-			// start the thread for Car Image - Database processing
+			// start the threads for writing test image file to disk
 			m_CameraDatabaseServer = new CCameraDBServer;
 			if (!m_CameraDatabaseServer->Start(this))
 			{
@@ -345,6 +363,19 @@ void CMainFrame::Activate()
 					);
 			}
 
+			// start the threads for error display
+			m_ErrorDisplayer = new CErrorDisplayer;
+			if (!m_ErrorDisplayer->Start())
+			{
+				delete m_ErrorDisplayer;
+				m_ErrorDisplayer = NULL;
+
+				::MessageBox(NULL,
+					(LPCWSTR)L"Program Baþlatýlýrken Hata Oluþtu: Hata Gösterimi",
+					(LPCWSTR)WARNINGWINDOW_TITLE,
+					MB_OK | MB_ICONERROR
+					);
+			}
 		}
 		else /// ini file fails
 		{

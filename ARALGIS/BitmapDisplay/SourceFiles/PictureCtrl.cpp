@@ -177,72 +177,6 @@ BOOL CPictureCtrl::LoadFromFile(CString &szFilePath)
 	return TRUE;
 }
 
-// BOOL CPictureCtrl::LoadFromResource(HMODULE hModule, LPCTSTR lpName, LPCTSTR lpType)
-// {
-// 	//Set success error state
-// 	SetLastError(ERROR_SUCCESS);
-// 	FreeData();
-// 
-// 	//Locate the resource
-// 	HRSRC hResource = FindResource(hModule, lpName, lpType);
-// 	if(hResource == NULL)
-// 	{
-// 		return FALSE;
-// 	}
-// 
-// 	//Get the size of the resource
-// 	DWORD dwResourceSize = SizeofResource(hModule, hResource);
-// 	if(dwResourceSize == 0)
-// 	{
-// 		return FALSE;
-// 	}
-// 
-// 	//Load the Resource
-// 	HGLOBAL hGlobalResource = LoadResource(hModule, hResource);
-// 	if(hGlobalResource == NULL)
-// 	{
-// 		return FALSE;
-// 	}
-// 
-// 	//Lock the resource and get the read pointer
-// 	BYTE* pRecource = (BYTE*)LockResource(hGlobalResource);
-// 	if(pRecource == NULL)
-// 	{
-// 		return FALSE;
-// 	}
-// 
-// 	//Allocate the Stream
-// 	DWORD dwResult =  CreateStreamOnHGlobal(NULL, TRUE, &m_pStream);
-// 	if(dwResult != S_OK)
-// 	{
-// 		FreeResource(hGlobalResource);
-// 		SetLastError(dwResult);
-// 		pRecource = NULL;
-// 		return FALSE;
-// 	}
-// 
-// 	//Copy the resource data to the stream
-// 	dwResult = m_pStream->Write(pRecource, dwResourceSize, NULL);
-// 	if(dwResult != S_OK)
-// 	{
-// 		FreeResource(hGlobalResource);
-// 		SAFE_RELEASE(m_pStream);
-// 		SetLastError(dwResult);
-// 		return FALSE;		
-// 	}
-// 
-// 	//Tidy up
-// //	FreeResource(hGlobalResource);
-// 	
-// 	//Mark as loaded
-// 	m_bIsPicLoaded = TRUE;
-// 
-// 	Invalidate();
-// 	RedrawWindow();
-// 
-// 	return TRUE;
-// }
-
 //Overload - Single load function
 BOOL CPictureCtrl::Load(CString &szFilePath)
 {
@@ -259,11 +193,6 @@ BOOL CPictureCtrl::Load(BYTE* pData, size_t nSize)
 	return LoadFromStream(pData, nSize);
 }
 
-// BOOL CPictureCtrl::Load(HMODULE hModule, LPCTSTR lpName, LPCTSTR lpType)
-// {
-// 	return LoadFromResource(hModule, lpName, lpType);
-// }
-
 void CPictureCtrl::FreeData()
 {
 	m_bIsPicLoaded = FALSE;
@@ -278,7 +207,7 @@ void CPictureCtrl::PreSubclassWindow()
 
 void CPictureCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
-	//Check if pic data is loaded
+	////Check if pic data is loaded
 	if(m_bIsPicLoaded)
 	{
 		//Get control measures
@@ -289,6 +218,40 @@ void CPictureCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		Image image(m_pStream);
 		graphics.DrawImage(&image, (INT)rc.left, (INT)rc.top, (INT)(rc.right-rc.left), (INT)(rc.bottom-rc.top));	
 	}
+
+
+	//Check if pic data is loaded
+	//if (m_bIsPicLoaded)
+	//{
+	//	//Get control measures
+	//	RECT rc;
+	//	this->GetClientRect(&rc);
+
+	//	Graphics graphics(lpDrawItemStruct->hDC);
+	//	Image image(m_pStream);
+	//	//graphics.DrawImage(&image, (INT)rc.left, (INT)rc.top, (INT)(rc.right - rc.left), (INT)(rc.bottom - rc.top));
+
+
+	//	// clear the control first 
+	//	//Graphics graphics(GetDC()->GetSafeHdc());
+	//	graphics.Clear(Color::Color(COLOUR_RED, COLOUR_GREEN, COLOUR_BLUE));
+
+	//	// scale and draw the picture 
+	//	int nHeight = (rc.bottom - rc.top);
+	//	int nWidth = (rc.right - rc.left);
+	//	double XScale = (double)nWidth / (double)image.GetWidth();
+	//	double YScale = (double)nHeight / (double)image.GetHeight();
+	//	double Scale;
+	//	if (XScale < YScale)
+	//		Scale = XScale;
+	//	else
+	//		Scale = YScale;
+
+	//	nHeight = (int) (image.GetHeight() * Scale);
+	//	nWidth = (int) (image.GetWidth() * Scale);
+
+	//	graphics.DrawImage(&image, (INT)rc.left, (INT)rc.top, (INT)nWidth, (INT)nHeight);
+	//}
 }
 
 BOOL CPictureCtrl::OnEraseBkgnd(CDC *pDC)
@@ -310,5 +273,17 @@ BOOL CPictureCtrl::OnEraseBkgnd(CDC *pDC)
 	else
 	{
 		return CStatic::OnEraseBkgnd(pDC);
+	}
+}
+
+void CPictureCtrl::FreeImage()
+{
+	FreeData();
+
+	if (m_bIsPicLoaded)
+	{
+		Graphics graphics(GetDC()->GetSafeHdc());
+
+		graphics.Clear(Color::Color(COLOUR_RED, COLOUR_GREEN, COLOUR_BLUE));
 	}
 }

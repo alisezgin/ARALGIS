@@ -35,7 +35,7 @@ CCameraDataReceiver::CCameraDataReceiver()
 	m_hTimer = CreateWaitableTimer(NULL, FALSE, NULL);
 	if (NULL == m_hTimer)
 	{
-		TRACE("CreateWaitableTimer failed (%d)\n", GetLastError());
+		TRACE("CreateWaitableTimer failed in CCameraDataReceiver (%d)\n", GetLastError());
 	}
 	///////////////////////////// TIMER ///////////////////////////////////////
 }
@@ -262,10 +262,10 @@ UINT __stdcall CCameraDataReceiver::CameraDataReceiverThread(LPVOID pParam)
 			//Set a timer to wait for XX seconds.
 			if (!SetWaitableTimer(pServer->m_hTimer, &liDueTime, tFrameTime, NULL, NULL, 0))
 			{
-				TRACE("SetWaitableTimer failed (%d)\n", GetLastError());
+				TRACE("SetWaitableTimer failed i CCameraDataReceiver (%d)\n", GetLastError());
 				return 2;
 			}
 		}
 	}
-	return 1;
+	return THREADEXIT_SUCCESS;
 }

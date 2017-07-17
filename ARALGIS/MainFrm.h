@@ -15,9 +15,7 @@
 #include ".\\VehicleDetection\\HeaderFiles\\VehicleDetection.h"
 #include ".\\ChangeDetection\\HeaderFiles\\ChangeDetectController.h"
 #include ".\\DiskSpaceController\\HeaderFiles\\FreeDiskSpaceController.h"
-
-
-
+#include ".\\ErrorDisplay\\HeaderFiles\\ErrorDisplayer.h"
 
 class CMainFrame : public CFrameWnd
 {
@@ -38,7 +36,7 @@ public:
 	CVehicleDetection        *m_VehicleDetector;
 	CChangeDetectController  *m_ChangeDetector;
 	CFreeDiskSpaceController *m_DiskSpaceController;
-
+	CErrorDisplayer          *m_ErrorDisplayer;
 
 protected:  // control bar embedded members
 	CToolBar           m_wndToolBar;

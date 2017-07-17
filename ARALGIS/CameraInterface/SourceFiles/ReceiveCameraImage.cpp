@@ -699,11 +699,16 @@ void CReceiveCameraImage::StartDataReception(void)
 	else
 	{
 		/// delete these lines 
-		CLoadSaveDlg dlg(NULL, m_Buffers, TRUE, TRUE);
-		if (dlg.DoModal() == IDOK)
-		{
-			m_bPlayOn = TRUE;
-		}
+		//CLoadSaveDlg dlg(NULL, m_Buffers, TRUE, TRUE);
+		//if (dlg.DoModal() == IDOK)
+		//{
+		//	m_bPlayOn = TRUE;
+		//}
+
+		int dBuffIndx = m_Buffers->GetIndex();
+		BOOL dRetVal;
+		dRetVal = m_Buffers->Load("E:\\FuzyonSoft\\utarit-bmw-avi\\29mayis2017\\Linea2K\\deneme4.avi", 0, 0, 0, "-format avi");
+		m_bPlayOn = TRUE;
 	}
 	/////////////  delete these lines
 	

@@ -122,8 +122,8 @@ public:
 		// based on k nearest neighbours (with k=2)
 		std::vector<std::vector<cv::DMatch>> matches2;
 
-		matcher.knnMatch(descriptors1, descriptors2, matches2, // vector of matches (up to 2 per entry)
-			                                               2); // return 2 nearest neighbours
+		matcher.knnMatch(descriptors1, descriptors2, matches2, 2); // vector of matches (up to 2 per entry)
+			                                                       // return 2 nearest neighbours
 
 #ifdef DEBUG_PRINT_FINAL1
 		DEBUG_PRINT("KNN finshed\n");

@@ -209,7 +209,7 @@ UINT __stdcall CPTSCommunicatorDVIT::PTSCommunicatorThread(LPVOID pParam)
 
 	BYTE buffer[15];
 	int dCamId = 0;
-
+	PTSDataType ptsData;
 
 	ZeroMemory(&hints, sizeof(hints));
 	hints.ai_family = AF_INET;
@@ -540,6 +540,52 @@ UINT __stdcall CPTSCommunicatorDVIT::PTSCommunicatorThread(LPVOID pParam)
 										pPTSCommunicator->GetImageData(bigBuffer, dImageSize);
 										delete[] bigBuffer;
 
+										int dTmpDiff = 0;
+										dTmpDiff = dTotalBytesReceived - dImageSize;
+										if (dTmpDiff == 15)
+										{
+											TRACE(L"CPTSCommunicatorDVIT::PTSCommunicatorThread readPTS image from socket: Remaining 15 bytes also read...\n");
+											//ptsData.colourID = (unsigned short)bigBuffer[dTotalBytesReceived - 14];
+
+											//ptsData.modelID = (unsigned short)bigBuffer[dTotalBytesReceived - 13];
+
+											//ptsData.speedValue = (unsigned short)bigBuffer[dTotalBytesReceived - 12];
+
+											//memcpy_s(&(ptsData.condfidenceVal), size_t(4), (bigBuffer+dTotalBytesReceived - 11), size_t(4));
+
+											//memcpy_s(&(ptsData.timeStamp), size_t(8), (bigBuffer + dTotalBytesReceived - 7), size_t(8));
+										}
+										else if (dTmpDiff > 15)
+										{
+											TRACE(L"CPTSCommunicatorDVIT::PTSCommunicatorThread readPTS image from socket: some kind of error...\n");
+											ptsData.cameraID = 0;
+											ptsData.colourID = 0;
+											ptsData.modelID = 0;
+											ptsData.speedValue = 0;
+											ptsData.condfidenceVal = 0;
+											ptsData.timeStamp = 0;
+										}
+										else
+										{
+											int dRemainData = 15 - dTmpDiff;
+
+											TRACE(L"CPTSCommunicatorDVIT::PTSCommunicatorThread readPTS image from socket: read remaining %d bytes...\n", dRemainData);
+
+											nBytes = recv(pPTSCommunicator->ClientSocket, (char*)buffer, dRemainData, NULL);
+											if ((INVALID_SOCKET == nBytes) || (0 == nBytes))
+											{
+												TRACE(L"recvfrom(...) receiving final part %d failure CPTSCommunicator::PTSCommunicatorThread\n",
+													WSAGetLastError());
+												continue;
+											}
+
+											/// some some handling here to fill the queue data
+											/// TODO --- 
+										}
+
+										g_IsAnswerReceivedFromPTS = TRUE;
+
+
 										if (g_PTS_Mode == PTS_MODE_CONTINUOUS)
 										{
 											SetEvent(g_CameraStartDataRecieveEvent);
@@ -624,6 +670,7 @@ UINT __stdcall CPTSCommunicatorDVIT::CommThread(LPVOID pParam)
 		{
 			TRACE("PTSCommThread PTSTriggerEvent Received\n");
 			ResetEvent(g_PTSTriggerEvent);
+			g_IsAnswerReceivedFromPTS = FALSE;
 			pPTSCommunicator->SendTriggerMessage();
 		}
 	}

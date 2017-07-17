@@ -14,8 +14,7 @@
 #pragma once
 #include "afxwin.h"
 
-class CPictureCtrl :
-	public CStatic
+class CPictureCtrl : public CStatic
 {
 public:
 
@@ -36,17 +35,16 @@ public:
 	//Loads an image from a byte stream;
 	BOOL LoadFromStream(BYTE* pData, size_t nSize);
 
-	//Loads an image from a Resource
-// 	BOOL LoadFromResource(HMODULE hModule, LPCTSTR lpName, LPCTSTR lpType);
-
 	//Overload - Single load function
 	BOOL Load(CString &szFilePath);
 	BOOL Load(IStream* piStream);
 	BOOL Load(BYTE* pData, size_t nSize);
-// 	BOOL Load(HMODULE hModule, LPCTSTR lpName, LPCTSTR lpType);
 
 	//Frees the image data
 	void FreeData();
+
+	// bora added  Free Image
+	void FreeImage();
 
 protected:
 	virtual void PreSubclassWindow();
@@ -55,10 +53,7 @@ protected:
 	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	virtual BOOL OnEraseBkgnd(CDC* pDC);
 
-
-
 private:
-
 	//Internal image stream buffer
 	IStream* m_pStream;
 

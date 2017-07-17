@@ -34,6 +34,8 @@ void InitializeGlobalVars()
 	InitializeCriticalSection(&RefImageCS);
 	InitializeCriticalSection(&TestImageCS); 
 	InitializeCriticalSection(&g_ChangeDetectCS);
+	InitializeCriticalSection(&g_DBFileWriteCS);
+	InitializeCriticalSection(&g_QueueErrorMessageCS);
 
 	g_CameraStartDataRecieveEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_CameraStopDataRecieveEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -61,7 +63,9 @@ void InitializeGlobalVars()
 	g_StartChangeDetectEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_PTSTriggerEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	g_ControlHardDiskSpaceEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-	g_CameraDBServerPlakaDataReadyEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_CameraDBServerWriteFileEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_StopChangeDetectionEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	g_ErrorOccurredEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	strncpy_s(g_PlakaNoChars, "          ", PLAKA_CHAR_LENGTH);
 }
@@ -77,7 +81,8 @@ void DeleteGlobalVariables()
 	DeleteCriticalSection(&g_IntermediateTestImgCS);
 	DeleteCriticalSection(&RefImageCS);
 	DeleteCriticalSection(&TestImageCS); 
-	//DeleteCriticalSection(&g_ChangeDetectCS);
+	DeleteCriticalSection(&g_DBFileWriteCS);
+	DeleteCriticalSection(&g_QueueErrorMessageCS);
 
 	CloseHandle(g_CameraStartDataRecieveEvent);
 	CloseHandle(g_CameraStopDataRecieveEvent);
@@ -92,7 +97,7 @@ void DeleteGlobalVariables()
 	CloseHandle(g_OdroidStopAlarmEvent);
 	CloseHandle(g_SendUVSSImageEvent);
 	CloseHandle(g_PTSLostEvent);
-	CloseHandle(g_CameraDBServerPlakaDataReadyEvent);
+	CloseHandle(g_CameraDBServerWriteFileEvent);
 	CloseHandle(g_ProcessFilter1Event);
 	CloseHandle(g_ProcessFilter2Event);
 	CloseHandle(g_ProcessFilter3Event);
@@ -106,4 +111,6 @@ void DeleteGlobalVariables()
 	CloseHandle(g_OdroidPTSFileWrittenEvent);
 	CloseHandle(g_OdroidImageFileWrittenEvent);
 	CloseHandle(g_OdroidErrorOccuredEvent);
+	CloseHandle(g_StopChangeDetectionEvent);
+	CloseHandle(g_ErrorOccurredEvent);
 }

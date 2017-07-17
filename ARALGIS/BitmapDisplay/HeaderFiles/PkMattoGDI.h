@@ -33,6 +33,7 @@ class PkMatToGDI
 {
 	// ali: ARALGISView has to use BackgroundClear()
 	friend CARALGISView;
+
 public:
 	//Standard constructor
 	//Set the CStatic controls where the cv::Mat will be drawn
@@ -63,15 +64,12 @@ public:
 	///false:the cv::Mat will be stretched into destination rectangle
 	void SetAutofit(bool autofit);
 
-
 	//Draw a cv::Mat using the DC of current CStatic control.
 	bool PkMatToGDI::DrawImg(const cv::Mat &img);
 
 	void CvMatToWinControl(const cv::Mat& img, CStatic* WinCtrl);
 	
-
 private:
-
 	///Repaint the rectangle using current brush
 	void BackgroundClear();
 
@@ -109,6 +107,5 @@ private:
 	//Bitmap header for grey scale image
 	BITMAPINFO* m_bmiGrey;
 	uchar _bmiGreyBuffer[sizeof(BITMAPINFO) + 256 * 4]; //extra space for grey color table
-
 };
 

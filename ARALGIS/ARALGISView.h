@@ -11,6 +11,10 @@
 #include ".\\BitmapDisplay\\HeaderFiles\\PictureCtrl.h"
 #include ".\\BitmapDisplay\\HeaderFiles\\PkMattoGDI.h"
 
+#include "ImageDisplayTools\\ImageControl\\HeaderFiles\\ImageControl.h"
+#include ".\\DrawRectangle\\HeaderFiles\\Rectangle.h"
+
+
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/opencv.hpp"
@@ -41,6 +45,7 @@ public:
 
 	// Operations
 public:
+	bool m_IsActive;
 
 	// Overrides
 protected:
@@ -68,12 +73,19 @@ protected:
 	// clears the preview box of the chassis bottom
 	void ClearPreviewBox();
 
+	// clears the Preview, Test and Ref picture control boxes
+	// uses the relevant pointers to fill associated backgrounds
+	void ClearPictureBoxes();
+
 	// prepares the image filename to be saved in the Cars/ChassisBottom directory
 	std::string PrepareImageFilename();
 	std::string PrepareImageFilename(CString const &, CTime const &);
 	std::string PrepareImageFilename(CString const &, CString const &);
 	BOOL SaveImage(std::string const &);
 	BOOL UpdateRefImage(CString const &);
+
+	// inserts the current passage info into the VehiclePassage Table
+	void UpdateVehiclePassage();
 
 	// prepares m_DriverList to be used in the driver list combo box
 	void PrepareDriverList();
@@ -87,21 +99,17 @@ protected:
 	void PrepareGateList();
 
 protected:
-
-	CStatic *m_RefImgBMP;
-	CStatic *m_TestImgBMP;
-	CStatic *m_PrevImgBMP;
-
-	PkMatToGDI *m_MatToGDITest;
-	PkMatToGDI *m_MatToGDIRef;
+	CStatic    *m_PrevImgBMP;
 	PkMatToGDI *m_MatToGDIPrev;
+	cv::Mat     m_CVImagePrev;
 
-	cv::Mat m_CVImagePrev;
+	CImageControl m_MatToImageTest;
+	CImageControl m_MatToImageRef;
 
 	bool m_AutoFit;
 
-	cv::Mat    m_RefCVMat;
-	cv::Mat	   m_TestCVMat;
+	cv::Mat m_RefCVMat;
+	cv::Mat	m_TestCVMat;
 	cv::Mat m_PrevCVMat;
 
 	CPictureCtrl m_CarPlakaImageStatic;
@@ -150,8 +158,6 @@ protected:
 	CString m_FormEUID;
 	CString m_FormEGID;
 	CString m_FormEDID;
-	// controls the edit box for License Plate Image; eventually will be of type MyPic
-	CString m_FormELPI;
 	// controls the edit box of frontal view image in ARALGISForm; eventually will be of type MyPic
 	CString m_FormEFVI;
 	//// controls the edit box of car chassis bottom image (current) in ARALGISForm; eventually will be of type MyPic
@@ -170,6 +176,8 @@ protected:
 
 	CButton m_ColourRadioOriginal;
 	CButton m_FilterRadioOriginal;
+
+	CButton m_ChangeDetectControl;
 
 	// holds the ID of the passing vehicle
 	long m_VID;
@@ -194,8 +202,36 @@ protected:
 	// holds the list of gate names in the database
 	std::vector<std::pair<CString, long>> m_GateList;
 
+	// keeps track of whether the displayed information 
+	// has been inserted into the VehiclePassage Table
+	BOOL m_bVehiclePassageUpdated;
+
 	// to have a better control on the background color
 	CBrush m_brush;
+
+	////////////// mouse move /////////////
+	// First point of the recorded element
+	CPoint m_FirstPoint;
+
+	// Second point of the object to be drawn
+	CPoint m_SecondPoint;
+
+	// pointer to the temporary drawing element
+	CElement* m_pTempElement;
+
+	// Cursor position
+	CPoint m_CursorPos;
+
+	// start position of move function
+	CPoint m_FirstPos;
+
+	CButton m_CropCheckBox;
+
+	bool m_IsCropActive;
+	int  m_CropWhichImage;
+	int isInUVSSImages(CPoint aInPoint);
+	///////////////////////////////////////////////
+
 
 private:
 	CWndResizer m_resizer;
@@ -206,7 +242,7 @@ protected:
 
 	afx_msg LRESULT OnCameraDataReady(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT GetTestImage(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnDBaseCarInfoReady(WPARAM wParam, LPARAM lParam); 
+	afx_msg LRESULT OnDBaseFileWritten(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT Filter1Available(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT Filter2Available(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT Filter3Available(WPARAM wParam, LPARAM lParam);
@@ -218,11 +254,9 @@ protected:
 	afx_msg LRESULT UpdatePTSStatusLost(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT UpdatePTSStatusNOK(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT UpdatePTSStatusOK(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT  UpdatePeripheralStatusOK(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT  UpdatePeripheralStatusNOK(WPARAM wParam, LPARAM lParam);
-
+	afx_msg LRESULT UpdatePeripheralStatusOK(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT UpdatePeripheralStatusNOK(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT ChangeDetectionFinished(WPARAM wParam, LPARAM lParam);
-
 	afx_msg void OnBnClickedButtonBarrierOpen();
 	afx_msg void OnBnClickedButtonBarrierClose();
 	afx_msg void OnBnClickedButtonHeaterOn();
@@ -241,17 +275,26 @@ protected:
 	afx_msg void OnBnClickedRadioColour2();
 	afx_msg void OnBnClickedRadioColour3();
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-public:
 	afx_msg void OnBnClickedRadio1Origfilter();
 	afx_msg void OnBnClickedRadioFilter1();
 	afx_msg void OnBnClickedRadioFilter2();
 	afx_msg void OnBnClickedRadioFilter3();
-	CButton m_ChangeDetectControl;
 	afx_msg void OnBnClickedButtonChangeDetect();
 	afx_msg void OnCbnSelchangeFormCboxVisitlist();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedButtonExit();
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+public:
+	afx_msg void OnBnClickedCheckCrop();
+	afx_msg LRESULT OnLButtonDownImage(WPARAM wparam, LPARAM lparam);
+	afx_msg LRESULT OnLButtonUpImage(WPARAM wparam, LPARAM lparam);
+	afx_msg LRESULT OnMouseMoveImage(WPARAM wparam, LPARAM lparam);
+	afx_msg LRESULT OnMouseWheelImage(WPARAM wparam, LPARAM lparam);
+	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

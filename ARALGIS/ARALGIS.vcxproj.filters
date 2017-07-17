@@ -136,6 +136,54 @@
     <Filter Include="DiskSpaceController\SourceFiles">
       <UniqueIdentifier>{6f6f8dea-407e-4d89-822a-41e417ef5d23}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ImageDisplayTools">
+      <UniqueIdentifier>{c83016f0-789c-4fe8-a669-9aa8c54e4c11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageDisplayTools\StandardLibrary">
+      <UniqueIdentifier>{df0071e0-368f-46c1-8e63-4841337e288f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageDisplayTools\ImageControl">
+      <UniqueIdentifier>{bf0afaab-80fe-4ae8-a74c-62c88c1baaa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageDisplayTools\ImageControl\HeaderFiles">
+      <UniqueIdentifier>{b3155d27-b975-40b6-bbdd-f8313fbf96b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageDisplayTools\ImageControl\SourceFiles">
+      <UniqueIdentifier>{2a46e938-a50c-40f9-aeef-7548241a7803}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageDisplayTools\StandardLibrary\HeaderFiles">
+      <UniqueIdentifier>{3f2038d6-092f-4f7f-9bc9-fca7e6cdf8e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageDisplayTools\StandardLibrary\SourceFiles">
+      <UniqueIdentifier>{bc1118c6-2052-4835-b385-08d63e5b1bc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DrawRectangle">
+      <UniqueIdentifier>{43000511-1039-4dc3-a5e3-36ce3b199c82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DrawRectangle\HeaderFiles">
+      <UniqueIdentifier>{c3c943f8-54fc-452e-b1c2-89aa1725a33f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DrawRectangle\SourceFiles">
+      <UniqueIdentifier>{52798aab-05de-4815-bb0d-ae1626a1d40a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ErrorDisplay">
+      <UniqueIdentifier>{664159cf-525a-43da-8b15-5cd0d304d005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ErrorDisplay\HeaderFiles">
+      <UniqueIdentifier>{eff854d4-39ce-481c-8496-dd5cde1583d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ErrorDisplay\SourceFiles">
+      <UniqueIdentifier>{e8617c31-c018-40a4-b901-da447c6615e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ErrorDisplay\ThreadSafeQueue">
+      <UniqueIdentifier>{e2da5a8d-f5b5-4620-b65f-f6621d541cd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ErrorDisplay\ThreadSafeQueue\HeaderFiles">
+      <UniqueIdentifier>{c3a1e600-799c-42d9-9467-c9f95fd3d542}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ErrorDisplay\ThreadSafeQueue\SourceFiles">
+      <UniqueIdentifier>{75f7266e-d3fa-4a7c-8736-5e87aada19eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -387,6 +435,33 @@
     <ClInclude Include="DiskSpaceController\HeaderFiles\FreeDiskSpaceController.h">
       <Filter>DiskSpaceController\HeaderFiles</Filter>
     </ClInclude>
+    <ClInclude Include="ImageDisplayTools\ImageControl\HeaderFiles\Icon.h">
+      <Filter>ImageDisplayTools\ImageControl\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageDisplayTools\ImageControl\HeaderFiles\ResourceList.h">
+      <Filter>ImageDisplayTools\ImageControl\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageDisplayTools\StandardLibrary\HeaderFiles\ResizableDlg.h">
+      <Filter>ImageDisplayTools\StandardLibrary\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageToolDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawRectangle\HeaderFiles\Element.h">
+      <Filter>DrawRectangle\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawRectangle\HeaderFiles\Rectangle.h">
+      <Filter>DrawRectangle\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageDisplayTools\ImageControl\HeaderFiles\ImageControl.h">
+      <Filter>ImageDisplayTools\ImageControl\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorDisplay\HeaderFiles\ErrorDisplayer.h">
+      <Filter>ErrorDisplay\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorDisplay\ThreadSafeQueue\HeaderFiles\ThreadSafeQueue.h">
+      <Filter>ErrorDisplay\ThreadSafeQueue\HeaderFiles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -566,6 +641,33 @@
     <ClCompile Include="DiskSpaceController\SourceFiles\FreeDiskSpaceController.cpp">
       <Filter>DiskSpaceController\SourceFiles</Filter>
     </ClCompile>
+    <ClCompile Include="ImageDisplayTools\ImageControl\SourceFiles\Icon.cpp">
+      <Filter>ImageDisplayTools\ImageControl\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageDisplayTools\ImageControl\SourceFiles\ResourceList.cpp">
+      <Filter>ImageDisplayTools\ImageControl\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageDisplayTools\StandardLibrary\SourceFiles\ResizableDlg.cpp">
+      <Filter>ImageDisplayTools\StandardLibrary\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageToolDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawRectangle\SourceFiles\Element.cpp">
+      <Filter>DrawRectangle\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawRectangle\SourceFiles\Rectangle.cpp">
+      <Filter>DrawRectangle\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageDisplayTools\ImageControl\SourceFiles\ImageControl.cpp">
+      <Filter>ImageDisplayTools\ImageControl\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ErrorDisplay\SourceFiles\ErrorDisplayer.cpp">
+      <Filter>ErrorDisplay\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ErrorDisplay\ThreadSafeQueue\SourceFiles\ThreadSafeQueue.cpp">
+      <Filter>ErrorDisplay\ThreadSafeQueue\SourceFiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ARALGIS.rc">
@@ -576,6 +678,7 @@
     <None Include="res\ARALGIS.rc2">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\ARALGISDoc.ico">
@@ -606,6 +709,15 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\UTARIT.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icons8-Crop-48.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icons8-Crop-48.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap2.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

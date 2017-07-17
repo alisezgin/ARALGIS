@@ -149,7 +149,7 @@ UINT __stdcall CCameraDBServer::CameraDBServerThread(LPVOID pParam)
 
 	HANDLE Handles[2];
 	Handles[0] = pCameraDBServer->ShutdownEvent;
-	Handles[1] = g_CameraDBServerPlakaDataReadyEvent;
+	Handles[1] = g_CameraDBServerWriteFileEvent;
 
 
 	for (;;)
@@ -169,10 +169,25 @@ UINT __stdcall CCameraDBServer::CameraDBServerThread(LPVOID pParam)
 			return THREADEXIT_SUCCESS;
 		}
 
-		// g_CameraDBServerPlakaDataReadyEvent is received
+		// g_CameraDBServerWriteFileEvent is received
 		else if (EventCaused == WAIT_OBJECT_0 + 1)
 		{
-			pCameraDBServer->SendDBMessage();
+			ResetEvent(g_CameraDBServerWriteFileEvent);
+			
+			cv::Mat TestImg;
+
+			EnterCriticalSection(&g_DBFileWriteCS);
+
+			TestImg.create(g_CVImageTest.size(), g_CVImageTest.type());
+
+			TestImg = g_CVImageTest.clone();
+
+			LeaveCriticalSection(&g_DBFileWriteCS);
+			
+			if (cv::imwrite(g_TestImageFileName, TestImg))
+			{
+				pCameraDBServer->SendDBMessage();
+			}
 		}
 
 	} // infite for loop
@@ -211,5 +226,5 @@ void CCameraDBServer::SendDBMessage()
 	LPARAM pLparam;
 	pLparam = reinterpret_cast<LPARAM>("ARALGIS");
 
-	pView->SendMessage(WM_DBASE_CAR_INFO_READY, 0, pLparam);
+	pView->SendMessage(WM_DBASE_FILE_WRITTEN, 0, pLparam);
 }

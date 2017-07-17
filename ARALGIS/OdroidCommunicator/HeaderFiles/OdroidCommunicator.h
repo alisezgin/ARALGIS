@@ -46,6 +46,9 @@ private:
 	bool				   	bRun;
 	bool					m_bClientedAccepted;
 
+	int						m_iTimerTick;
+	HANDLE					m_hTimer;
+
 	void SendOdroidOpenBarrierMessage();
 	void SendOdroidCloseBarrierMessage();
 	void SendOdroidStartHeatingMessage();

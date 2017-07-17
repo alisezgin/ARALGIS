@@ -276,6 +276,18 @@ void CWndResizer::OnMouseMove(UINT nFlags, CPoint point)
 		}
 	}
 }
+
+void CWndResizer::OnMouseWheel()
+{
+	int AA = 1;
+}
+
+void CWndResizer::OnLButtonDblClk()
+{
+	int AA = 1;
+}
+
+
 void CWndResizer::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	OnMouseMove(nFlags, point);
@@ -948,6 +960,14 @@ LRESULT CALLBACK CWndResizer::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 	case WM_HSCROLL:
 	case WM_VSCROLL:
 		pResizer->OnScroll();
+		break;
+
+	case WM_MOUSEWHEEL:
+		pResizer->OnMouseWheel();
+		break;
+
+	case WM_LBUTTONDBLCLK:
+		pResizer->OnLButtonDblClk();
 		break;
 
 		//case WM_ERASEBKGND:

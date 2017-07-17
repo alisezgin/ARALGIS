@@ -262,7 +262,7 @@ void PkMatToGDI::BackgroundClear()
 
 	// The RGB macro is declared in "Windowsx.h"
 
-	SetDCBrushColor(hDC, RGB(240, 240, 240));
+	SetDCBrushColor(hDC, RGB(COLOUR_RED, COLOUR_GREEN, COLOUR_BLUE));
 
 	// Set the Pen to Blue
 

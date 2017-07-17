@@ -32,6 +32,8 @@
 #define IDD_DB_MODIFY_ACK1              317
 #define IDD_DB_NEWDRIVER                317
 #define IDB_BITMAP1                     324
+#define IDD_DIALOG_IMAGETOOLS           325
+#define IDB_BITMAP_CROP                 327
 #define IDC_BITMAP                      1000
 #define IDC_GRP_TEST                    1006
 #define IDC_GRP_REF                     1007
@@ -130,6 +132,12 @@
 #define IDC_FORM_CBOX_DRIVERLIST        1075
 #define IDC_BUTTON3                     1076
 #define IDC_BUTTON_EXIT                 1076
+#define IDC_STATIC_IMAGE                1077
+#define IDC_RADIO_ORG                   1078
+#define IDC_RADIO_ZOOMFIT               1079
+#define IDC_CHECK_CROP                  1080
+#define IDC_STATIC_TESTBMP              1081
+#define IDC_STATIC_REFBMP               1082
 #define ID_KAMERA_KONFIG32771           32771
 #define ID_KAMERA_KAY32772              32772
 #define ID_KAMERA_RESIMG32773           32773
@@ -183,9 +191,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        325
+#define _APS_NEXT_RESOURCE_VALUE        328
 #define _APS_NEXT_COMMAND_VALUE         32810
-#define _APS_NEXT_CONTROL_VALUE         1077
+#define _APS_NEXT_CONTROL_VALUE         1083
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

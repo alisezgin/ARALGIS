@@ -75,7 +75,7 @@ HANDLE g_OdroidImageFileWrittenEvent;
 HANDLE g_OdroidErrorOccuredEvent;
 
 // event used for triggering CameraDBServer
-HANDLE g_CameraDBServerPlakaDataReadyEvent;
+HANDLE g_CameraDBServerWriteFileEvent;
 
 // event used for triggering Filter-1 processing of test image
 HANDLE g_ProcessFilter1Event;
@@ -103,6 +103,12 @@ HANDLE g_StartChangeDetectEvent;
 
 // event used for starting free disc space control 
 HANDLE g_ControlHardDiskSpaceEvent;
+
+// event used for interrupting change detection thread 
+HANDLE g_StopChangeDetectionEvent;
+
+// event for error message processing
+HANDLE g_ErrorOccurredEvent;
 ///////////////////////////////////////////////////
 ////////// GLOBAL EVENTS ends here ////////////////
 
@@ -112,6 +118,21 @@ HANDLE g_ControlHardDiskSpaceEvent;
 
 // Critical Section to protect isDatabaseHandlingInProgress
 CRITICAL_SECTION g_IntermediateTestImgCS;
+
+// Critical Section to protect RefImage 
+CRITICAL_SECTION   RefImageCS;
+
+// Critical Section to protect TestImage 
+CRITICAL_SECTION   TestImageCS;
+
+// Critical Section to shutdown after change detection is finished
+CRITICAL_SECTION g_ChangeDetectCS;
+
+// Critical Section to protect intermediate test Images
+CRITICAL_SECTION g_DBFileWriteCS;
+
+// Critical Section to protect Error Messages Queue
+CRITICAL_SECTION g_QueueErrorMessageCS;
 ///////////////////////////////////////////////////////////
 ////////// GLOBAL CRITICAL SECTIONs start here ////////////
 
@@ -169,7 +190,7 @@ int  g_CarPlakaImageLenght;
 char g_ImageFilesDirPath[MAX_DIR_PATH_LENGTH];
 
 // global variable to hold test image filename (includes directory path)
-char g_TestImageFileName[MAX_DIR_PATH_LENGTH];
+//char g_TestImageFileName[MAX_DIR_PATH_LENGTH];
 
 // global variable to hold reference image filename (includes directory path)
 char g_RefImageFileName[MAX_DIR_PATH_LENGTH];
@@ -193,6 +214,9 @@ char g_CameraConfigFilename[MAX_FILENAME_LENGTH + 1];
 bool g_ChangeDetectActive;
 // boraN INI ends
 
+cv::Mat g_CVRefBigWindow;
+cv::Mat g_CVTestBigWindow;
+std::string g_TestImageFileName;
 /////////////////////////////////////////////////////
 //// GLOBAL DATA VARIABLES end here////////////////
 
@@ -206,15 +230,6 @@ BOOL g_isProgramStarted;
 
 // something like a counting semaphore for thread sync
 int g_carsDetectedByPTSCnt;
-
-// Critical Section to protect RefImage 
-CRITICAL_SECTION   RefImageCS;
-
-// Critical Section to protect TestImage 
-CRITICAL_SECTION   TestImageCS;
-
-// Critical Section to shutdown after change detection is finished
-CRITICAL_SECTION g_ChangeDetectCS;
 
 // defines what type of code will be used for PTS comm
 int g_PTS_Producer_ID;
@@ -232,6 +247,7 @@ int g_AutoDetect_Type;
 BOOL g_CarFound;
 
 BOOL g_IsOdroidStartReceived;
+BOOL g_IsAnswerReceivedFromPTS;
 ////////////////////////////////////////////////////////////////////
 ////// GLOBAL CONTROL VARIABLES end here /////////////////////////
 
