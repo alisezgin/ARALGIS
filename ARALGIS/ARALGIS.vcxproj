@@ -242,11 +242,13 @@
     <ClInclude Include="Database\HeaderFiles\DriverInfoSet.h" />
     <ClInclude Include="Database\HeaderFiles\DriverSet.h" />
     <ClInclude Include="Database\HeaderFiles\GateSet.h" />
+    <ClInclude Include="Database\HeaderFiles\SearchDlg.h" />
     <ClInclude Include="Database\HeaderFiles\UserInfoSet.h" />
     <ClInclude Include="Database\HeaderFiles\UserSet.h" />
     <ClInclude Include="Database\HeaderFiles\VehicleInfoSet.h" />
     <ClInclude Include="Database\HeaderFiles\VehiclePassageSet.h" />
     <ClInclude Include="Database\HeaderFiles\VehicleSet.h" />
+    <ClInclude Include="Database\HeaderFiles\VehicleTypeSet.h" />
     <ClInclude Include="DBUpdateAckDlg.h" />
     <ClInclude Include="DiskSpaceController\HeaderFiles\FreeDiskSpaceController.h" />
     <ClInclude Include="DrawRectangle\HeaderFiles\Element.h" />
@@ -312,11 +314,13 @@
     <ClCompile Include="Database\SourceFiles\DriverInfoSet.cpp" />
     <ClCompile Include="Database\SourceFiles\DriverSet.cpp" />
     <ClCompile Include="Database\SourceFiles\GateSet.cpp" />
+    <ClCompile Include="database\SourceFiles\SearchDlg.cpp" />
     <ClCompile Include="Database\SourceFiles\UserInfoSet.cpp" />
     <ClCompile Include="Database\SourceFiles\UserSet.cpp" />
     <ClCompile Include="Database\SourceFiles\VehicleInfoSet.cpp" />
     <ClCompile Include="Database\SourceFiles\VehiclePassageSet.cpp" />
     <ClCompile Include="Database\SourceFiles\VehicleSet.cpp" />
+    <ClCompile Include="Database\SourceFiles\VehicleTypeSet.cpp" />
     <ClCompile Include="DBUpdateAckDlg.cpp" />
     <ClCompile Include="DiskSpaceController\SourceFiles\FreeDiskSpaceController.cpp" />
     <ClCompile Include="DrawRectangle\SourceFiles\Element.cpp" />

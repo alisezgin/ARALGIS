@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -461,6 +461,12 @@
     </ClInclude>
     <ClInclude Include="ErrorDisplay\ThreadSafeQueue\HeaderFiles\ThreadSafeQueue.h">
       <Filter>ErrorDisplay\ThreadSafeQueue\HeaderFiles</Filter>
+    </ClInclude>    
+    <ClInclude Include="Database\HeaderFiles\SearchDlg.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\VehicleTypeSet.h">
+      <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -667,6 +673,12 @@
     </ClCompile>
     <ClCompile Include="ErrorDisplay\ThreadSafeQueue\SourceFiles\ThreadSafeQueue.cpp">
       <Filter>ErrorDisplay\ThreadSafeQueue\SourceFiles</Filter>
+     </ClCompile>
+   <ClCompile Include="database\SourceFiles\SearchDlg.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\VehicleTypeSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -693,13 +705,13 @@
     <Image Include="res\icon1.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\sil\UTARİT.gif">
+    <Image Include="..\..\sil\UTARIT.gif">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\bitmap1.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\sil\UTARİT.jpg">
+    <Image Include="..\..\sil\UTARIT.jpg">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\..\sil\utarit.jpg">

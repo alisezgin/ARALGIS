@@ -26,6 +26,7 @@
 #include "atltime.h"
 
 #include "VisitInfo.h"
+#include <unordered_map>
 
 class CARALGISDoc;
 
@@ -89,14 +90,31 @@ protected:
 
 	// prepares m_DriverList to be used in the driver list combo box
 	void PrepareDriverList();
+	void PrepareDriverMap();
 	// fills the drop down list with the contents of m_DriverList
 	void FillDriverList();
+	void FillDriverBox();
 
-	// prepares m_KeeperList to be used in the keeper list combo box
-	void PrepareKeeperList();
+	// prepares m_UserList to be used in the keeper list combo box
+	void PrepareUserList();
+	void PrepareUserMap();
+	// fills the drop down list with the contents of m_UserList
+	void FillUserList();
+	void FillUserBox();
 
 	// prepares m_GateList to be used in the gate list combo box
 	void PrepareGateList();
+	void PrepareGateMap();
+	// fills the drop down list with the contents of m_GateList
+	void FillGateList();
+	void FillGateBox();
+
+	// prepares m_VehicleTypeList to be passed on to the search query
+	void PrepareVehicleTypeList();
+	void PrepareVehicleTypeMap();
+
+	// prepares a disjunction (CString) for a given vector of ID's (of type long)
+	CString GenDisjunctionOfVec(CString colName, const std::vector<long> & vec);
 
 protected:
 	CStatic    *m_PrevImgBMP;
@@ -195,12 +213,23 @@ protected:
 	CComboBox m_FormCBDriverList;
 	// holds the list of drivers in the database
 	std::vector<std::pair<CString, long>> m_DriverList;
+	std::unordered_map<long, CString> m_DriverMap;
 
+	// controls the user list combo box
+	CComboBox m_FormCBUserList;
 	// holds the list of gate keepers in the database
-	std::vector<std::pair<CString, long>> m_KeeperList;
+	std::vector<std::pair<CString, long>> m_UserList;
+	std::unordered_map<long, CString> m_UserMap;
 
+	// controls the gate list combo box
+	CComboBox m_FormCBGateList;
 	// holds the list of gate names in the database
 	std::vector<std::pair<CString, long>> m_GateList;
+	std::unordered_map<long, CString> m_GateMap;
+
+	// holds the list of vehicle types in the database
+	std::vector<std::pair<CString, long>> m_VehicleTypeList;
+	std::unordered_map<long, CString> m_VehicleTypeMap;
 
 	// keeps track of whether the displayed information 
 	// has been inserted into the VehiclePassage Table
@@ -287,6 +316,7 @@ protected:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnReportSearch();
 public:
 	afx_msg void OnBnClickedCheckCrop();
 	afx_msg LRESULT OnLButtonDownImage(WPARAM wparam, LPARAM lparam);

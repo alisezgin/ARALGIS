@@ -23,6 +23,7 @@
 #include "GateSet.h"
 #include "UserInfoSet.h"
 #include "UserSet.h"
+#include "VehicleTypeSet.h"
 //#include "VehicleView.h"
 
 #include "VehiclePassageSet.h"
@@ -33,6 +34,8 @@
 
 #include "DBUpdateAckDlg.h"
 #include "DriverAckDlg.h"
+
+#include "SearchDlg.h"
 
 #include "BitmapDlg.h"
 #include "ImageToolDialog.h"
@@ -115,6 +118,7 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_WM_MOUSEMOVE()
 	ON_BN_CLICKED(IDC_CHECK_CROP, &CARALGISView::OnBnClickedCheckCrop)
 	ON_WM_MOUSEWHEEL()
+	ON_COMMAND(ID_RAPORLAR_RAPOR1, &CARALGISView::OnReportSearch)
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -133,6 +137,8 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 , m_FormEGID(_T(""))
 , m_FormEUID(_T(""))
 , m_FormCBDriverList{}
+, m_FormCBUserList{}
+, m_FormCBGateList{}
 , m_bVehiclePassageUpdated( TRUE )
 {
 	// TODO: add construction code here
@@ -183,7 +189,20 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 	/// bora2ali bug-fix ends
 
 	// Prepare the driver list to be displayed in the Driver List Combo box
+	PrepareDriverMap();
 	PrepareDriverList();
+
+	// Prepare the user list to be displayed in the User List Combo box
+	PrepareUserMap();
+	PrepareUserList();
+
+	// Prepare the gate list to be displayed in the Gate List Combo box
+	PrepareGateMap();
+	PrepareGateList();
+
+	// Prepare the Vehicle Type list to be passed on to the search query
+	PrepareVehicleTypeMap();
+	PrepareVehicleTypeList();
 
 	// set the background color variable
 	m_brush.CreateSolidBrush(RGB(COLOUR_RED, COLOUR_GREEN, COLOUR_BLUE));
@@ -344,6 +363,8 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK_CROP, m_CropCheckBox);
 	DDX_Control(pDX, IDC_STATIC_TESTBMP, m_MatToImageTest);
 	DDX_Control(pDX, IDC_STATIC_REFBMP, m_MatToImageRef);
+	DDX_Control(pDX, IDC_FORM_CBOX_USERLIST, m_FormCBUserList);
+	DDX_Control(pDX, IDC_FORM_CBOX_GATELIST, m_FormCBGateList);
 }
 
 BOOL CARALGISView::PreCreateWindow(CREATESTRUCT& cs)
@@ -1404,8 +1425,64 @@ void CARALGISView::ClearPictureBoxes()
 
 }
 
-
 void CARALGISView::PrepareDriverList()
+{
+	CDriverSet dSet;
+	//dSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	m_DriverList.clear();
+	//while (!dSet.IsEOF())
+	//{
+	//	CString strDisplayName = dSet.m_Name + CString{ _T(" ") }+dSet.m_LastName;
+	//	long lID = dSet.m_ID;
+	//	m_DriverList.push_back(std::make_pair(strDisplayName, lID));
+	//	dSet.MoveNext();
+	//}
+	for (auto d : m_DriverMap)
+		m_DriverList.push_back(std::make_pair(d.second, d.first));
+	std::sort(m_DriverList.begin(), m_DriverList.end(),
+		[](std::pair<CString, long> p1, std::pair<CString, long> p2) {
+		if (p1.first == p2.first) return p1.second < p2.second;
+		else return p1.first < p2.first;
+	});
+}
+
+void CARALGISView::PrepareUserList()
+{
+	m_UserList.clear();
+	for (auto u : m_UserMap)
+		m_UserList.push_back(std::make_pair(u.second, u.first));
+	std::sort(m_UserList.begin(), m_UserList.end(),
+		[](std::pair<CString, long> u1, std::pair<CString, long> u2) {
+		if (u1.first == u2.first) return u1.second < u2.second;
+		else return u1.first < u2.first;
+	});
+}
+
+void CARALGISView::PrepareGateList()
+{
+	m_GateList.clear();
+	for (auto g : m_GateMap)
+		m_GateList.push_back(std::make_pair(g.second, g.first));
+	std::sort(m_GateList.begin(), m_GateList.end(),
+		[](std::pair<CString, long> g1, std::pair<CString, long> g2) {
+		if (g1.first == g2.first) return g1.second < g2.second;
+		else return g1.first < g2.first; 
+	});
+}
+
+void CARALGISView::PrepareVehicleTypeList()
+{
+	m_VehicleTypeList.clear();
+	for (const auto & vt : m_VehicleTypeMap)
+		m_VehicleTypeList.push_back(std::make_pair(vt.second, vt.first));
+	std::sort(m_VehicleTypeList.begin(), m_VehicleTypeList.end(),
+		[](std::pair<CString, long> vt1, std::pair<CString, long> vt2) {
+		if (vt1.first == vt2.first) return vt1.second < vt2.second;
+		else return vt1.first < vt2.first; 
+	});
+}
+
+void CARALGISView::PrepareDriverMap()
 {
 	CDriverSet dSet;
 	dSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
@@ -1413,16 +1490,47 @@ void CARALGISView::PrepareDriverList()
 	while (!dSet.IsEOF())
 	{
 		CString strDisplayName = dSet.m_Name + CString{ _T(" ") }+dSet.m_LastName;
-		long lID = dSet.m_ID;
-		m_DriverList.push_back(std::make_pair(strDisplayName, lID));
+		m_DriverMap[dSet.m_ID] = strDisplayName;
 		dSet.MoveNext();
 	}
-	std::sort(m_DriverList.begin(), m_DriverList.end(),
-		[](std::pair<CString, long> p1, std::pair<CString, long> p2) {
-		if (p1 == p2) return p1.second < p2.second;
-		else return p1 < p2;
-	});
 }
+
+void CARALGISView::PrepareUserMap()
+{
+	CUserSet uSet;
+	uSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	m_UserList.clear();
+	while (!uSet.IsEOF())
+	{
+		CString strDisplayName = uSet.m_Name + CString{ _T(" ") } +uSet.m_LastName;
+		m_UserMap[uSet.m_ID] = strDisplayName;
+		uSet.MoveNext();
+	}
+}
+
+void CARALGISView::PrepareGateMap()
+{
+	CGateSet gSet;
+	gSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	m_GateList.clear();
+	while (!gSet.IsEOF())
+	{
+		m_GateMap[gSet.m_GateID] = gSet.m_GateType;
+		gSet.MoveNext();
+	}
+}
+
+void CARALGISView::PrepareVehicleTypeMap()
+{
+	CVehicleTypeSet vTypeSet;
+	vTypeSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	while (!vTypeSet.IsEOF())
+	{
+		m_VehicleTypeMap[vTypeSet.m_VTID] = vTypeSet.m_Type;
+		vTypeSet.MoveNext();
+	}
+}
+
 
 void CARALGISView::FillDriverList()
 {
@@ -1433,6 +1541,49 @@ void CARALGISView::FillDriverList()
 	{
 		m_FormCBDriverList.InsertString(-1,p.first);
 	}
+}
+
+void CARALGISView::FillUserList()
+{
+	m_FormCBUserList.ResetContent();
+	m_FormCBUserList.InsertString(0, CString{ _T("Bilinmeyen Kullanici") });
+	m_FormCBUserList.InsertString(1, CString{ _T("Yeni Kullanici Ekle") });
+	for (auto u : m_UserList)
+	{
+		m_FormCBUserList.InsertString(-1, u.first);
+	}
+}
+
+void CARALGISView::FillGateList()
+{
+	m_FormCBGateList.ResetContent();
+	m_FormCBGateList.InsertString(0, CString{ _T("Bilinmeyen Kapi") });
+	m_FormCBGateList.InsertString(1, CString{ _T("Yeni Kapi Ekle") });
+	for (auto g : m_GateList)
+	{
+		m_FormCBGateList.InsertString(-1, g.first);
+	}
+}
+
+
+CString ToString(long _id)
+{
+	CString res{ _T("") };
+	res.Format(_T("%ld"), _id);
+	return res;
+}
+
+CString CARALGISView::GenDisjunctionOfVec(CString colName, const std::vector<long> & vec)
+{
+	CString res{};
+	CString leftSide = colName + _T(" = '");
+	size_t vecSize = vec.size();
+	for (auto i = 0; i < vecSize - 1; ++i)
+	{
+		res += leftSide + ToString(vec[i]) + _T("' OR ");
+	}
+	res += (leftSide + ToString(vec[vecSize - 1]) + _T("'"));
+	return res;
 }
 // ali - UTILITY FUNCTION - end
 
@@ -1488,6 +1639,8 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 
 	m_formCBoxVisitList.ResetContent();
 	FillDriverList();
+	FillUserList();
+	FillGateList();
 
 	CVehiclePassageSet vPassageSet;
 	// find all visits of the given LP
@@ -1500,17 +1653,10 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	strLP.MakeUpper();
 	m_FormELP = strLP;
 
-	///////////////////////////// sils il sil sil sil 
-	CString sil{ m_FormELP };
-	int silmin = m_FormEDT.GetMinute();
-	TRACE("sil: %s\nsilmin: %d", sil, silmin);
-	///////////////////////////// sils il sil sil sil 
-
-
 	// before executing the query;
 	// it may be beneficial to bound the resulting record set
 	// vPassageSet.SetRowsetSize() = RECENT_VISIT_COUNT;
-	vPassageSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	vPassageSet.Open(CRecordset::snapshot, nullptr, CRecordset::readOnly);
 	if (vPassageSet.IsBOF()) {
 		MessageBox(CString{ _T("Kayit bulunamadi; plaka no: ") } +strLP);
 		m_formCBoxVisitList.AddString(LPCTSTR{ CString{ _T("Kayit yok") } });
@@ -1534,7 +1680,8 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	m_VID = vPassageSet.m_VehiclePassageVehicleID;
 	ASSERT(m_VID >= 0);
 
-	m_FormEDID = DriverNameFromID(vPassageSet.m_VehiclePassageDriverID);
+	// no rush; don't do them here, but after the relevant hashes are prepared.
+	/*m_FormEDID = DriverNameFromID(vPassageSet.m_VehiclePassageDriverID);
 	m_DID = vPassageSet.m_VehiclePassageDriverID;
 
 
@@ -1542,35 +1689,114 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	m_GID = vPassageSet.m_VehiclePassageGateID;
 
 	m_FormEUID = KeeperNameFromID(vPassageSet.m_VehiclePassageUserID);
+	m_UID = vPassageSet.m_VehiclePassageUserID;*/
+
+	auto VisitListSize = 0;
+//	std::vector<long> vecDriver{};
+	std::vector<long> vecGate{};
+	std::vector<long> vecUser{};
+
+	while (VisitListSize < VISIT_LIST_LENGTH && !vPassageSet.IsEOF())
+	{
+//		vecDriver.push_back(vPassageSet.m_VehiclePassageDriverID);
+		vecGate.push_back(vPassageSet.m_VehiclePassageGateID);
+		vecUser.push_back(vPassageSet.m_VehiclePassageUserID);
+		vPassageSet.MoveNext();
+		++VisitListSize;
+	}
+
+//	CString filterDriver = GenDisjunctionOfVec(CString{ _T("[Driver].[ID]") }, vecDriver);
+	CString filterGate = GenDisjunctionOfVec(CString{ _T("[Gate].[ID]") }, vecGate);
+	CString filterUser = GenDisjunctionOfVec(CString{ _T("[User].[ID]") }, vecUser);
+
+	// generate the unordered_map for DriverID to Name+LastName
+	//std::unordered_map<long, CString> driverMap;
+	//CDriverSet dSet;
+	//dSet.m_strFilter = filterDriver;
+	//dSet.Open(CRecordset::snapshot, nullptr, CRecordset::readOnly);
+	//while (!dSet.IsEOF())
+	//{
+	//	CString strDriverName = dSet.m_LastName;
+	//	strDriverName += _T(", ");
+	//	strDriverName += dSet.m_Name;
+	//	driverMap[dSet.m_ID] = strDriverName;
+	//	dSet.MoveNext();
+	//}
+
+	// generate the unordered_map for GateID to GateName
+	/*std::unordered_map<long, CString> gateMap;
+	CGateSet gSet;
+	gSet.m_strFilter = filterGate;
+	gSet.Open(CRecordset::snapshot, nullptr, CRecordset::readOnly);
+	while (!gSet.IsEOF())
+	{
+		gateMap[gSet.m_GateID] = gSet.m_GateType;
+		gSet.MoveNext();
+	}*/
+
+	// generate the unordered_map for UserID to User
+	/*std::unordered_map<long, CString> userMap;
+	CUserSet uSet;
+	uSet.m_strFilter = filterUser;
+	uSet.Open(CRecordset::snapshot, nullptr, CRecordset::readOnly);
+	while (!uSet.IsEOF())
+	{
+		CString strUserName = uSet.m_LastName;
+		strUserName += _T(", ");
+		strUserName += uSet.m_Name;
+		userMap[uSet.m_ID] = strUserName;
+		uSet.MoveNext();
+	}*/
+
+	vPassageSet.MoveFirst();
+
+	// by default, display the information for the very last entry
+	m_DID = vPassageSet.m_VehiclePassageDriverID;
+//	m_FormEDID = driverMap[m_DID];
+	m_FormEDID = m_DriverMap[m_DID];
+	m_GID = vPassageSet.m_VehiclePassageGateID;
+//	m_FormEGID = gateMap[m_GID];
+	m_FormEGID = m_GateMap[m_GID];
 	m_UID = vPassageSet.m_VehiclePassageUserID;
+//	m_FormEUID = userMap[m_UID];
+	m_FormEUID = m_UserMap[m_UID];
 
-	auto VisitListIndex = 0;
-
-	// careful with looping: do not go out of bounds for m_VisitInfo array
-	while (!vPassageSet.IsEOF() && VisitListIndex < VISIT_LIST_LENGTH) {
-		CTime visitDate = vPassageSet.m_VehiclePassageEntryDateTime;  
+	for (auto j = 0; j < VisitListSize; ++j)
+	{
+		CTime visitDate = vPassageSet.m_VehiclePassageEntryDateTime;
 		m_formCBoxVisitList.AddString(visitDate.Format("%d/%m/%Y %X"));
-		m_VisitInfo[VisitListIndex++].Prepare(
-			DriverNameFromID(vPassageSet.m_VehiclePassageDriverID),
-			KeeperNameFromID(vPassageSet.m_VehiclePassageUserID),
-			GateFromID(vPassageSet.m_VehiclePassageGateID));
-
+		m_VisitInfo[j].Prepare(
+			m_DriverMap[vPassageSet.m_VehiclePassageDriverID], //driverMap[vPassageSet.m_VehiclePassageDriverID],
+			m_UserMap[vPassageSet.m_VehiclePassageUserID], //userMap[vPassageSet.m_VehiclePassageUserID],
+			m_GateMap[vPassageSet.m_VehiclePassageGateID]); //gateMap[vPassageSet.m_VehiclePassageGateID]);
 		vPassageSet.MoveNext();
 	}
 
+	//// careful with looping: do not go out of bounds for m_VisitInfo array
+	//while (!vPassageSet.IsEOF() && VisitListIndex < VISIT_LIST_LENGTH) {
+	//	CTime visitDate = vPassageSet.m_VehiclePassageEntryDateTime;  
+	//	m_formCBoxVisitList.AddString(visitDate.Format("%d/%m/%Y %X"));
+	//	m_VisitInfo[VisitListIndex++].Prepare(
+	//		DriverNameFromID(vPassageSet.m_VehiclePassageDriverID),
+	//		KeeperNameFromID(vPassageSet.m_VehiclePassageUserID),
+	//		GateFromID(vPassageSet.m_VehiclePassageGateID));
+
+	//	vPassageSet.MoveNext();
+	//}
+
 	// textual information done.
 	// now, update the relevant images: FrontalView, ChassisBottomRef, ChassisBottomCur
-	CVehicleSet vSet;
-	vSet.m_strFilter = filter;
-	vSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
-	if (vSet.IsBOF()) {
-		// this should never happen.
-		// if a record for a license plate exists in the VehiclePassage table, 
-		// then there must be (exactly) one entry in the Vehicle table.
-		MessageBox(CString{ _T("Kayitli arac bulunamadi. Plaka: ") }+strLP);
-	}
-	// checking the assertion above: exactly one record must match the license plate
-	ASSERT(vSet.GetRecordCount() == 1);
+	//CVehicleSet vSet;
+	//vSet.m_strFilter = filter;
+	//vSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	//if (vSet.IsBOF()) {
+	//	// this should never happen.
+	//	// if a record for a license plate exists in the VehiclePassage table, 
+	//	// then there must be (exactly) one entry in the Vehicle table.
+	//	MessageBox(CString{ _T("Kayitli arac bulunamadi. Plaka: ") }+strLP);
+	//}
+	//// checking the assertion above: exactly one record must match the license plate
+	//ASSERT(vSet.GetRecordCount() == 1);
 
 	// prepare the reference image filename: <license_plate>_ref.jpg
 	std::string strRefFilename = PrepareImageFilename(strLP, CString{ _T("ref.jpg") });
@@ -2318,7 +2544,7 @@ void CARALGISView::OnCbnSelchangeFormCboxVisitlist()
 	}
 
 	m_PrevCVMat = m_CVImagePrev.clone();
-	m_MatToGDIPrev = new PkMatToGDI(m_PrevImgBMP, false);
+	m_MatToGDIPrev = new PkMatToGDI(m_PrevImgBMP, FALSE);
 	m_MatToGDIPrev->DrawImg(m_CVImagePrev);
 
 	// fill in the rest of visit information boxes.
@@ -2715,4 +2941,21 @@ BOOL CARALGISView::OnCommand(WPARAM wParam, LPARAM lParam)
 	}
 
 	return CColorFormView::OnCommand(wParam, lParam);
+}
+
+// handles the report generation for user filled filters
+void CARALGISView::OnReportSearch()
+{
+	// TODO: Add your command handler code here
+	CSearchDlg dSearch{ m_DriverList, m_VehicleTypeList, m_GateList };
+	if (dSearch.DoModal() == IDOK)
+	{
+		// make the database query and generate output
+		MessageBox(_T("Filter received: ") + dSearch.getFilter());
+	}
+	else
+	{ // cold-feet; do not do anything
+
+	}
+
 }
