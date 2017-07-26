@@ -11,6 +11,7 @@
 #include "ARALGIS.h"
 #endif
 
+
 #include "MainFrm.h"
 
 #include "ARALGISDoc.h"
@@ -19,23 +20,28 @@
 #include ".\ImageFiltering\HeaderFiles\pixkit-image.hpp"
 #include ".\ImageFiltering\HeaderFiles\cvt.hpp"
 
+// database access files
 #include "VehicleSet.h"
 #include "GateSet.h"
 #include "UserInfoSet.h"
 #include "UserSet.h"
 #include "VehicleTypeSet.h"
-//#include "VehicleView.h"
-
 #include "VehiclePassageSet.h"
 #include "VehicleDlg.h"
-
 #include "DriverInfoSet.h"
 #include "DriverSet.h"
-
+#include "DriverTypeSet.h"
 #include "DBUpdateAckDlg.h"
 #include "DriverAckDlg.h"
-
 #include "SearchDlg.h"
+#include "ReportDlg.h"
+#include "DriverDlg.h"
+#include "DriverInfoDlg.h"
+// end of database access files
+
+// GUI files
+#include "UserLog.h"
+// end of GUI files
 
 #include "BitmapDlg.h"
 #include "ImageToolDialog.h"
@@ -119,13 +125,16 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_BN_CLICKED(IDC_CHECK_CROP, &CARALGISView::OnBnClickedCheckCrop)
 	ON_WM_MOUSEWHEEL()
 	ON_COMMAND(ID_RAPORLAR_RAPOR1, &CARALGISView::OnReportSearch)
+	ON_CBN_SELCHANGE(IDC_FORM_CBOX_DRIVERLIST, &CARALGISView::OnCbnSelchangeFormCboxDriverlist)
+	ON_BN_CLICKED(IDC_FORM_B_DRIVERINFO, &CARALGISView::OnBnClickedFormBDriverinfo)
+	ON_COMMAND(ID_DRIVER_NEW, &CARALGISView::OnDriverNew)
+	ON_COMMAND(ID_USER_NEW, &CARALGISView::OnUserNew)
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
 
 CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 //, m_PlakaStr(_T(""))
-
 , m_FormLPEntry(_T(""))
 , m_FormELP(_T(""))
 , m_FormEFVI(_T(""))
@@ -168,6 +177,7 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 	m_AutoFit = false;
 	g_dCarDetectCount = 0;
 
+	/*
 	// ali : ARALGISCarsDir is an environment variable which should be set
 	// (at the time of the installation of ARALGIS)
 	// pointing to the directory containing the Image directories
@@ -180,29 +190,49 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 	
 	/// bora2ali bug-fix begins
 	// the environment variable does not contain the trailing directory separator
-	//m_PathToCars += _T("\\");
+	m_PathToCars += _T("\\");
 	// currently we have two image subdirectories:
 	// FrontalView and ChassisBottom
 	// we may very well end up removing the former.
-	//m_PathToCars += _T("ChassisBottom\\");
+	m_PathToCars += _T("ChassisBottom\\");
 	//strcpy(m_PathToCars, "\\");
 	/// bora2ali bug-fix ends
-
-	// Prepare the driver list to be displayed in the Driver List Combo box
-	PrepareDriverMap();
-	PrepareDriverList();
-
-	// Prepare the user list to be displayed in the User List Combo box
-	PrepareUserMap();
-	PrepareUserList();
-
-	// Prepare the gate list to be displayed in the Gate List Combo box
-	PrepareGateMap();
-	PrepareGateList();
+	*/
+	m_ImagePrep = CImagePrep::GetInstance();
 
 	// Prepare the Vehicle Type list to be passed on to the search query
 	PrepareVehicleTypeMap();
 	PrepareVehicleTypeList();
+	PreparePosVehicleTypeIdMap();
+
+	// Prepare the Driver Type list for driver insertion
+	PrepareDriverTypeMap();
+	PrepareDriverTypeList();
+	PreparePosDriverTypeIdMap();
+
+	// Prepare the driver list to be displayed in the Driver List Combo box
+	PrepareDriverMap();
+	PrepareDriverList();
+	PreparePosDriverIdMap();
+	// and display it.
+	// important note: because the combobox has not been properly set up yet at this point,
+	// the call to filling it fails. 
+	// this should be done in OnInitialUpdate.
+	// FillDriverList();
+
+	// Prepare the user list to be displayed in the User List Combo box
+	PrepareUserMap();
+	PrepareUserList();
+	PreparePosUserIdMap();
+	// and display it
+	// FillUserList();
+
+	// Prepare the gate list to be displayed in the Gate List Combo box
+	PrepareGateMap();
+	PrepareGateList();
+	PreparePosGateIdMap();
+	// and display it
+	// FillGateList();
 
 	// set the background color variable
 	m_brush.CreateSolidBrush(RGB(COLOUR_RED, COLOUR_GREEN, COLOUR_BLUE));
@@ -622,6 +652,11 @@ void CARALGISView::OnInitialUpdate()
 
 	// start 1 second interval timer
 	SetTimer(DISPLAY_TIMER_ID, TIMER_PERIOD_IN_MS, NULL);
+
+	// fill the drop down boxes here.
+	FillDriverList();
+	FillUserList();
+	FillGateList();
 }
 
 
@@ -710,7 +745,7 @@ afx_msg LRESULT CARALGISView::OnCameraDataReady(WPARAM wParam, LPARAM lParam)
 			m_MatToImageTest.load(m_TestCVMat);
 			//Invalidate(); UpdateWindow();
 
-			std::string strFilename = PrepareImageFilename(m_FormELP, m_FormEDT);
+			std::string strFilename = m_ImagePrep->PrepareChassisFilename(m_FormELP, m_FormEDT); // PrepareImageFilename(m_FormELP, m_FormEDT);
 			g_TestImageFileName = strFilename;
 			SetEvent(g_CameraDBServerWriteFileEvent);
 
@@ -1427,7 +1462,7 @@ void CARALGISView::ClearPictureBoxes()
 
 void CARALGISView::PrepareDriverList()
 {
-	CDriverSet dSet;
+	//CDriverSet dSet;
 	//dSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
 	m_DriverList.clear();
 	//while (!dSet.IsEOF())
@@ -1444,6 +1479,35 @@ void CARALGISView::PrepareDriverList()
 		if (p1.first == p2.first) return p1.second < p2.second;
 		else return p1.first < p2.first;
 	});
+	// name and lastname can be the same for different entries; 
+	// distinguish them with suffix counters
+	int suffixCnt = 1;
+	for (auto index = 1; index < m_DriverList.size(); ++index)
+	{
+		if (m_DriverList[index].first == m_DriverList[index - 1].first)
+		{
+			CString strSuffix;
+			strSuffix.Format(_T("%d"), suffixCnt);
+			m_DriverList[index - 1].first += strSuffix;
+			++suffixCnt;
+		}
+		else 
+		{
+			if (suffixCnt > 1) 
+			{
+				CString strSuffix;
+				strSuffix.Format(_T("%d"), suffixCnt);
+				m_DriverList[index-1].first += strSuffix;
+				suffixCnt = 1;
+			}
+		}
+	}
+	if (suffixCnt > 1)
+	{
+		CString strSuffix;
+		strSuffix.Format(_T("%d"), suffixCnt);
+		m_DriverList[m_DriverList.size() - 1].first += strSuffix;
+	}
 }
 
 void CARALGISView::PrepareUserList()
@@ -1482,24 +1546,55 @@ void CARALGISView::PrepareVehicleTypeList()
 	});
 }
 
+void CARALGISView::PrepareDriverTypeList()
+{
+	m_DriverTypeList.clear();
+	for (const auto & dt : m_DriverTypeMap)
+		m_DriverTypeList.push_back(std::make_pair(dt.second, dt.first));
+	std::sort(m_DriverTypeList.begin(), m_DriverTypeList.end(),
+		[](std::pair<CString, long> dt1, std::pair<CString, long> dt2) {
+		if (dt1.first == dt2.first) return dt1.second < dt2.second;
+		else return dt1.first < dt2.first;
+	});
+}
+
 void CARALGISView::PrepareDriverMap()
 {
 	CDriverSet dSet;
 	dSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
-	m_DriverList.clear();
+	m_DriverMap.clear();
 	while (!dSet.IsEOF())
 	{
 		CString strDisplayName = dSet.m_Name + CString{ _T(" ") }+dSet.m_LastName;
 		m_DriverMap[dSet.m_ID] = strDisplayName;
 		dSet.MoveNext();
 	}
+	dSet.MoveFirst();
+	m_DriverInfoMap.clear();
+	DriverInfo dInfo;
+	while (!dSet.IsEOF())
+	{
+		dInfo._NatIdNo = dSet.m_NatIDNo;
+		if (dSet.m_Type > 0)
+			dInfo._Type = m_DriverTypeMap[dSet.m_Type];
+		else
+			dInfo._Type = CString{ _T("Bilinmeyen kategori") };
+		//if (dSet.m_Division > 0)
+			//dInfo._Division = dSet.m_Division;
+		//else
+			//dInfo._Division = CString{ _T("Bilinmeyen birlik") };
+		dInfo._Division = CString{ _T("Piyade") };
+		m_DriverInfoMap[dSet.m_ID] = dInfo;
+		dSet.MoveNext();
+	}
 }
+
 
 void CARALGISView::PrepareUserMap()
 {
 	CUserSet uSet;
 	uSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
-	m_UserList.clear();
+	m_UserMap.clear();
 	while (!uSet.IsEOF())
 	{
 		CString strDisplayName = uSet.m_Name + CString{ _T(" ") } +uSet.m_LastName;
@@ -1512,7 +1607,7 @@ void CARALGISView::PrepareGateMap()
 {
 	CGateSet gSet;
 	gSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
-	m_GateList.clear();
+	m_GateMap.clear();
 	while (!gSet.IsEOF())
 	{
 		m_GateMap[gSet.m_GateID] = gSet.m_GateType;
@@ -1524,6 +1619,7 @@ void CARALGISView::PrepareVehicleTypeMap()
 {
 	CVehicleTypeSet vTypeSet;
 	vTypeSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	m_VehicleTypeMap.clear();
 	while (!vTypeSet.IsEOF())
 	{
 		m_VehicleTypeMap[vTypeSet.m_VTID] = vTypeSet.m_Type;
@@ -1531,15 +1627,60 @@ void CARALGISView::PrepareVehicleTypeMap()
 	}
 }
 
+void CARALGISView::PrepareDriverTypeMap()
+{
+	CDriverTypeSet setDriverType;
+	setDriverType.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	m_DriverTypeMap.clear();
+	while (!setDriverType.IsEOF())
+	{
+		m_DriverTypeMap[setDriverType.m_DTID] = setDriverType.m_Type;
+		setDriverType.MoveNext();
+	}
+}
+
+void CARALGISView::PreparePosDriverIdMap()
+{
+	long pos = 0;
+	for (auto d : m_DriverList)
+		m_PosDriverIdMap[pos++] = d.second;
+}
+
+void CARALGISView::PreparePosUserIdMap()
+{
+	long pos = 0;
+	for (auto u : m_UserList)
+		m_PosUserIdMap[pos++] = u.second;
+}
+
+void CARALGISView::PreparePosGateIdMap()
+{
+	long pos = 0;
+	for (auto g : m_GateList)
+		m_PosGateIdMap[pos++] = g.second;
+}
+
+void CARALGISView::PreparePosVehicleTypeIdMap()
+{
+	long pos = 0;
+	for (auto v : m_VehicleTypeList)
+		m_PosVehicleTypeIdMap[pos++] = v.second;
+}
+
+void CARALGISView::PreparePosDriverTypeIdMap()
+{
+	long pos = 0;
+	for (auto dt : m_DriverTypeList)
+		m_PosDriverTypeIdMap[pos++] = dt.second;
+}
 
 void CARALGISView::FillDriverList()
 {
 	m_FormCBDriverList.ResetContent();
 	m_FormCBDriverList.InsertString(0,CString{ _T("Bilinmeyen Surucu") });
-	m_FormCBDriverList.InsertString(1,CString{ _T("Yeni Surucu Ekle") });
-	for(auto p : m_DriverList)
+	for (auto d : m_DriverList)
 	{
-		m_FormCBDriverList.InsertString(-1,p.first);
+		m_FormCBDriverList.InsertString(-1,d.first);
 	}
 }
 
@@ -1548,8 +1689,10 @@ void CARALGISView::FillUserList()
 	m_FormCBUserList.ResetContent();
 	m_FormCBUserList.InsertString(0, CString{ _T("Bilinmeyen Kullanici") });
 	m_FormCBUserList.InsertString(1, CString{ _T("Yeni Kullanici Ekle") });
+	long pos = 0;
 	for (auto u : m_UserList)
 	{
+		m_PosUserIdMap[pos++] = u.second;
 		m_FormCBUserList.InsertString(-1, u.first);
 	}
 }
@@ -1559,9 +1702,20 @@ void CARALGISView::FillGateList()
 	m_FormCBGateList.ResetContent();
 	m_FormCBGateList.InsertString(0, CString{ _T("Bilinmeyen Kapi") });
 	m_FormCBGateList.InsertString(1, CString{ _T("Yeni Kapi Ekle") });
+	long pos = 0;
 	for (auto g : m_GateList)
 	{
+		m_PosGateIdMap[pos++] = g.second;
 		m_FormCBGateList.InsertString(-1, g.first);
+	}
+}
+
+void CARALGISView::FillVehicleTypeList()
+{
+	long pos = 0;
+	for (auto v : m_VehicleTypeList)
+	{
+		m_PosVehicleTypeIdMap[pos++] = v.second;
 	}
 }
 
@@ -1638,9 +1792,9 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	// are set to nullptr at this point.
 
 	m_formCBoxVisitList.ResetContent();
-	FillDriverList();
+	/*FillDriverList();
 	FillUserList();
-	FillGateList();
+	FillGateList();*/
 
 	CVehiclePassageSet vPassageSet;
 	// find all visits of the given LP
@@ -1799,7 +1953,7 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	//ASSERT(vSet.GetRecordCount() == 1);
 
 	// prepare the reference image filename: <license_plate>_ref.jpg
-	std::string strRefFilename = PrepareImageFilename(strLP, CString{ _T("ref.jpg") });
+	std::string strRefFilename = m_ImagePrep->PrepareChassisFilename(strLP, CString{ _T("ref.jpg") }); // PrepareImageFilename(strLP, CString{ _T("ref.jpg") });
 
 	//if (g_CVImageRef.rows != 0 || g_CVImageRef.cols != 0)
 	//{
@@ -1874,6 +2028,7 @@ void CARALGISView::GetTestImageAsByte()
 	}
 }
 
+/*
 // returns the full path for the default image
 std::string CARALGISView::PrepareImageFilename()
 {
@@ -1907,6 +2062,7 @@ std::string CARALGISView::PrepareImageFilename(CString const & _lp, CString cons
 	
 	return strFinalFilename;
 }
+*/
 
 BOOL CARALGISView::SaveImage(std::string const & _filename)
 {
@@ -1926,7 +2082,7 @@ BOOL CARALGISView::SaveImage(std::string const & _filename)
 			//MessageBox(_T("m_TestCVMat is empty!\nWriting default image."));
 			//m_TestCVMat = cv::imread("c:\\ali\\github-home\\ARALGIS\\Cars\\ChassisBottom\\default.jpg", cv::IMREAD_COLOR);
 			//m_TestCVMat = cv::imread(PrepareImageFilename(), cv::IMREAD_COLOR);
-			MatToSave = cv::imread(PrepareImageFilename(), cv::IMREAD_COLOR);
+			MatToSave = cv::imread(m_ImagePrep->PrepareChassisFilename(), cv::IMREAD_COLOR); //PrepareImageFilename(), cv::IMREAD_COLOR);
 		}
 		else
 		{
@@ -1951,6 +2107,10 @@ BOOL CARALGISView::SaveImage(std::string const & _filename)
 //		MatToSave = cv::imread(PrepareImageFilename(), cv::IMREAD_COLOR);
 //#endif
 	}
+	else
+	{
+		MatToSave = m_TestCVMat;
+	}
 
 	// ali - addendum
 	// In the RELEASE version: 
@@ -1974,7 +2134,7 @@ BOOL CARALGISView::SaveImage(std::string const & _filename)
 // used in the SaveImage member method.
 BOOL CARALGISView::UpdateRefImage(CString const & _lp)
 {
-	std::string strRefFilename = PrepareImageFilename(_lp, CString{ _T("ref.jpg") });
+	std::string strRefFilename = m_ImagePrep->PrepareChassisFilename(_lp, CString{ _T("ref.jpg") }); //  PrepareImageFilename(_lp, CString{ _T("ref.jpg") });
 	return SaveImage(strRefFilename);
 }
 
@@ -1982,7 +2142,7 @@ BOOL CARALGISView::UpdateRefImage(CString const & _lp)
 void CARALGISView::UpdateVehiclePassage()
 {
 	// begin by saving the current image in m_CVImageTest
-	std::string strFilename = PrepareImageFilename(m_FormELP, m_FormEDT);
+	std::string strFilename = m_ImagePrep->PrepareChassisFilename(m_FormELP, m_FormEDT); // PrepareImageFilename(m_FormELP, m_FormEDT);
 	SaveImage(strFilename);
 
 	// update the reference image
@@ -2507,7 +2667,7 @@ void CARALGISView::OnCbnSelchangeFormCboxVisitlist()
 	strVisitDateTime.Remove(':');
 	strVisitDateTime += _T(".jpg");
 	// m_FormELP must have been set at the time of the License Plate reception
-	std::string strFilename = PrepareImageFilename(m_FormELP, strVisitDateTime);
+	std::string strFilename = m_ImagePrep->PrepareChassisFilename(m_FormELP, strVisitDateTime); // PrepareImageFilename(m_FormELP, strVisitDateTime);
 	//CString strPrevTag = m_FormELP + _T("_") + strVisitDateTime;
 	//std::string strFilename = PrepareImageFilename(m_FormELP, strVisitDateTime);
 	
@@ -2520,7 +2680,7 @@ void CARALGISView::OnCbnSelchangeFormCboxVisitlist()
 	if (dwAttrib == INVALID_FILE_ATTRIBUTES ||
 		(dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) 
 	{ // if no such file exists, use the default image
-		strFilename = PrepareImageFilename();
+		strFilename = m_ImagePrep->PrepareChassisFilename(); //PrepareImageFilename();
 	}
 
 	if (m_CVImagePrev.rows != 0 || m_CVImagePrev.cols != 0)
@@ -2947,15 +3107,159 @@ BOOL CARALGISView::OnCommand(WPARAM wParam, LPARAM lParam)
 void CARALGISView::OnReportSearch()
 {
 	// TODO: Add your command handler code here
-	CSearchDlg dSearch{ m_DriverList, m_VehicleTypeList, m_GateList };
+	CSearchDlg dSearch{ m_DriverList, m_VehicleTypeList, m_GateList, m_PosDriverIdMap, m_PosVehicleTypeIdMap, m_PosGateIdMap };
 	if (dSearch.DoModal() == IDOK)
 	{
 		// make the database query and generate output
-		MessageBox(_T("Filter received: ") + dSearch.getFilter());
+		// MessageBox(_T("Filter received: ") + dSearch.getFilter());
+		CString strFilter = dSearch.getFilter();
+		CVehiclePassageSet vPassageSet{};
+		vPassageSet.m_strFilter = strFilter;
+		vPassageSet.Open(CRecordset::snapshot, nullptr, CRecordset::readOnly);
+		CReportDlg rDlg{ vPassageSet, m_DriverMap, m_UserMap, m_GateMap, m_VehicleTypeMap };
+		if (rDlg.DoModal() == IDOK)
+		{
+			
+		}
+		else
+		{
+			
+		}
 	}
 	else
 	{ // cold-feet; do not do anything
 
 	}
 
+}
+
+
+void CARALGISView::OnCbnSelchangeFormCboxDriverlist()
+{
+	// TODO: Add your control notification handler code here
+	int pos = m_FormCBDriverList.GetCurSel();
+	if (pos > 0)
+	{ // a driver is selected; reset the relevant Id member
+		m_DID = m_PosDriverIdMap[pos - 1];
+	} 
+	else
+	{ // unknown driver is selected; set the relevant Id member to -1
+		m_DID = -1;
+	}
+}
+
+
+void CARALGISView::OnBnClickedFormBDriverinfo()
+{
+	// TODO: Add your control notification handler code here
+	CString _NatIdNo;
+	CString _Type;
+	CString _Division{ _T("Piyade") };
+	int pos = m_FormCBDriverList.GetCurSel();
+	if (pos > 0)
+	{
+		long lID = m_PosDriverIdMap[pos-1];
+		_NatIdNo = m_DriverInfoMap[lID]._NatIdNo;
+		_Type = m_DriverInfoMap[lID]._Type;
+		_Division = m_DriverInfoMap[lID]._Division;
+		CDriverInfoDlg dlgDriverInfo(_NatIdNo, _Type, _Division);
+		dlgDriverInfo.DoModal();
+	}
+	else
+	{
+		MessageBox(_T("Lutfen bir surucu secin."));
+	}
+
+}
+
+
+void CARALGISView::OnDriverNew()
+{
+	// TODO: Add your command handler code here
+	CDriverDlg dlgDriver(m_DriverTypeList, m_PosDriverTypeIdMap);
+	if (dlgDriver.DoModal() == IDOK)
+	{
+		CDriverSet setDriver;
+		setDriver.Open(CRecordset::dynamic, nullptr, CRecordset::appendOnly);
+		setDriver.AddNew();
+		// for the following, it is assumed that any field not explicitly set
+		// the recordset is sending (database) NULL to the sql server.
+		// in case of doubt, it may be better to explicitly set those fields to NULL.
+		// Check CRecordset::SetFieldNull(&m_Name, true); 
+		if (dlgDriver.getName() != _T(""))
+			setDriver.m_Name = dlgDriver.getName();
+		if (dlgDriver.getLastName() != _T(""))
+			setDriver.m_LastName = dlgDriver.getLastName();
+		if (dlgDriver.getType() > -1)
+			setDriver.m_Type = dlgDriver.getType();
+		if (dlgDriver.getDriverLicenseIssueCity() != _T(""))
+			setDriver.m_DriverLicenseIssueCity = dlgDriver.getDriverLicenseIssueCity();
+		if (dlgDriver.getDriverLicenseIssueDistrict() != _T(""))
+			setDriver.m_DriverLicenseIssueDistrict = dlgDriver.getDriverLicenseIssueDistrict();
+		setDriver.m_NatIDNo = dlgDriver.getNatIDNo();
+		if (dlgDriver.getDateOfBirth().GetStatus() == COleDateTime::valid)
+		{
+			COleDateTime dtBirth = dlgDriver.getDateOfBirth();
+			//CString strBirth;
+			//strBirth = dtBirth.Format(_T("%Y-%m-%d"));
+			setDriver.m_DateofBirth = dtBirth;
+		}
+		if (dlgDriver.getBirthPlace() != _T(""))
+			setDriver.m_BirthPlace = dlgDriver.getBirthPlace();
+		if (dlgDriver.getNatIDIssueCity() != _T(""))
+			setDriver.m_NatIDIssueCity = dlgDriver.getNatIDIssueCity();
+		if (dlgDriver.getNatIDIssueDistrict())
+			setDriver.m_NatIDIssueDistrict = dlgDriver.getNatIDIssueDistrict();
+		if (dlgDriver.getNatIDVolNo() > 0)
+			setDriver.m_NatIDVolNo = dlgDriver.getNatIDVolNo();
+		if (dlgDriver.getNatIDRowNo() > 0)
+			setDriver.m_NatIDRowNo = dlgDriver.getNatIDRowNo();
+		if (dlgDriver.getNatIDLogNo() > 0)
+			setDriver.m_NatIDLogNo = dlgDriver.getNatIDLogNo();
+		if (dlgDriver.getFatherName() != _T(""))
+			setDriver.m_FatherName = dlgDriver.getFatherName();
+		if (dlgDriver.getMotherName() != _T(""))
+			setDriver.m_MotherName = dlgDriver.getMotherName();
+		if (dlgDriver.getBloodType() != _T(""))
+			setDriver.m_BloodType = dlgDriver.getBloodType();
+		if (dlgDriver.getIssueAuthority() != _T(""))
+			setDriver.m_IssueAuthority = dlgDriver.getIssueAuthority();
+
+		if (!setDriver.CanAppend()) {
+			MessageBox(_T("Something went wrong; database cannot be appended"));
+			m_FormCBDriverList.SetCurSel(0);
+			return;
+		}
+		setDriver.Update();
+		// database updated; now revise the memory cache
+		// note: this is brute force and not incremental
+		// it will probably be better to only insert the new driver
+		PrepareDriverMap();
+		PrepareDriverList();
+		PreparePosDriverIdMap();
+		FillDriverList();
+		m_FormCBDriverList.SetCurSel(0);
+	}
+	else
+	{
+		// reset the driver selection to "Bilinmeyen Surucu"
+		m_FormCBDriverList.SetCurSel(0);
+		return;
+	}
+
+}
+
+
+void CARALGISView::OnUserNew()
+{
+	// TODO: Add your command handler code here
+	CUserLog logUser;
+	if (logUser.Login())
+	{ // login was successful
+		MessageBox(_T("In ARALGSISView, after successful login"));
+	}
+	else
+	{ // login was unsuccessful
+		MessageBox(_T("In ARALGISView, after failed login"));
+	}
 }

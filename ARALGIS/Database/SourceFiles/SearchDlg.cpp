@@ -14,6 +14,9 @@ IMPLEMENT_DYNAMIC(CSearchDlg, CDialogEx)
 CSearchDlg::CSearchDlg(const VectorType& _driverList,
 const VectorType& _vehicleTypeList,
 const VectorType& _gateList,
+MapType& _PosDriverIdMap,
+std::unordered_map<long,long>& _PosVehicleTypeIdMap,
+MapType& _PosGateIdMap,
 CWnd* pParent /*=NULL*/)
 	: CDialogEx(CSearchDlg::IDD, pParent)
 	, m_DateBegin{}
@@ -23,6 +26,9 @@ CWnd* pParent /*=NULL*/)
 	, m_DriverList{ _driverList }
 	, m_VehicleTypeList{ _vehicleTypeList }
 	, m_GateList{ _gateList }
+	, m_PosDriverIdMap{ _PosDriverIdMap }
+	, m_PosVehicleTypeIdMap{ _PosVehicleTypeIdMap }
+	, m_PosGateIdMap{ _PosGateIdMap }
 {
 }
 
@@ -56,7 +62,7 @@ BOOL CSearchDlg::OnInitDialog()
 // only when OK is pressed will it collect the field contents and form the filter string
 void CSearchDlg::OnOK()
 {
-	m_strFilter = _T("1");
+	m_strFilter = _T("1=1");
 	DATETIMEPICKERINFO dtpi;
 	dtpi.cbSize = sizeof(DATETIMEPICKERINFO);
 	m_DateBegin.GetDateTimePickerInfo(&dtpi);
@@ -64,7 +70,7 @@ void CSearchDlg::OnOK()
 	{
 		CTime tDateBegin{};
 		m_DateBegin.GetTime(tDateBegin);
-		m_strFilter = _T(" AND [EntryDateTime] >= '");
+		m_strFilter += _T(" AND [EntryDateTime] >= '");
 		m_strFilter += tDateBegin.Format("%Y-%m-%d %H:%M");
 		m_strFilter += _T("'");
 	}
@@ -74,7 +80,7 @@ void CSearchDlg::OnOK()
 	{
 		CTime tDateEnd{};
 		m_DateEnd.GetTime(tDateEnd);
-		m_strFilter += _T(" AND [ExitDateTime] <= '");
+		m_strFilter += _T(" AND [EntryDateTime] <= '");
 		m_strFilter += tDateEnd.Format("%Y-%m-%d %H:%M");
 		m_strFilter += _T("'");
 	}
@@ -87,11 +93,58 @@ void CSearchDlg::OnOK()
 		m_strFilter += m_strLicensePlate;
 		m_strFilter += _T("'");
 	}
-	MessageBox(_T("After license plate: ") + m_strFilter);
+	//MessageBox(_T("After license plate: ") + m_strFilter);
 
-	if (m_cVehicleType) {}
-	if (m_cDriver) {}
-	if (m_cGate) {}
+	long posVehicleType = m_cVehicleType.GetCurSel();
+	// no selection and selecting "Butun Araclar" are equivalent.
+	if (posVehicleType != CB_ERR && posVehicleType > 0) 
+	{
+		m_strFilter += _T(" AND [VehicleType] = '");
+		CString strVTID{};
+		// do not forget to decrement the position index 
+		// to account for the first line "Butun Araclar".
+		long id = m_PosVehicleTypeIdMap[posVehicleType - 1];
+		strVTID.Format(_T("%ld"), id);
+		/*auto iter = m_PosVehicleTypeIdMap.find(posVehicleType-1);
+		strVTID.Format(_T("%ld"), *iter);*/
+		m_strFilter += strVTID;
+		m_strFilter += _T("'");
+	}
+	//MessageBox(_T("After Vehicle Type: ") + m_strFilter);
+
+	long posDriver = m_cDriver.GetCurSel();
+	// no selection and selecting "Butun Suruculer" are equivalent
+	if (posDriver != CB_ERR && posDriver > 0)
+	{
+		m_strFilter += _T(" AND [DriverID] = '");
+		CString strDriver{};
+		// do not forget to decrement the position index 
+		// to account for the first line "Butun Suruculer"
+		long id = m_PosDriverIdMap[posDriver - 1];
+		strDriver.Format(_T("%ld"), id);
+		/*auto iter = m_PosDriverIdMap.find(posDriver);
+		strDriver.Format(_T("%ld"), *iter);*/
+		m_strFilter += strDriver;
+		m_strFilter += _T("'");
+	}
+	//MessageBox(_T("After Driver: ") + m_strFilter);
+
+	long posGate = m_cGate.GetCurSel();
+	// no selection and selecting "Butun Kapilar" are equivalent
+	if (posGate != CB_ERR && posGate > 0) 
+	{
+		m_strFilter += _T(" AND [GateID] = '");
+		CString strGate;
+		// do not foget to decrement the position index
+		// to account for the first line "Butun Kapilar"
+		long id = m_PosGateIdMap[posGate - 1];
+		strGate.Format(_T("%ld"), id);
+		/*auto iter = m_PosGateIdMap.find(posGate-1);
+		strGate.Format(_T("%ld"), *iter);*/
+		m_strFilter += strGate;
+		m_strFilter += _T("'");
+	}
+	//MessageBox(_T("After Gate: ") + m_strFilter);
 
 	CDialogEx::OnOK();
 }

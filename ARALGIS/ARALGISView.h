@@ -27,11 +27,19 @@
 
 #include "VisitInfo.h"
 #include <unordered_map>
+#include "ImagePrep.h"
 
 class CARALGISDoc;
 
 class CARALGISView : public CColorFormView
 {
+protected:
+	struct DriverInfo {
+		CString _NatIdNo;
+		CString _Type;
+		CString _Division;
+	};
+
 protected: // create from serialization only
 	CARALGISView();
 	virtual ~CARALGISView();
@@ -79,9 +87,9 @@ protected:
 	void ClearPictureBoxes();
 
 	// prepares the image filename to be saved in the Cars/ChassisBottom directory
-	std::string PrepareImageFilename();
+	/* std::string PrepareImageFilename();
 	std::string PrepareImageFilename(CString const &, CTime const &);
-	std::string PrepareImageFilename(CString const &, CString const &);
+	std::string PrepareImageFilename(CString const &, CString const &); */
 	BOOL SaveImage(std::string const &);
 	BOOL UpdateRefImage(CString const &);
 
@@ -91,6 +99,7 @@ protected:
 	// prepares m_DriverList to be used in the driver list combo box
 	void PrepareDriverList();
 	void PrepareDriverMap();
+	void PreparePosDriverIdMap();
 	// fills the drop down list with the contents of m_DriverList
 	void FillDriverList();
 	void FillDriverBox();
@@ -98,6 +107,7 @@ protected:
 	// prepares m_UserList to be used in the keeper list combo box
 	void PrepareUserList();
 	void PrepareUserMap();
+	void PreparePosUserIdMap();
 	// fills the drop down list with the contents of m_UserList
 	void FillUserList();
 	void FillUserBox();
@@ -105,6 +115,7 @@ protected:
 	// prepares m_GateList to be used in the gate list combo box
 	void PrepareGateList();
 	void PrepareGateMap();
+	void PreparePosGateIdMap();
 	// fills the drop down list with the contents of m_GateList
 	void FillGateList();
 	void FillGateBox();
@@ -112,6 +123,15 @@ protected:
 	// prepares m_VehicleTypeList to be passed on to the search query
 	void PrepareVehicleTypeList();
 	void PrepareVehicleTypeMap();
+	void PreparePosVehicleTypeIdMap();
+	// fills the drop down list with the contents of the m_VehicleTypeList
+	void FillVehicleTypeList();
+//M	void FillVehicleTypeBox();
+
+	// prepares m_DriverTypeList to be used by the CDriverDlg
+	void PrepareDriverTypeList();
+	void PrepareDriverTypeMap();
+	void PreparePosDriverTypeIdMap();
 
 	// prepares a disjunction (CString) for a given vector of ID's (of type long)
 	CString GenDisjunctionOfVec(CString colName, const std::vector<long> & vec);
@@ -207,29 +227,41 @@ protected:
 	long m_UID;
 
 	// holds the absolute path to the 'Cars' directory
-	CString m_PathToCars;
+	//CString m_PathToCars;
+	CImagePrep* m_ImagePrep;
 
 	// controls the driver list combo box
 	CComboBox m_FormCBDriverList;
 	// holds the list of drivers in the database
 	std::vector<std::pair<CString, long>> m_DriverList;
 	std::unordered_map<long, CString> m_DriverMap;
+	std::unordered_map<long, long> m_PosDriverIdMap;
+	// maps driver ID to an information summary
+	std::unordered_map<long, DriverInfo> m_DriverInfoMap;
 
 	// controls the user list combo box
 	CComboBox m_FormCBUserList;
 	// holds the list of gate keepers in the database
 	std::vector<std::pair<CString, long>> m_UserList;
 	std::unordered_map<long, CString> m_UserMap;
+	std::unordered_map<long, long> m_PosUserIdMap;
 
 	// controls the gate list combo box
 	CComboBox m_FormCBGateList;
 	// holds the list of gate names in the database
 	std::vector<std::pair<CString, long>> m_GateList;
 	std::unordered_map<long, CString> m_GateMap;
+	std::unordered_map<long, long> m_PosGateIdMap;
 
 	// holds the list of vehicle types in the database
 	std::vector<std::pair<CString, long>> m_VehicleTypeList;
 	std::unordered_map<long, CString> m_VehicleTypeMap;
+	std::unordered_map<long, long> m_PosVehicleTypeIdMap;
+
+	// holds the list of driver types in the database
+	std::vector<std::pair<CString, long>> m_DriverTypeList;
+	std::unordered_map<long, CString> m_DriverTypeMap;
+	std::unordered_map<long, long> m_PosDriverTypeIdMap;
 
 	// keeps track of whether the displayed information 
 	// has been inserted into the VehiclePassage Table
@@ -325,6 +357,10 @@ public:
 	afx_msg LRESULT OnMouseWheelImage(WPARAM wparam, LPARAM lparam);
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnCbnSelchangeFormCboxDriverlist();
+	afx_msg void OnBnClickedFormBDriverinfo();
+	afx_msg void OnDriverNew();
+	afx_msg void OnUserNew();
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

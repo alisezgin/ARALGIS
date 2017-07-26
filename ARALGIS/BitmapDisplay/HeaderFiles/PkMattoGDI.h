@@ -6,6 +6,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 class CARALGISView;
+class CReportDlg;
 
 
 /// PkMatToGDI Class
@@ -33,6 +34,8 @@ class PkMatToGDI
 {
 	// ali: ARALGISView has to use BackgroundClear()
 	friend CARALGISView;
+	// ali: CReportDlg has to use BackgroundClear()
+	friend CReportDlg;
 
 public:
 	//Standard constructor

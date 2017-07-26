@@ -424,3 +424,5 @@ void CARALGISApp::OnAppAbout()
 }
 
 // CARALGISApp message handlers
+
+

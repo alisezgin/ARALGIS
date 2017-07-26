@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -42,15 +42,6 @@
     </Filter>
     <Filter Include="CameraInterface\SourceFiles">
       <UniqueIdentifier>{f33c2992-6a9f-4e24-b5f8-81dfe1efb326}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="BitmapDisplay">
-      <UniqueIdentifier>{3227aa5b-7809-4403-8a3e-105e78e44f24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="BitmapDisplay\HeaderFiles">
-      <UniqueIdentifier>{f90865ec-4dd3-4598-9cc7-8d40863ab80b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="BitmapDisplay\SourceFiles">
-      <UniqueIdentifier>{0f8229a1-d74a-4082-9402-a375929d9df4}</UniqueIdentifier>
     </Filter>
     <Filter Include="ImageFiltering">
       <UniqueIdentifier>{04b80714-dad7-4efa-b49a-db505b44c5f4}</UniqueIdentifier>
@@ -183,6 +174,24 @@
     </Filter>
     <Filter Include="ErrorDisplay\ThreadSafeQueue\SourceFiles">
       <UniqueIdentifier>{75f7266e-d3fa-4a7c-8736-5e87aada19eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{a2973c97-5da3-40a5-bb23-0700a295511b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\HeaderFiles">
+      <UniqueIdentifier>{b830af09-f0ba-49d9-9894-f6bdbc6b3d95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\SourceFiles">
+      <UniqueIdentifier>{0211a152-cc21-4c4d-9387-d20e7f6fd66b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BitmapDisplay">
+      <UniqueIdentifier>{3227aa5b-7809-4403-8a3e-105e78e44f24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BitmapDisplay\HeaderFiles">
+      <UniqueIdentifier>{f90865ec-4dd3-4598-9cc7-8d40863ab80b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BitmapDisplay\SourceFiles">
+      <UniqueIdentifier>{0f8229a1-d74a-4082-9402-a375929d9df4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -396,9 +405,6 @@
     <ClInclude Include="Database\HeaderFiles\DriverSet.h">
       <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
-    <ClInclude Include="DriverAckDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BitmapDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -461,12 +467,39 @@
     </ClInclude>
     <ClInclude Include="ErrorDisplay\ThreadSafeQueue\HeaderFiles\ThreadSafeQueue.h">
       <Filter>ErrorDisplay\ThreadSafeQueue\HeaderFiles</Filter>
-    </ClInclude>    
+    </ClInclude>
     <ClInclude Include="Database\HeaderFiles\SearchDlg.h">
       <Filter>Database\HeaderFiles</Filter>
     </ClInclude>
     <ClInclude Include="Database\HeaderFiles\VehicleTypeSet.h">
       <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\ReportDlg.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\HeaderFiles\ImagePrep.h">
+      <Filter>GUI\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="DriverAckDlg.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\DriverTypeSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\DriverInfoDlg.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\DriverDlg.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\UserLogSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\HeaderFiles\UserLog.h">
+      <Filter>GUI\HeaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\HeaderFiles\LoginDlg.h">
+      <Filter>GUI\HeaderFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -673,12 +706,36 @@
     </ClCompile>
     <ClCompile Include="ErrorDisplay\ThreadSafeQueue\SourceFiles\ThreadSafeQueue.cpp">
       <Filter>ErrorDisplay\ThreadSafeQueue\SourceFiles</Filter>
-     </ClCompile>
-   <ClCompile Include="database\SourceFiles\SearchDlg.cpp">
+    </ClCompile>
+    <ClCompile Include="database\SourceFiles\SearchDlg.cpp">
       <Filter>Database\SourceFiles</Filter>
     </ClCompile>
     <ClCompile Include="Database\SourceFiles\VehicleTypeSet.cpp">
       <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\ReportDlg.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\SourceFiles\ImagePrep.cpp">
+      <Filter>GUI\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\DriverDlg.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\DriverTypeSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\DriverInfoDlg.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\UserLogSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\SourceFiles\UserLog.cpp">
+      <Filter>GUI\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\SourceFiles\LoginDlg.cpp">
+      <Filter>GUI\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -705,9 +762,6 @@
     <Image Include="res\icon1.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\sil\UTARIT.gif">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\bitmap1.bmp">
       <Filter>Resource Files</Filter>
     </Image>
@@ -730,6 +784,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\bitmap2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\sil\UTARİT.gif">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\sil\UTARİT.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

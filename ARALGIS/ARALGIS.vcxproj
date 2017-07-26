@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(MSBuildProjectDirectory)\Database\HeaderFiles;.\ARALGIS\ImageFiltering\HeaderFiles;$(IncludePath)</IncludePath>
-    <SourcePath>$(MSBuildProjectDirectory)\Database\SourceFiles;$(SourcePath)</SourcePath>
+    <IncludePath>$(MSBuildProjectDirectory)\Database\HeaderFiles;.\ARALGIS\ImageFiltering\HeaderFiles;$(MSBuildProjectDirectory)\GUI\HeaderFiles;$(IncludePath)</IncludePath>
+    <SourcePath>$(MSBuildProjectDirectory)\Database\SourceFiles;C:\ali\github-home\ARALGIS\ARALGIS\GUI\SourceFiles;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -239,11 +239,16 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Database\HeaderFiles\BlackListSet.h" />
     <ClInclude Include="Database\HeaderFiles\CameraDBServer.h" />
+    <ClInclude Include="Database\HeaderFiles\DriverDlg.h" />
+    <ClInclude Include="Database\HeaderFiles\DriverInfoDlg.h" />
     <ClInclude Include="Database\HeaderFiles\DriverInfoSet.h" />
     <ClInclude Include="Database\HeaderFiles\DriverSet.h" />
+    <ClInclude Include="Database\HeaderFiles\DriverTypeSet.h" />
     <ClInclude Include="Database\HeaderFiles\GateSet.h" />
+    <ClInclude Include="Database\HeaderFiles\ReportDlg.h" />
     <ClInclude Include="Database\HeaderFiles\SearchDlg.h" />
     <ClInclude Include="Database\HeaderFiles\UserInfoSet.h" />
+    <ClInclude Include="Database\HeaderFiles\UserLogSet.h" />
     <ClInclude Include="Database\HeaderFiles\UserSet.h" />
     <ClInclude Include="Database\HeaderFiles\VehicleInfoSet.h" />
     <ClInclude Include="Database\HeaderFiles\VehiclePassageSet.h" />
@@ -256,6 +261,9 @@
     <ClInclude Include="DriverAckDlg.h" />
     <ClInclude Include="ErrorDisplay\HeaderFiles\ErrorDisplayer.h" />
     <ClInclude Include="ErrorDisplay\ThreadSafeQueue\HeaderFiles\ThreadSafeQueue.h" />
+    <ClInclude Include="GUI\HeaderFiles\ImagePrep.h" />
+    <ClInclude Include="GUI\HeaderFiles\LoginDlg.h" />
+    <ClInclude Include="GUI\HeaderFiles\UserLog.h" />
     <ClInclude Include="ImageDisplayTools\ImageControl\HeaderFiles\Icon.h" />
     <ClInclude Include="ImageDisplayTools\ImageControl\HeaderFiles\ImageControl.h" />
     <ClInclude Include="ImageDisplayTools\ImageControl\HeaderFiles\ResourceList.h" />
@@ -311,11 +319,16 @@
     <ClCompile Include="ColourButton.cpp" />
     <ClCompile Include="Database\SourceFiles\BlackListSet.cpp" />
     <ClCompile Include="Database\SourceFiles\CameraDBServer.cpp" />
+    <ClCompile Include="Database\SourceFiles\DriverDlg.cpp" />
+    <ClCompile Include="Database\SourceFiles\DriverInfoDlg.cpp" />
     <ClCompile Include="Database\SourceFiles\DriverInfoSet.cpp" />
     <ClCompile Include="Database\SourceFiles\DriverSet.cpp" />
+    <ClCompile Include="Database\SourceFiles\DriverTypeSet.cpp" />
     <ClCompile Include="Database\SourceFiles\GateSet.cpp" />
+    <ClCompile Include="Database\SourceFiles\ReportDlg.cpp" />
     <ClCompile Include="database\SourceFiles\SearchDlg.cpp" />
     <ClCompile Include="Database\SourceFiles\UserInfoSet.cpp" />
+    <ClCompile Include="Database\SourceFiles\UserLogSet.cpp" />
     <ClCompile Include="Database\SourceFiles\UserSet.cpp" />
     <ClCompile Include="Database\SourceFiles\VehicleInfoSet.cpp" />
     <ClCompile Include="Database\SourceFiles\VehiclePassageSet.cpp" />
@@ -328,6 +341,9 @@
     <ClCompile Include="DriverAckDlg.cpp" />
     <ClCompile Include="ErrorDisplay\SourceFiles\ErrorDisplayer.cpp" />
     <ClCompile Include="ErrorDisplay\ThreadSafeQueue\SourceFiles\ThreadSafeQueue.cpp" />
+    <ClCompile Include="GUI\SourceFiles\ImagePrep.cpp" />
+    <ClCompile Include="GUI\SourceFiles\LoginDlg.cpp" />
+    <ClCompile Include="GUI\SourceFiles\UserLog.cpp" />
     <ClCompile Include="ImageDisplayTools\ImageControl\SourceFiles\Icon.cpp" />
     <ClCompile Include="ImageDisplayTools\ImageControl\SourceFiles\ImageControl.cpp" />
     <ClCompile Include="ImageDisplayTools\ImageControl\SourceFiles\ResourceList.cpp" />

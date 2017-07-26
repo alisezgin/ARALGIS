@@ -1,20 +1,25 @@
 #pragma once
 #include "afxdtctl.h"
 #include "afxwin.h"
+#include <unordered_map>
 
 
 // CSearchDlg dialog
 
 using VectorType = std::vector<std::pair<CString, long>>;
+using MapType = std::unordered_map<long, long>;
 
 class CSearchDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CSearchDlg)
 
 public:
-	CSearchDlg(const std::vector<std::pair<CString, long>>& _driverList = VectorType{},
-		const std::vector<std::pair<CString, long>>& _vehicleTypeList = VectorType{},
-		const std::vector<std::pair<CString, long>>& _gateList = VectorType{},
+	CSearchDlg(const VectorType& _driverList = VectorType{},
+		const VectorType& _vehicleTypeList = VectorType{},
+		const VectorType& _gateList = VectorType{},
+		MapType& _PosDriverIdMap = MapType{},
+		std::unordered_map<long,long>& _PosVehicleTypeIdMap = MapType{},
+		MapType& _PosGateIdMap = MapType{},
 		CWnd* pParent = NULL);   // standard constructor
 	virtual ~CSearchDlg();
 	virtual BOOL OnInitDialog() override;
@@ -50,12 +55,15 @@ private:
 	CComboBox m_cGate;
 
 	// the database burden relievers are passed (by reference)
-	const std::vector<std::pair<CString, long>>& m_DriverList;
+	const VectorType& m_DriverList;
+	MapType& m_PosDriverIdMap;
 
 	// holds the list of available vehicle types
-	const std::vector<std::pair<CString, long>>& m_VehicleTypeList;
+	const VectorType& m_VehicleTypeList;
+	std::unordered_map<long,long>& m_PosVehicleTypeIdMap;
 
 	// holds the list of gate names in the database
-	const std::vector<std::pair<CString, long>>& m_GateList;
+	const VectorType& m_GateList;
+	MapType& m_PosGateIdMap;
 
 };
