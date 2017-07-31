@@ -121,7 +121,7 @@ BOOL CReportDlg::OnInitDialog()
 		lv.iSubItem++;
 		lv.pszText = _T("");
 		TCHAR tcharDate[20];
-		lstrcpy(tcharDate, m_VehiclePassageSet.m_VehiclePassageEntryDateTime.Format(_T("%Y/%m/%d %H:%M:%S")));
+		lstrcpy(tcharDate, m_VehiclePassageSet.m_VehiclePassageEntryDateTime.Format(_T("%d/%m/%Y %X")));
 		lv.pszText = tcharDate;
 		m_ReportList.SetItem(&lv);
 

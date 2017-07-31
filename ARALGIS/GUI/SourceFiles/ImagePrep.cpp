@@ -18,7 +18,7 @@ CImagePrep::CImagePrep()
 	// FrontalView and ChassisBottom
 	// we may very well end up removing the former.
 	m_strPathToChassis = m_strPathToCars + _T("ChassisBottom\\");
-	m_strPathToFrontal = m_strPathToCars + _T("Frontal\\");
+	m_strPathToFrontal = m_strPathToCars + _T("FrontalView\\");
 
 }
 CImagePrep::~CImagePrep()
