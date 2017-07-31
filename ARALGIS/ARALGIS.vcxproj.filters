@@ -501,6 +501,9 @@
     <ClInclude Include="GUI\HeaderFiles\LoginDlg.h">
       <Filter>GUI\HeaderFiles</Filter>
     </ClInclude>
+    <ClInclude Include="Database\HeaderFiles\DivisionSet.h">
+      <Filter>Database\HeaderFiles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -736,6 +739,9 @@
     </ClCompile>
     <ClCompile Include="GUI\SourceFiles\LoginDlg.cpp">
       <Filter>GUI\SourceFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\SourceFiles\DivisionSet.cpp">
+      <Filter>Database\SourceFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

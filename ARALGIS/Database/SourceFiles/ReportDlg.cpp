@@ -15,6 +15,7 @@ CReportDlg::CReportDlg(CVehiclePassageSet & _vPassageSet
 , MapTypeLStr& _userMap
 , MapTypeLStr& _gateMap
 , MapTypeLStr& _vehicleTypeMap
+, MapTypeLStr& _divisionMap
 	, CWnd* pParent /*=NULL*/)
 	: 
 	CDialogEx(CReportDlg::IDD, pParent)
@@ -23,6 +24,7 @@ CReportDlg::CReportDlg(CVehiclePassageSet & _vPassageSet
 	, m_UserMap(_userMap)
 	, m_GateMap(_gateMap)
 	, m_VehicleTypeMap(_vehicleTypeMap)
+	, m_DivisionMap(_divisionMap)
 	, m_ChassisPicCtrl(NULL)
 	, m_FrontalPicCtrl(NULL)
 {
@@ -103,8 +105,11 @@ BOOL CReportDlg::OnInitDialog()
 		lv.iSubItem++;
 		lv.pszText = _T("");
 		long dID = m_VehiclePassageSet.m_VehiclePassageDriverID;
-		if (dID < 0)
+		if (dID < 0 ||
+			m_VehiclePassageSet.IsFieldNull(&(m_VehiclePassageSet.m_VehiclePassageDriverID)))
+		{
 			lv.pszText = ptrDefault;
+		}
 		else
 		{
 			TCHAR tcharDriver[200];
@@ -123,8 +128,11 @@ BOOL CReportDlg::OnInitDialog()
 		lv.iSubItem++;
 		lv.pszText = _T("");
 		long gID = m_VehiclePassageSet.m_VehiclePassageGateID;
-		if (gID < 0)
+		if (gID < 0 ||
+			m_VehiclePassageSet.IsFieldNull(&(m_VehiclePassageSet.m_VehiclePassageGateID)))
+		{
 			lv.pszText = ptrDefault;
+		}
 		else
 		{
 			TCHAR tcharGate[50];
@@ -136,8 +144,11 @@ BOOL CReportDlg::OnInitDialog()
 		lv.iSubItem++;
 		lv.pszText = _T("");
 		long uID = m_VehiclePassageSet.m_VehiclePassageUserID;
-		if (uID < 0)
+		if (uID < 0 ||
+			m_VehiclePassageSet.IsFieldNull(&(m_VehiclePassageSet.m_VehiclePassageUserID)))
+		{
 			lv.pszText = ptrDefault;
+		}
 		else
 		{
 			TCHAR tcharUser[200];
@@ -148,28 +159,37 @@ BOOL CReportDlg::OnInitDialog()
 
 		lv.iSubItem++;
 		lv.pszText = _T("");
-		long vID = m_VehiclePassageSet.m_VehiclePassageVehicleID;
-		if (vID < 0)
+		long vID = m_VehiclePassageSet.m_VehiclePassageVehicleTypeID;
+		if (vID < 0 ||
+			m_VehiclePassageSet.IsFieldNull(&(m_VehiclePassageSet.m_VehiclePassageVehicleTypeID)))
+		{
 			lv.pszText = ptrDefault;
+		}
 		else
 		{
 			// lv.pszText = CT2W(m_VehicleTypeMap[vID]);
 			// lv.pszText = CT2W(m_VehicleTypeMap[1]);
 			TCHAR tcharVehicleType[100];
-			lstrcpy(tcharVehicleType, m_VehicleTypeMap[1]);
+			lstrcpy(tcharVehicleType, m_VehicleTypeMap[vID]);
 			lv.pszText = tcharVehicleType;
 		}
 		m_ReportList.SetItem(&lv);
 
-		// ali: to-do
-		/*lv.iSubItem++;
+		lv.iSubItem++;
 		long divID = m_VehiclePassageSet.m_VehiclePassageDivisionID;
 		lv.pszText = _T("");
-		if (divID < 0)
-			lv.pszText = CT2W(strDefault);
+		if (divID < 0 ||
+			m_VehiclePassageSet.IsFieldNull(&(m_VehiclePassageSet.m_VehiclePassageDivisionID)))
+		{
+			lv.pszText = ptrDefault;
+		}
 		else
-			lv.pszText = CT2W(m_DivisionMap[divID]);
-		m_ReportList.SetItem(&lv); */
+		{
+			TCHAR tcharDivision[100];
+			lstrcpy(tcharDivision, m_DivisionMap[divID]);
+			lv.pszText = tcharDivision;
+		}
+		m_ReportList.SetItem(&lv); 
 
 		++rowIndex;
 

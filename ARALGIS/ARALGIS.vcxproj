@@ -239,6 +239,7 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Database\HeaderFiles\BlackListSet.h" />
     <ClInclude Include="Database\HeaderFiles\CameraDBServer.h" />
+    <ClInclude Include="Database\HeaderFiles\DivisionSet.h" />
     <ClInclude Include="Database\HeaderFiles\DriverDlg.h" />
     <ClInclude Include="Database\HeaderFiles\DriverInfoDlg.h" />
     <ClInclude Include="Database\HeaderFiles\DriverInfoSet.h" />
@@ -319,6 +320,7 @@
     <ClCompile Include="ColourButton.cpp" />
     <ClCompile Include="Database\SourceFiles\BlackListSet.cpp" />
     <ClCompile Include="Database\SourceFiles\CameraDBServer.cpp" />
+    <ClCompile Include="Database\SourceFiles\DivisionSet.cpp" />
     <ClCompile Include="Database\SourceFiles\DriverDlg.cpp" />
     <ClCompile Include="Database\SourceFiles\DriverInfoDlg.cpp" />
     <ClCompile Include="Database\SourceFiles\DriverInfoSet.cpp" />

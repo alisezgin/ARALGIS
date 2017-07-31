@@ -1,14 +1,14 @@
-// VehiclePassageSet.h : Declaration of the CVehiclePassageSet
+// C:\ali\github-home\ARALGIS\ARALGIS\Database\HeaderFiles\DivisionSet.h : Declaration of the CDivisionSet
 
 #pragma once
 
-// code generated on Tuesday, May 9, 2017, 11:56 AM
+// code generated on 30 Temmuz 2017 Pazar, 15:36
 
-class CVehiclePassageSet : public CRecordset
+class CDivisionSet : public CRecordset
 {
 public:
-	CVehiclePassageSet(CDatabase* pDatabase = NULL);
-	DECLARE_DYNAMIC(CVehiclePassageSet)
+	CDivisionSet(CDatabase* pDatabase = NULL);
+	DECLARE_DYNAMIC(CDivisionSet)
 
 // Field/Param Data
 
@@ -20,16 +20,8 @@ public:
 // (Note: You must use an ODBC driver version that is version 3.5 or greater
 // to support both Unicode and these conversions).
 
-	long	m_VehiclePassageVehicleID;
-	CString	m_VehiclePassageLicensePlate;
-	CTime	m_VehiclePassageEntryDateTime;
-	CTime	m_VehiclePassageExitDateTime;
-	long	m_VehiclePassageUserID;
-	long	m_VehiclePassageGateID;
-	long	m_VehiclePassageDriverID;
-	long	m_VehiclePassageVehicleTypeID;
-	BOOL	m_VehiclePassagePermissionGranted;
-	long	m_VehiclePassageDivisionID;
+	long		m_DivID;
+	CStringW	m_Type;
 
 // Overrides
 	// Wizard generated virtual function overrides

@@ -7,6 +7,7 @@
 #define IDP_OLE_INIT_FAILED             100
 #define IDD_ARALGIS_FORM                101
 #define IDR_MAINFRAME                   128
+#define IDR_MENU_MAINFRAME              128
 #define IDR_ARALGISTYPE                 130
 #define IDR_THEME_MENU                  200
 #define ID_SET_STYLE                    201
@@ -104,15 +105,20 @@
 #define IDC_FORM_BDN_QUERY              1050
 #define IDC_BUTTON_ORGINAL              1051
 #define IDC_FORM_SDID2                  1051
+#define IDC_FORM_S_DID                  1051
 #define IDC_FORM_BLP_QUERY              1052
 #define IDC_FORM_BRN_QUERY              1053
 #define IDC_FORM_SGID                   1054
 #define IDC_FORM_BGN_QUERY              1055
 #define IDC_FORM_SUID2                  1056
+#define IDC_FORM_S_UID                  1056
 #define IDC_STATIC_PLAKA_STR            1057
 #define IDC_FORM_SGID2                  1058
+#define IDC_FORM_S_GID                  1058
 #define IDC_STATIC_2222                 1059
+#define IDC_FORM_S_DIVID                1059
 #define IDC_STATIC_BN1                  1060
+#define IDC_FORM_S_VEHICLETYPE          1060
 #define IDC_RADIO_COLOUR1               1061
 #define IDC_STATIC_BN2                  1062
 #define IDC_RADIO_COLOUR2               1062
@@ -140,8 +146,12 @@
 #define IDC_FORM_CBOX_USERLIST          1084
 #define IDC_SEARCH_C_GATE               1085
 #define IDC_FORM_CBOX_GATELIST          1086
+#define IDC_SEARCH_C_DIVISION           1086
 #define IDC_SEARCH_C_VTYPE              1087
+#define IDC_FORM_CBOX_DIVISIONLIST      1087
 #define IDC_SEARCH_DTP_DATEBEGIN        1088
+#define IDC_FORM_CBOX_DIVISIONLIST2     1088
+#define IDC_FORM_CBOX_VEHICLETYPELIST   1088
 #define IDC_SEARCH_DTP_DATEEND          1089
 #define IDC_STATIC_SEARCH_DATEBEGIN     1090
 #define IDC_STATIC_SEARCH_DATEEND       1091
@@ -149,6 +159,7 @@
 #define IDC_STATIC_SEARCH_DRIVER        1093
 #define IDC_STATIC_SEARCH_GATE          1094
 #define IDC_STATIC_SEARCH_LICENSEPLATE  1095
+#define IDC_STATIC_SEARCH_DIVISION      1096
 #define IDC_DLG_LCB_REPORT              1098
 #define IDC_REPORT_PCTRL_CHASSIS        1099
 #define IDC_REPORT_PCTRL_FRONTAL        1100
@@ -246,16 +257,46 @@
 #define ID_VEHICLE_NEW                  32814
 #define ID_DRIVER_NEW                   32814
 #define ID_VEHICLE_REMOVE               32815
+#define ID_USER_LOGIN                   32815
 #define ID_VEHICLE_CHANGE               32816
+#define ID_USER_LOGOUT                  32816
 #define ID_BLACKLIST_ADD                32817
 #define ID_BLACKLIST_REMOVE             32818
+#define ID_USER_DISABLE                 32819
+#define ID_MENU_USER_LOGIN              32820
+#define ID_MENU_USER_LOGOUT             32821
+#define ID_MENU_USER_CHANGEPASSWD       32822
+#define ID_MENU_USER_DISABLE            32823
+#define ID_MENU_RAPOR_ARA               32824
+#define ID_DATABASE_USER_REMOVE         32825
+#define ID_DATABASE_VEHICLE_NEW         32826
+#define ID_DATABASE_ADDUSER             32827
+#define ID_DATABASE_USERCHANGEPASSWD    32828
+#define ID_DATABASE_REMOVEUSER          32829
+#define ID_DATABASE_ADDDRIVER           32830
+#define ID_DATABASE_ADDGATE             32831
+#define ID_DATABASE_ADDDIVISION         32832
+#define ID_DATABASE_ADDTYPE             32833
+#define ID_MENU_DATABASE_ADDDRIVER      32834
+#define ID_MENU_DATABASE_ADDGATE        32835
+#define ID_MENU_DATABASE_ADDDIVISION    32836
+#define ID_MENU_DATABASE_ADDTYPE        32837
+#define ID_MENU_RAPOR_QUERY             32838
+#define ID_KULLAN32839                  32839
+#define ID_MENU_USER_ENABLE             32840
+#define ID_KULLAN32841                  32841
+#define ID_MENU_USER_ADDUSER            32842
+#define ID_MENU_USER_SETUSER            32843
+#define ID_MENU_USER_SETIDLE            32844
+#define ID_KULLAN32845                  32845
+#define ID_MENU_USER_SETADMIN           32846
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        332
-#define _APS_NEXT_COMMAND_VALUE         32815
+#define _APS_NEXT_RESOURCE_VALUE        333
+#define _APS_NEXT_COMMAND_VALUE         32847
 #define _APS_NEXT_CONTROL_VALUE         1147
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

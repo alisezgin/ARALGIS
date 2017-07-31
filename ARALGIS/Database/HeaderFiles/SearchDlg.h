@@ -14,12 +14,15 @@ class CSearchDlg : public CDialogEx
 	DECLARE_DYNAMIC(CSearchDlg)
 
 public:
-	CSearchDlg(const VectorType& _driverList = VectorType{},
+	CSearchDlg(
+		const VectorType& _driverList = VectorType{},
 		const VectorType& _vehicleTypeList = VectorType{},
 		const VectorType& _gateList = VectorType{},
+		const VectorType& _divisionList = VectorType{},
 		MapType& _PosDriverIdMap = MapType{},
-		std::unordered_map<long,long>& _PosVehicleTypeIdMap = MapType{},
+		MapType& _PosVehicleTypeIdMap = MapType{},
 		MapType& _PosGateIdMap = MapType{},
+		MapType& _PosDivisionIdMap = MapType{},
 		CWnd* pParent = NULL);   // standard constructor
 	virtual ~CSearchDlg();
 	virtual BOOL OnInitDialog() override;
@@ -28,6 +31,7 @@ public:
 	void FillDriverList();
 	void FillVehicleTypeList();
 	void FillGateList();
+	void FillDivisionList();
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_SEARCH };
@@ -53,6 +57,8 @@ private:
 	CComboBox m_cDriver;
 	// holds the gate; ignore if null or empty string
 	CComboBox m_cGate;
+	// holds the division; ignore if null or empty string
+	CComboBox m_cDivision;
 
 	// the database burden relievers are passed (by reference)
 	const VectorType& m_DriverList;
@@ -65,5 +71,9 @@ private:
 	// holds the list of gate names in the database
 	const VectorType& m_GateList;
 	MapType& m_PosGateIdMap;
+
+	// holds the list of division names in the database
+	const VectorType& m_DivisionList;
+	MapType& m_PosDivisionIdMap;
 
 };

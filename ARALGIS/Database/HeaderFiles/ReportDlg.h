@@ -37,6 +37,7 @@ public:
 		MapTypeLStr& _userMap,
 		MapTypeLStr& _gateMap,
 		MapTypeLStr& _vehicleTypeMap,
+		MapTypeLStr& _divisionMap,
 		CWnd* pParent = NULL);   // standard constructor
 	virtual ~CReportDlg();
 	virtual BOOL OnInitDialog() override;
@@ -51,6 +52,7 @@ protected:
 	MapTypeLStr& m_UserMap;
 	MapTypeLStr& m_GateMap;
 	MapTypeLStr& m_VehicleTypeMap;
+	MapTypeLStr& m_DivisionMap;
 
 	int FindMaxLength(int colNo);
 	CImagePrep* m_ImagePrep;

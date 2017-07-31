@@ -102,7 +102,6 @@ protected:
 	void PreparePosDriverIdMap();
 	// fills the drop down list with the contents of m_DriverList
 	void FillDriverList();
-	void FillDriverBox();
 
 	// prepares m_UserList to be used in the keeper list combo box
 	void PrepareUserList();
@@ -110,7 +109,6 @@ protected:
 	void PreparePosUserIdMap();
 	// fills the drop down list with the contents of m_UserList
 	void FillUserList();
-	void FillUserBox();
 
 	// prepares m_GateList to be used in the gate list combo box
 	void PrepareGateList();
@@ -118,7 +116,6 @@ protected:
 	void PreparePosGateIdMap();
 	// fills the drop down list with the contents of m_GateList
 	void FillGateList();
-	void FillGateBox();
 
 	// prepares m_VehicleTypeList to be passed on to the search query
 	void PrepareVehicleTypeList();
@@ -126,12 +123,19 @@ protected:
 	void PreparePosVehicleTypeIdMap();
 	// fills the drop down list with the contents of the m_VehicleTypeList
 	void FillVehicleTypeList();
-//M	void FillVehicleTypeBox();
 
 	// prepares m_DriverTypeList to be used by the CDriverDlg
 	void PrepareDriverTypeList();
 	void PrepareDriverTypeMap();
 	void PreparePosDriverTypeIdMap();
+
+	// prepares m_DivisionList to be used in the division list combo box
+	void PrepareDivisionList();
+	void PrepareDivisionMap();
+	void PreparePosDivisionIdMap();
+	// fills the drop down list with the contents of the m_DivisionList
+	void FillDivisionList();
+
 
 	// prepares a disjunction (CString) for a given vector of ID's (of type long)
 	CString GenDisjunctionOfVec(CString colName, const std::vector<long> & vec);
@@ -192,20 +196,16 @@ protected:
 	CString m_FormLPEntry;
 	// ARALGISForm'da arac plaka numarasi kutusu icin
 	CString m_FormELP;
+	// controls the edit box of frontal view image in ARALGISForm; eventually will be of type MyPic
+	CString m_FormEFVI;
 
+	// the following are being displayed for now
 	CString m_FormEUID;
 	CString m_FormEGID;
 	CString m_FormEDID;
-	// controls the edit box of frontal view image in ARALGISForm; eventually will be of type MyPic
-	CString m_FormEFVI;
-	//// controls the edit box of car chassis bottom image (current) in ARALGISForm; eventually will be of type MyPic
-	//CString m_FormECBCI;
-	//// controls the edit box for chassis bottom reference image in ARALGISForm; eventually will be of type MyPic
-	//CString m_FormECBRI;
-	// holds the driver name for the current record
-	// CString m_FormEDN;
-	// holds the registration number for the current record
-	// CString m_FormERN;
+	// the following are not being displayed
+	CString m_FormEDivID;
+	CString m_FormEVTID;
 
 	// snaps the current time and date for the current vehicle database entry
 	CTime m_FormEDT;
@@ -225,6 +225,10 @@ protected:
 	long m_GID;
 	// holds the ID of the current gate keeper
 	long m_UID;
+	// holds the ID of the current division
+	long m_DivID;
+	// holds the ID of the current vehicle type
+	long m_VTID;
 
 	// holds the absolute path to the 'Cars' directory
 	//CString m_PathToCars;
@@ -236,6 +240,7 @@ protected:
 	std::vector<std::pair<CString, long>> m_DriverList;
 	std::unordered_map<long, CString> m_DriverMap;
 	std::unordered_map<long, long> m_PosDriverIdMap;
+	std::unordered_map<long, long> m_DriverIdPosMap;
 	// maps driver ID to an information summary
 	std::unordered_map<long, DriverInfo> m_DriverInfoMap;
 
@@ -245,6 +250,7 @@ protected:
 	std::vector<std::pair<CString, long>> m_UserList;
 	std::unordered_map<long, CString> m_UserMap;
 	std::unordered_map<long, long> m_PosUserIdMap;
+	std::unordered_map<long, long> m_UserIdPosMap;
 
 	// controls the gate list combo box
 	CComboBox m_FormCBGateList;
@@ -252,16 +258,44 @@ protected:
 	std::vector<std::pair<CString, long>> m_GateList;
 	std::unordered_map<long, CString> m_GateMap;
 	std::unordered_map<long, long> m_PosGateIdMap;
+	std::unordered_map<long, long> m_GateIdPosMap;
 
+	// controls the division list combo box
+	CComboBox m_FormCBDivisionList;
+	// holds the list of division types in the database
+	std::vector<std::pair<CString, long>> m_DivisionList;
+	std::unordered_map<long, CString> m_DivisionMap;
+	std::unordered_map<long, long> m_PosDivisionIdMap;
+	std::unordered_map<long, long> m_DivisionIdPosMap;
+
+
+	// controls the vehicle type list combo box
+	CComboBox m_FormCBVehicleTypeList;
 	// holds the list of vehicle types in the database
 	std::vector<std::pair<CString, long>> m_VehicleTypeList;
 	std::unordered_map<long, CString> m_VehicleTypeMap;
 	std::unordered_map<long, long> m_PosVehicleTypeIdMap;
+	std::unordered_map<long, long> m_VehicleTypeIdPosMap;
 
 	// holds the list of driver types in the database
 	std::vector<std::pair<CString, long>> m_DriverTypeList;
 	std::unordered_map<long, CString> m_DriverTypeMap;
 	std::unordered_map<long, long> m_PosDriverTypeIdMap;
+	std::unordered_map<long, long> m_DriverTypeIdPosMap;
+
+	// tracking the state of the session
+	enum class SESSION_STATE { IDLE, USER, ADMIN };
+	SESSION_STATE m_eSessionState;
+	void setSessionIdle();
+	void setSessionUser();
+	void setSessionAdmin();
+	void enableUserInterface();
+	void disableUserInterface();
+	void enableAdminInterface();
+	void disableAdminInterface();
+
+	// handle for the main menu 
+	CMenu* m_ptrMenu;
 
 	// keeps track of whether the displayed information 
 	// has been inserted into the VehiclePassage Table
@@ -348,7 +382,6 @@ protected:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnReportSearch();
 public:
 	afx_msg void OnBnClickedCheckCrop();
 	afx_msg LRESULT OnLButtonDownImage(WPARAM wparam, LPARAM lparam);
@@ -359,8 +392,30 @@ public:
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnCbnSelchangeFormCboxDriverlist();
 	afx_msg void OnBnClickedFormBDriverinfo();
-	afx_msg void OnDriverNew();
 	afx_msg void OnUserNew();
+	afx_msg void OnMenuUserEnable();
+	afx_msg void OnMenuUserDisable();
+	afx_msg void OnUpdateMenuUserLogin(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenuUserLogout(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenuUserChangepasswd(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenuRaporQuery(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenuDatabaseAdddriver(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenuDatabaseAddgate(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenuDatabaseAdddivision(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenuDatabaseAddtype(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenuUserAdduser(CCmdUI *pCmdUI);
+	afx_msg void OnMenuUserSetadmin();
+	afx_msg void OnUpdateMenuUserSetidle(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenuUserSetuser(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenuUserSetadmin(CCmdUI *pCmdUI);
+	afx_msg void OnMenuUserSetuser();
+	afx_msg void OnMenuUserSetidle();
+	// button to update the database
+	CButton m_bFormUpdateDb;
+	// the button when pushed displays a brief information about the selected driver	
+	CButton m_bFormDriverInfo;
+	afx_msg void OnMenuRaporQuery();
+	afx_msg void OnMenuDatabaseAdddriver();
 };
 
 #ifndef _DEBUG  // debug version in ARALGISView.cpp

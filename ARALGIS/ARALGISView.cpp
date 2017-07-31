@@ -37,6 +37,7 @@
 #include "ReportDlg.h"
 #include "DriverDlg.h"
 #include "DriverInfoDlg.h"
+#include "DivisionSet.h"
 // end of database access files
 
 // GUI files
@@ -124,11 +125,28 @@ BEGIN_MESSAGE_MAP(CARALGISView, CFormView)
 	ON_WM_MOUSEMOVE()
 	ON_BN_CLICKED(IDC_CHECK_CROP, &CARALGISView::OnBnClickedCheckCrop)
 	ON_WM_MOUSEWHEEL()
-	ON_COMMAND(ID_RAPORLAR_RAPOR1, &CARALGISView::OnReportSearch)
 	ON_CBN_SELCHANGE(IDC_FORM_CBOX_DRIVERLIST, &CARALGISView::OnCbnSelchangeFormCboxDriverlist)
 	ON_BN_CLICKED(IDC_FORM_B_DRIVERINFO, &CARALGISView::OnBnClickedFormBDriverinfo)
-	ON_COMMAND(ID_DRIVER_NEW, &CARALGISView::OnDriverNew)
 	ON_COMMAND(ID_USER_NEW, &CARALGISView::OnUserNew)
+	ON_COMMAND(ID_MENU_USER_ENABLE, &CARALGISView::OnMenuUserEnable)
+	ON_COMMAND(ID_MENU_USER_DISABLE, &CARALGISView::OnMenuUserDisable)
+	ON_UPDATE_COMMAND_UI(ID_MENU_USER_LOGIN, &CARALGISView::OnUpdateMenuUserLogin)
+	ON_UPDATE_COMMAND_UI(ID_MENU_USER_LOGOUT, &CARALGISView::OnUpdateMenuUserLogout)
+	ON_UPDATE_COMMAND_UI(ID_MENU_USER_CHANGEPASSWD, &CARALGISView::OnUpdateMenuUserChangepasswd)
+	ON_UPDATE_COMMAND_UI(ID_MENU_RAPOR_QUERY, &CARALGISView::OnUpdateMenuRaporQuery)
+	ON_UPDATE_COMMAND_UI(ID_MENU_DATABASE_ADDDRIVER, &CARALGISView::OnUpdateMenuDatabaseAdddriver)
+	ON_UPDATE_COMMAND_UI(ID_MENU_DATABASE_ADDGATE, &CARALGISView::OnUpdateMenuDatabaseAddgate)
+	ON_UPDATE_COMMAND_UI(ID_MENU_DATABASE_ADDDIVISION, &CARALGISView::OnUpdateMenuDatabaseAdddivision)
+	ON_UPDATE_COMMAND_UI(ID_MENU_DATABASE_ADDTYPE, &CARALGISView::OnUpdateMenuDatabaseAddtype)
+	ON_UPDATE_COMMAND_UI(ID_MENU_USER_ADDUSER, &CARALGISView::OnUpdateMenuUserAdduser)
+	ON_COMMAND(ID_MENU_USER_SETADMIN, &CARALGISView::OnMenuUserSetadmin)
+	ON_UPDATE_COMMAND_UI(ID_MENU_USER_SETIDLE, &CARALGISView::OnUpdateMenuUserSetidle)
+	ON_UPDATE_COMMAND_UI(ID_MENU_USER_SETUSER, &CARALGISView::OnUpdateMenuUserSetuser)
+	ON_UPDATE_COMMAND_UI(ID_MENU_USER_SETADMIN, &CARALGISView::OnUpdateMenuUserSetadmin)
+	ON_COMMAND(ID_MENU_USER_SETUSER, &CARALGISView::OnMenuUserSetuser)
+	ON_COMMAND(ID_MENU_USER_SETIDLE, &CARALGISView::OnMenuUserSetidle)
+	ON_COMMAND(ID_MENU_RAPOR_QUERY, &CARALGISView::OnMenuRaporQuery)
+	ON_COMMAND(ID_MENU_DATABASE_ADDDRIVER, &CARALGISView::OnMenuDatabaseAdddriver)
 END_MESSAGE_MAP()
 
 // CARALGISView construction/destruction
@@ -145,12 +163,17 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 , m_FormEBL{}
 , m_FormEGID(_T(""))
 , m_FormEUID(_T(""))
+, m_FormEDivID(_T(""))
+, m_FormEVTID(_T(""))
 , m_FormCBDriverList{}
 , m_FormCBUserList{}
 , m_FormCBGateList{}
 , m_bVehiclePassageUpdated( TRUE )
+, m_eSessionState( SESSION_STATE::IDLE )
 {
 	// TODO: add construction code here
+
+	m_eSessionState = SESSION_STATE::IDLE;
 
 	m_PrevImgBMP = new CStatic;
 
@@ -200,6 +223,8 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 	*/
 	m_ImagePrep = CImagePrep::GetInstance();
 
+	// keep them as they are; idle session should only disable their usage.
+
 	// Prepare the Vehicle Type list to be passed on to the search query
 	PrepareVehicleTypeMap();
 	PrepareVehicleTypeList();
@@ -234,6 +259,11 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 	// and display it
 	// FillGateList();
 
+	// Prepare the division list to be displayed in the Division List Combo box
+	PrepareDivisionMap();
+	PrepareDivisionList();
+	PreparePosDivisionIdMap();
+
 	// set the background color variable
 	m_brush.CreateSolidBrush(RGB(COLOUR_RED, COLOUR_GREEN, COLOUR_BLUE));
 
@@ -243,7 +273,11 @@ CARALGISView::CARALGISView() : CColorFormView(CARALGISView::IDD)
 
 	g_IsOdroidStartReceived = FALSE;
 	g_IsAnswerReceivedFromPTS = FALSE;
-	m_IsActive = true;
+
+	// should probably be set to false in setSessionIdle and reset to true in 
+	// both setSessionUser and setSessionAdmin.
+	// m_IsActive = true;
+	// m_IsActive = false;
 }
 
 CARALGISView::~CARALGISView()
@@ -363,6 +397,76 @@ CARALGISView::~CARALGISView()
 	LeaveCriticalSection(&g_ChangeDetectCS);
 }
 
+void CARALGISView::enableUserInterface()
+{
+	m_IsActive = true;
+	// enable controls
+	m_FormEBL.EnableWindow(true);
+	m_formCBoxVisitList.EnableWindow(true);
+	m_FormCBDriverList.EnableWindow(true);
+	m_FormCBUserList.EnableWindow(true);
+	m_FormCBGateList.EnableWindow(true);
+	m_FormCBDivisionList.EnableWindow(true);
+	m_FormCBVehicleTypeList.EnableWindow(true);
+	m_bFormUpdateDb.EnableWindow(true);
+	m_bFormDriverInfo.EnableWindow(true);
+	GetDlgItem(IDC_FORM_EDID)->EnableWindow(true);
+	GetDlgItem(IDC_FORM_EUID)->EnableWindow(true);
+	GetDlgItem(IDC_FORM_EGID)->EnableWindow(true);
+}
+
+void CARALGISView::disableUserInterface()
+{
+	m_IsActive = false;
+	// disable controls
+	m_FormEBL.EnableWindow(false);
+	m_formCBoxVisitList.EnableWindow(false);
+	m_FormCBDriverList.EnableWindow(false);
+	m_FormCBUserList.EnableWindow(false);
+	m_FormCBGateList.EnableWindow(false);
+	m_FormCBGateList.EnableWindow(false);
+	m_FormCBDivisionList.EnableWindow(false);
+	m_FormCBVehicleTypeList.EnableWindow(false);
+	m_bFormUpdateDb.EnableWindow(false);
+	m_bFormDriverInfo.EnableWindow(false);
+	GetDlgItem(IDC_FORM_EDID)->EnableWindow(false);
+	GetDlgItem(IDC_FORM_EUID)->EnableWindow(false);
+	GetDlgItem(IDC_FORM_EGID)->EnableWindow(false);
+}
+
+void CARALGISView::enableAdminInterface()
+{
+	// nothing specific right now; 
+	// placeholder for future additions
+}
+
+void CARALGISView::disableAdminInterface()
+{
+	// nothing specific right now;
+	// placeholder for future additions
+}
+
+void CARALGISView::setSessionIdle()
+{
+	m_eSessionState = SESSION_STATE::IDLE;
+	disableUserInterface();
+	disableAdminInterface();
+	// disable all control boxes here
+}
+
+void CARALGISView::setSessionUser()
+{
+	m_eSessionState = SESSION_STATE::USER;
+	enableUserInterface();
+	disableAdminInterface();
+}
+
+void CARALGISView::setSessionAdmin()
+{
+	m_eSessionState = SESSION_STATE::ADMIN;
+	enableUserInterface();
+	enableAdminInterface();
+}
 
 void CARALGISView::DoDataExchange(CDataExchange* pDX)
 {
@@ -395,6 +499,13 @@ void CARALGISView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_REFBMP, m_MatToImageRef);
 	DDX_Control(pDX, IDC_FORM_CBOX_USERLIST, m_FormCBUserList);
 	DDX_Control(pDX, IDC_FORM_CBOX_GATELIST, m_FormCBGateList);
+	DDX_Control(pDX, IDC_FORM_BUPDATEDB, m_bFormUpdateDb);
+	//DDX_Control(pDX, IDC_FORM_EDID, m_cFormDriver);
+	//DDX_Control(pDX, IDC_FORM_EUID, m_cFormUser);
+	//DDX_Control(pDX, IDC_FORM_EGID, m_cFormGate);
+	DDX_Control(pDX, IDC_FORM_B_DRIVERINFO, m_bFormDriverInfo);
+	DDX_Control(pDX, IDC_FORM_CBOX_DIVISIONLIST, m_FormCBDivisionList);
+	DDX_Control(pDX, IDC_FORM_CBOX_VEHICLETYPELIST, m_FormCBVehicleTypeList);
 }
 
 BOOL CARALGISView::PreCreateWindow(CREATESTRUCT& cs)
@@ -531,7 +642,6 @@ void CARALGISView::OnInitialUpdate()
 	arrID.Add(IDC_FORM_EDID);
 	arrID.Add(IDC_FORM_EBL);
 	arrID.Add(IDC_FORM_CBOX_VISITLIST);
-	arrID.Add(IDC_FORM_BMODIFY);
 	arrID.Add(IDC_FORM_BUPDATEDB);
 	arrID.Add(IDC_FORM_BLP_QUERY);
 	arrID.Add(IDC_FORM_BDN_QUERY);
@@ -657,6 +767,17 @@ void CARALGISView::OnInitialUpdate()
 	FillDriverList();
 	FillUserList();
 	FillGateList();
+	FillDivisionList();
+	FillVehicleTypeList();
+
+	// m_ptrMenu = GetMenu();
+	m_ptrMenu = AfxGetMainWnd()->GetMenu();
+
+	if (m_ptrMenu == nullptr)
+		MessageBox(_T("menu pointer is null."));
+	
+	setSessionIdle();
+
 }
 
 
@@ -1534,6 +1655,18 @@ void CARALGISView::PrepareGateList()
 	});
 }
 
+void CARALGISView::PrepareDivisionList()
+{
+	m_DivisionList.clear();
+	for (auto d : m_DivisionMap)
+		m_DivisionList.push_back(std::make_pair(d.second, d.first));
+	std::sort(m_DivisionList.begin(), m_DivisionList.end(),
+		[](std::pair<CString, long> d1, std::pair<CString, long> d2) {
+		if (d1.first == d2.first) return d1.second < d2.second;
+		else return d1.first < d2.first;
+	});
+}
+
 void CARALGISView::PrepareVehicleTypeList()
 {
 	m_VehicleTypeList.clear();
@@ -1615,6 +1748,19 @@ void CARALGISView::PrepareGateMap()
 	}
 }
 
+void CARALGISView::PrepareDivisionMap()
+{
+	CDivisionSet setDiv;
+	setDiv.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
+	m_DivisionMap.clear();
+	while (!setDiv.IsEOF())
+	{
+		m_DivisionMap[setDiv.m_DivID] = setDiv.m_Type;
+		setDiv.MoveNext();
+	}
+
+}
+
 void CARALGISView::PrepareVehicleTypeMap()
 {
 	CVehicleTypeSet vTypeSet;
@@ -1642,36 +1788,73 @@ void CARALGISView::PrepareDriverTypeMap()
 void CARALGISView::PreparePosDriverIdMap()
 {
 	long pos = 0;
+	m_PosDriverIdMap[-1] = -1;
+	m_DriverIdPosMap[-1] = -1;
 	for (auto d : m_DriverList)
+	{
+		m_DriverIdPosMap[d.second] = pos;
 		m_PosDriverIdMap[pos++] = d.second;
+	}
 }
 
 void CARALGISView::PreparePosUserIdMap()
 {
+	m_UserIdPosMap[-1] = -1;
+	m_PosUserIdMap[-1] = -1;
 	long pos = 0;
 	for (auto u : m_UserList)
+	{
+		m_UserIdPosMap[u.second] = pos;
 		m_PosUserIdMap[pos++] = u.second;
+	}
 }
 
 void CARALGISView::PreparePosGateIdMap()
 {
+	m_GateIdPosMap[-1] = -1;
+	m_PosGateIdMap[-1] = -1;
 	long pos = 0;
 	for (auto g : m_GateList)
+	{
+		m_GateIdPosMap[g.second] = pos;
 		m_PosGateIdMap[pos++] = g.second;
+	}
+}
+
+void CARALGISView::PreparePosDivisionIdMap()
+{
+	m_DivisionIdPosMap[-1] = -1;
+	m_PosDivisionIdMap[-1] = -1;
+	long pos = 0;
+	for (auto d : m_DivisionList)
+	{
+		m_DivisionIdPosMap[d.second] = pos;
+		m_PosDivisionIdMap[pos++] = d.second;
+	}
 }
 
 void CARALGISView::PreparePosVehicleTypeIdMap()
 {
+	m_VehicleTypeIdPosMap[-1] = -1;
+	m_PosVehicleTypeIdMap[-1] = -1;
 	long pos = 0;
 	for (auto v : m_VehicleTypeList)
+	{
+		m_VehicleTypeIdPosMap[v.second] = pos;
 		m_PosVehicleTypeIdMap[pos++] = v.second;
+	}
 }
 
 void CARALGISView::PreparePosDriverTypeIdMap()
 {
+	m_DriverTypeIdPosMap[-1] = -1;
+	m_PosDriverTypeIdMap[-1] = -1;
 	long pos = 0;
 	for (auto dt : m_DriverTypeList)
+	{
+		m_DriverTypeIdPosMap[dt.second] = pos;
 		m_PosDriverTypeIdMap[pos++] = dt.second;
+	}
 }
 
 void CARALGISView::FillDriverList()
@@ -1688,11 +1871,9 @@ void CARALGISView::FillUserList()
 {
 	m_FormCBUserList.ResetContent();
 	m_FormCBUserList.InsertString(0, CString{ _T("Bilinmeyen Kullanici") });
-	m_FormCBUserList.InsertString(1, CString{ _T("Yeni Kullanici Ekle") });
 	long pos = 0;
 	for (auto u : m_UserList)
 	{
-		m_PosUserIdMap[pos++] = u.second;
 		m_FormCBUserList.InsertString(-1, u.first);
 	}
 }
@@ -1701,21 +1882,32 @@ void CARALGISView::FillGateList()
 {
 	m_FormCBGateList.ResetContent();
 	m_FormCBGateList.InsertString(0, CString{ _T("Bilinmeyen Kapi") });
-	m_FormCBGateList.InsertString(1, CString{ _T("Yeni Kapi Ekle") });
 	long pos = 0;
 	for (auto g : m_GateList)
 	{
-		m_PosGateIdMap[pos++] = g.second;
 		m_FormCBGateList.InsertString(-1, g.first);
+	}
+}
+
+void CARALGISView::FillDivisionList()
+{
+	m_FormCBDivisionList.ResetContent();
+	m_FormCBDivisionList.InsertString(0, CString{ _T("Bilinmeyen Birlik") });
+	long pos = 0;
+	for (auto d : m_DivisionList)
+	{
+		m_FormCBDivisionList.InsertString(-1, d.first);
 	}
 }
 
 void CARALGISView::FillVehicleTypeList()
 {
+	m_FormCBVehicleTypeList.ResetContent();
+	m_FormCBVehicleTypeList.InsertString(0, CString{ _T("Bilinmeyen Arac Tipi.") });
 	long pos = 0;
 	for (auto v : m_VehicleTypeList)
 	{
-		m_PosVehicleTypeIdMap[pos++] = v.second;
+		m_FormCBVehicleTypeList.InsertString(-1, v.first);
 	}
 }
 
@@ -1792,9 +1984,6 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	// are set to nullptr at this point.
 
 	m_formCBoxVisitList.ResetContent();
-	/*FillDriverList();
-	FillUserList();
-	FillGateList();*/
 
 	CVehiclePassageSet vPassageSet;
 	// find all visits of the given LP
@@ -1817,11 +2006,24 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 		m_FormEUID = _T("Kayit yok");
 		m_FormEGID = _T("Kayit yok");
 		m_FormEDID = _T("Kayit yok");
+		// the following two assignments are redundant; they are not being displayed
+		m_FormEDivID = _T("Kayit yok");
+		m_FormEVTID = _T("Kayit yok");
+
 		m_FormEBL.SetCheck(BST_INDETERMINATE);
 		m_VID = -1;
 		m_DID = -1; // _T("Kayit yok");
 		m_GID = -1; // _T("Kayit yok");
 		m_UID = -1; // _T("Kayit yok");
+		m_DivID = -1;
+		m_VTID = -1;
+		// adjust all combo boxes
+		m_FormCBDriverList.SetCurSel(0);
+		m_FormCBGateList.SetCurSel(0);
+		m_FormCBUserList.SetCurSel(0);
+		m_FormCBDivisionList.SetCurSel(0);
+		m_FormCBVehicleTypeList.SetCurSel(0);
+
 		UpdateData(FALSE);
 		return;
 	}
@@ -1833,17 +2035,6 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	// since there is an existing record; m_VID >= 0
 	m_VID = vPassageSet.m_VehiclePassageVehicleID;
 	ASSERT(m_VID >= 0);
-
-	// no rush; don't do them here, but after the relevant hashes are prepared.
-	/*m_FormEDID = DriverNameFromID(vPassageSet.m_VehiclePassageDriverID);
-	m_DID = vPassageSet.m_VehiclePassageDriverID;
-
-
-	m_FormEGID = GateFromID(vPassageSet.m_VehiclePassageGateID);
-	m_GID = vPassageSet.m_VehiclePassageGateID;
-
-	m_FormEUID = KeeperNameFromID(vPassageSet.m_VehiclePassageUserID);
-	m_UID = vPassageSet.m_VehiclePassageUserID;*/
 
 	auto VisitListSize = 0;
 //	std::vector<long> vecDriver{};
@@ -1863,57 +2054,26 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 	CString filterGate = GenDisjunctionOfVec(CString{ _T("[Gate].[ID]") }, vecGate);
 	CString filterUser = GenDisjunctionOfVec(CString{ _T("[User].[ID]") }, vecUser);
 
-	// generate the unordered_map for DriverID to Name+LastName
-	//std::unordered_map<long, CString> driverMap;
-	//CDriverSet dSet;
-	//dSet.m_strFilter = filterDriver;
-	//dSet.Open(CRecordset::snapshot, nullptr, CRecordset::readOnly);
-	//while (!dSet.IsEOF())
-	//{
-	//	CString strDriverName = dSet.m_LastName;
-	//	strDriverName += _T(", ");
-	//	strDriverName += dSet.m_Name;
-	//	driverMap[dSet.m_ID] = strDriverName;
-	//	dSet.MoveNext();
-	//}
-
-	// generate the unordered_map for GateID to GateName
-	/*std::unordered_map<long, CString> gateMap;
-	CGateSet gSet;
-	gSet.m_strFilter = filterGate;
-	gSet.Open(CRecordset::snapshot, nullptr, CRecordset::readOnly);
-	while (!gSet.IsEOF())
-	{
-		gateMap[gSet.m_GateID] = gSet.m_GateType;
-		gSet.MoveNext();
-	}*/
-
-	// generate the unordered_map for UserID to User
-	/*std::unordered_map<long, CString> userMap;
-	CUserSet uSet;
-	uSet.m_strFilter = filterUser;
-	uSet.Open(CRecordset::snapshot, nullptr, CRecordset::readOnly);
-	while (!uSet.IsEOF())
-	{
-		CString strUserName = uSet.m_LastName;
-		strUserName += _T(", ");
-		strUserName += uSet.m_Name;
-		userMap[uSet.m_ID] = strUserName;
-		uSet.MoveNext();
-	}*/
-
 	vPassageSet.MoveFirst();
 
 	// by default, display the information for the very last entry
 	m_DID = vPassageSet.m_VehiclePassageDriverID;
-//	m_FormEDID = driverMap[m_DID];
-	m_FormEDID = m_DriverMap[m_DID];
+	m_FormCBDriverList.SetCurSel(m_DriverIdPosMap[m_DID] + 1);
 	m_GID = vPassageSet.m_VehiclePassageGateID;
-//	m_FormEGID = gateMap[m_GID];
-	m_FormEGID = m_GateMap[m_GID];
+	m_FormCBGateList.SetCurSel(m_GateIdPosMap[m_GID] + 1);
 	m_UID = vPassageSet.m_VehiclePassageUserID;
-//	m_FormEUID = userMap[m_UID];
+	m_FormCBUserList.SetCurSel(m_UserIdPosMap[m_UID] + 1);
+	m_DivID = vPassageSet.m_VehiclePassageDriverID;
+	m_FormCBDivisionList.SetCurSel(m_DivisionIdPosMap[m_DivID] + 1);
+	m_VTID = vPassageSet.m_VehiclePassageVehicleTypeID;
+	m_FormCBVehicleTypeList.SetCurSel(m_VehicleTypeIdPosMap[m_VTID] + 1);
+
+	// remove these in due time
+	m_FormEDID = m_DriverMap[m_DID];
+	m_FormEGID = m_GateMap[m_GID];
 	m_FormEUID = m_UserMap[m_UID];
+	m_FormEDivID = m_DivisionMap[m_DivID];
+	m_FormEVTID = m_VehicleTypeMap[m_VTID];
 
 	for (auto j = 0; j < VisitListSize; ++j)
 	{
@@ -1922,35 +2082,40 @@ void CARALGISView::OnLPUpdateInfo(CString strLP)
 		m_VisitInfo[j].Prepare(
 			m_DriverMap[vPassageSet.m_VehiclePassageDriverID], //driverMap[vPassageSet.m_VehiclePassageDriverID],
 			m_UserMap[vPassageSet.m_VehiclePassageUserID], //userMap[vPassageSet.m_VehiclePassageUserID],
-			m_GateMap[vPassageSet.m_VehiclePassageGateID]); //gateMap[vPassageSet.m_VehiclePassageGateID]);
+			m_GateMap[vPassageSet.m_VehiclePassageGateID],
+			m_DivisionMap[vPassageSet.m_VehiclePassageDivisionID],
+			m_VehicleTypeMap[vPassageSet.m_VehiclePassageVehicleTypeID]); //gateMap[vPassageSet.m_VehiclePassageGateID]);
+		// do not blindly pass the ID's read from the recordset; they could be database-NULL
+		// passing -1 in case of NULL columns together with PreparePosXXXIdMap method collection
+		// means that the first entry of the combo box, pos=0, will be selected.
+		long _DID;
+		if (vPassageSet.IsFieldNull(&(vPassageSet.m_VehiclePassageDriverID)))
+			_DID = -1;
+		else
+			_DID = vPassageSet.m_VehiclePassageDriverID;
+		long _UID;
+		if (vPassageSet.IsFieldNull(&(vPassageSet.m_VehiclePassageUserID)))
+			_UID = -1;
+		else
+			_UID = vPassageSet.m_VehiclePassageUserID;
+		long _GID;
+		if (vPassageSet.IsFieldNull(&(vPassageSet.m_VehiclePassageGateID)))
+			_GID = -1;
+		else
+			_GID = vPassageSet.m_VehiclePassageGateID;
+		long _DivID;
+		if (vPassageSet.IsFieldNull(&(vPassageSet.m_VehiclePassageDivisionID)))
+			_DivID = -1;
+		else
+			_DivID = vPassageSet.m_VehiclePassageDivisionID;
+		long _VTID;
+		if (vPassageSet.IsFieldNull(&(vPassageSet.m_VehiclePassageVehicleTypeID)))
+			_VTID = -1;
+		else
+			_VTID = vPassageSet.m_VehiclePassageVehicleTypeID;
+		m_VisitInfo[j].Prepare(_DID, _UID, _GID, _DivID, _VTID);
 		vPassageSet.MoveNext();
 	}
-
-	//// careful with looping: do not go out of bounds for m_VisitInfo array
-	//while (!vPassageSet.IsEOF() && VisitListIndex < VISIT_LIST_LENGTH) {
-	//	CTime visitDate = vPassageSet.m_VehiclePassageEntryDateTime;  
-	//	m_formCBoxVisitList.AddString(visitDate.Format("%d/%m/%Y %X"));
-	//	m_VisitInfo[VisitListIndex++].Prepare(
-	//		DriverNameFromID(vPassageSet.m_VehiclePassageDriverID),
-	//		KeeperNameFromID(vPassageSet.m_VehiclePassageUserID),
-	//		GateFromID(vPassageSet.m_VehiclePassageGateID));
-
-	//	vPassageSet.MoveNext();
-	//}
-
-	// textual information done.
-	// now, update the relevant images: FrontalView, ChassisBottomRef, ChassisBottomCur
-	//CVehicleSet vSet;
-	//vSet.m_strFilter = filter;
-	//vSet.Open(CRecordset::dynamic, nullptr, CRecordset::readOnly);
-	//if (vSet.IsBOF()) {
-	//	// this should never happen.
-	//	// if a record for a license plate exists in the VehiclePassage table, 
-	//	// then there must be (exactly) one entry in the Vehicle table.
-	//	MessageBox(CString{ _T("Kayitli arac bulunamadi. Plaka: ") }+strLP);
-	//}
-	//// checking the assertion above: exactly one record must match the license plate
-	//ASSERT(vSet.GetRecordCount() == 1);
 
 	// prepare the reference image filename: <license_plate>_ref.jpg
 	std::string strRefFilename = m_ImagePrep->PrepareChassisFilename(strLP, CString{ _T("ref.jpg") }); // PrepareImageFilename(strLP, CString{ _T("ref.jpg") });
@@ -2183,9 +2348,38 @@ void CARALGISView::UpdateVehiclePassage()
 
 	vPassageSet.m_VehiclePassageLicensePlate = m_FormELP;
 	vPassageSet.m_VehiclePassageEntryDateTime = m_FormEDT;
-	vPassageSet.m_VehiclePassageUserID = m_UID;
-	vPassageSet.m_VehiclePassageGateID = m_GID;
-	vPassageSet.m_VehiclePassageDriverID = m_DID;
+	// read the values from the combo boxes
+	int _posDriver = m_FormCBDriverList.GetCurSel();
+	m_DID = _posDriver == CB_ERR || _posDriver == 0 ? -1 : m_PosDriverIdMap[_posDriver - 1];
+	int _posUser = m_FormCBUserList.GetCurSel();
+	m_UID = _posUser == CB_ERR || _posUser == 0 ? -1 : m_PosUserIdMap[_posUser - 1];
+	int _posGate = m_FormCBGateList.GetCurSel();
+	m_GID = _posGate == CB_ERR || _posGate == 0 ? -1 : m_PosGateIdMap[_posGate - 1];
+	int _posDivision = m_FormCBDivisionList.GetCurSel();
+	m_DivID = _posDivision == CB_ERR || _posDivision == 0 ? -1 : m_PosDivisionIdMap[_posDivision - 1];
+	int _posVehicleType = m_FormCBVehicleTypeList.GetCurSel();
+	m_VTID = _posVehicleType == CB_ERR || _posVehicleType == 0 ? -1 : m_PosVehicleTypeIdMap[_posVehicleType - 1];
+	// -1 values mean the corresponding entry should left as database-NULL.
+	if (m_DID == -1)
+		vPassageSet.SetFieldNull(&(vPassageSet.m_VehiclePassageDriverID), true);
+	else
+		vPassageSet.m_VehiclePassageDriverID = m_DID;
+	if (m_UID == -1)
+		vPassageSet.SetFieldNull(&(vPassageSet.m_VehiclePassageUserID), true);
+	else
+		vPassageSet.m_VehiclePassageUserID = m_UID;
+	if (m_GID == -1)
+		vPassageSet.SetFieldNull(&(vPassageSet.m_VehiclePassageGateID), true);
+	else
+		vPassageSet.m_VehiclePassageGateID = m_GID;
+	if (m_DivID == -1)
+		vPassageSet.SetFieldNull(&(vPassageSet.m_VehiclePassageDivisionID), true);
+	else
+		vPassageSet.m_VehiclePassageDivisionID = m_DivID;
+	if (m_VTID == -1)
+		vPassageSet.SetFieldNull(&(vPassageSet.m_VehiclePassageVehicleTypeID), true);
+	else
+		vPassageSet.m_VehiclePassageVehicleTypeID = m_VTID;
 	vPassageSet.m_VehiclePassagePermissionGranted = !m_FormEBL.GetCheck();
 
 	/*CString msg = _T("These will be used by AddNew():");
@@ -2710,9 +2904,30 @@ void CARALGISView::OnCbnSelchangeFormCboxVisitlist()
 	// fill in the rest of visit information boxes.
 	// careful: index is in reverse
 	auto visitInfoIndex = m_formCBoxVisitList.GetCount() - index - 1;
+	// the following 5 assignments should phased out
 	m_FormEDID = m_VisitInfo[visitInfoIndex].GetDriver();
 	m_FormEUID = m_VisitInfo[visitInfoIndex].GetKeeper();
 	m_FormEGID = m_VisitInfo[visitInfoIndex].GetGate();
+	m_FormEDivID = m_VisitInfo[visitInfoIndex].GetDivision();
+	m_FormEVTID = m_VisitInfo[visitInfoIndex].GetVehicleType();
+
+	// these 5 assignments are the definite ones.
+	m_DID = m_VisitInfo[visitInfoIndex].GetDriverID();
+	m_UID = m_VisitInfo[visitInfoIndex].GetUserID();
+	m_GID = m_VisitInfo[visitInfoIndex].GetGateID();
+	m_DivID = m_VisitInfo[visitInfoIndex].GetDivisionID();
+	m_VTID = m_VisitInfo[visitInfoIndex].GetVehicleTypeID();
+
+	// use the ID assignments to select the proper entries in the relevant combo boxes
+	// account for the first selection of "Butun ..."
+	// this has to be fixed!!! 
+	// i need another unordered_map that maps id to pos.
+	m_FormCBDriverList.SetCurSel(m_DriverIdPosMap[m_DID] + 1); 
+	m_FormCBUserList.SetCurSel(m_UserIdPosMap[m_UID] + 1);
+	m_FormCBGateList.SetCurSel(m_GateIdPosMap[m_GID] + 1);
+	m_FormCBDivisionList.SetCurSel(m_DivisionIdPosMap[m_DivID] + 1);
+	m_FormCBVehicleTypeList.SetCurSel(m_VehicleTypeIdPosMap[m_VTID]+ 1);
+	
 
 	UpdateData(FALSE);
 
@@ -3104,35 +3319,6 @@ BOOL CARALGISView::OnCommand(WPARAM wParam, LPARAM lParam)
 }
 
 // handles the report generation for user filled filters
-void CARALGISView::OnReportSearch()
-{
-	// TODO: Add your command handler code here
-	CSearchDlg dSearch{ m_DriverList, m_VehicleTypeList, m_GateList, m_PosDriverIdMap, m_PosVehicleTypeIdMap, m_PosGateIdMap };
-	if (dSearch.DoModal() == IDOK)
-	{
-		// make the database query and generate output
-		// MessageBox(_T("Filter received: ") + dSearch.getFilter());
-		CString strFilter = dSearch.getFilter();
-		CVehiclePassageSet vPassageSet{};
-		vPassageSet.m_strFilter = strFilter;
-		vPassageSet.Open(CRecordset::snapshot, nullptr, CRecordset::readOnly);
-		CReportDlg rDlg{ vPassageSet, m_DriverMap, m_UserMap, m_GateMap, m_VehicleTypeMap };
-		if (rDlg.DoModal() == IDOK)
-		{
-			
-		}
-		else
-		{
-			
-		}
-	}
-	else
-	{ // cold-feet; do not do anything
-
-	}
-
-}
-
 
 void CARALGISView::OnCbnSelchangeFormCboxDriverlist()
 {
@@ -3173,8 +3359,293 @@ void CARALGISView::OnBnClickedFormBDriverinfo()
 }
 
 
-void CARALGISView::OnDriverNew()
+void CARALGISView::OnUserNew()
 {
+	// TODO: Add your command handler code here
+	CUserLog logUser;
+	if (logUser.Login())
+	{ // login was successful
+		MessageBox(_T("In ARALGSISView, after successful login"));
+	}
+	else
+	{ // login was unsuccessful
+		MessageBox(_T("In ARALGISView, after failed login"));
+	}
+}
+
+
+
+void CARALGISView::OnMenuUserEnable()
+{
+	// TODO: Add your command handler code here
+	setSessionIdle();
+}
+
+
+void CARALGISView::OnMenuUserDisable()
+{
+	// TODO: Add your command handler code here
+	setSessionUser();
+}
+
+
+void CARALGISView::OnUpdateMenuUserLogin(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+	if (m_eSessionState == SESSION_STATE::IDLE)
+		pCmdUI->Enable(true);
+	else
+		pCmdUI->Enable(false);
+}
+
+
+void CARALGISView::OnUpdateMenuUserLogout(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+	switch (m_eSessionState)
+	{
+	case SESSION_STATE::IDLE :
+		pCmdUI->Enable(false);
+		break;
+	case SESSION_STATE::ADMIN :
+	case SESSION_STATE::USER :
+		pCmdUI->Enable(true);
+	}
+}
+
+
+void CARALGISView::OnUpdateMenuUserChangepasswd(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+	switch (m_eSessionState)
+	{
+	case SESSION_STATE::IDLE :
+		pCmdUI->Enable(false);
+		break;
+	case SESSION_STATE::ADMIN :
+	case SESSION_STATE::USER :
+		pCmdUI->Enable(true);
+	}
+}
+
+
+void CARALGISView::OnUpdateMenuRaporQuery(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+	switch (m_eSessionState)
+	{
+	case SESSION_STATE::IDLE :
+		pCmdUI->Enable(false);
+		break;
+	case SESSION_STATE::ADMIN :
+		pCmdUI->Enable(true);
+		break;
+	case SESSION_STATE::USER :
+		pCmdUI->Enable(false);
+	}
+}
+
+
+void CARALGISView::OnUpdateMenuDatabaseAdddriver(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+	switch (m_eSessionState)
+	{
+	case SESSION_STATE::IDLE :
+		pCmdUI->Enable(false);
+		break;
+	case SESSION_STATE::USER :
+		pCmdUI->Enable(true);
+		break;
+	case SESSION_STATE::ADMIN :
+		pCmdUI->Enable(true);
+	}
+}
+
+
+void CARALGISView::OnUpdateMenuDatabaseAddgate(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+	switch (m_eSessionState)
+	{
+	case SESSION_STATE::IDLE:
+		pCmdUI->Enable(false);
+		break;
+	case SESSION_STATE::USER:
+		pCmdUI->Enable(false);
+		break;
+	case SESSION_STATE::ADMIN:
+		pCmdUI->Enable(true);
+	}
+}
+
+
+void CARALGISView::OnUpdateMenuDatabaseAdddivision(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+	switch (m_eSessionState)
+	{
+	case SESSION_STATE::IDLE:
+		pCmdUI->Enable(false);
+		break;
+	case SESSION_STATE::USER:
+		pCmdUI->Enable(false);
+		break;
+	case SESSION_STATE::ADMIN:
+		pCmdUI->Enable(true);
+	}
+}
+
+
+void CARALGISView::OnUpdateMenuDatabaseAddtype(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+	switch (m_eSessionState)
+	{
+	case SESSION_STATE::IDLE:
+		pCmdUI->Enable(false);
+		break;
+	case SESSION_STATE::USER:
+		pCmdUI->Enable(false);
+		break;
+	case SESSION_STATE::ADMIN:
+		pCmdUI->Enable(true);
+	}
+}
+
+
+void CARALGISView::OnUpdateMenuUserAdduser(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+	switch (m_eSessionState)
+	{
+	case SESSION_STATE::IDLE:
+		pCmdUI->Enable(false);
+		break;
+	case SESSION_STATE::USER:
+		pCmdUI->Enable(false);
+		break;
+	case SESSION_STATE::ADMIN:
+		pCmdUI->Enable(true);
+	}
+}
+
+
+void CARALGISView::OnUpdateMenuUserSetidle(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+	switch (m_eSessionState)
+	{
+	case SESSION_STATE::IDLE:
+		pCmdUI->Enable(false);
+		break;
+	case SESSION_STATE::USER:
+		pCmdUI->Enable(true);
+		break;
+	case SESSION_STATE::ADMIN:
+		pCmdUI->Enable(true);
+	}
+}
+
+
+void CARALGISView::OnUpdateMenuUserSetuser(CCmdUI *pCmdUI)
+{
+	// TODO: Add your command update UI handler code here
+	switch (m_eSessionState)
+	{
+	case SESSION_STATE::IDLE:
+		pCmdUI->Enable(true);
+		break;
+	case SESSION_STATE::USER:
+		pCmdUI->Enable(false);
+		break;
+	case SESSION_STATE::ADMIN:
+		pCmdUI->Enable(true);
+	}
+}
+
+
+void CARALGISView::OnUpdateMenuUserSetadmin(CCmdUI *pCmdUI)
+{
+	switch (m_eSessionState)
+	{
+	case SESSION_STATE::IDLE:
+		pCmdUI->Enable(true);
+		break;
+	case SESSION_STATE::USER:
+		pCmdUI->Enable(true);
+		break;
+	case SESSION_STATE::ADMIN:
+		pCmdUI->Enable(false);
+	}
+	// TODO: Add your command update UI handler code here
+}
+
+
+void CARALGISView::OnMenuUserSetidle()
+{
+	// TODO: Add your command handler code here
+	setSessionIdle();
+}
+
+void CARALGISView::OnMenuUserSetuser()
+{
+	// TODO: Add your command handler code here
+	setSessionUser();
+}
+
+void CARALGISView::OnMenuUserSetadmin()
+{
+	// TODO: Add your command handler code here
+	setSessionAdmin();
+}
+
+
+
+
+void CARALGISView::OnMenuRaporQuery()
+{
+	// TODO: Add your command handler code here
+	// TODO: Add your command handler code here
+	CSearchDlg dSearch{
+		m_DriverList, m_VehicleTypeList, m_GateList, m_DivisionList,
+		m_PosDriverIdMap, m_PosVehicleTypeIdMap, m_PosGateIdMap, m_PosDivisionIdMap };
+	if (dSearch.DoModal() == IDOK)
+	{
+		// make the database query and generate output
+		// MessageBox(_T("Filter received: ") + dSearch.getFilter());
+		CString strFilter = dSearch.getFilter();
+		CVehiclePassageSet vPassageSet{};
+		vPassageSet.m_strFilter = strFilter;
+		vPassageSet.Open(CRecordset::snapshot, nullptr, CRecordset::readOnly);
+		CReportDlg rDlg{
+			vPassageSet,
+			m_DriverMap,
+			m_UserMap,
+			m_GateMap,
+			m_VehicleTypeMap,
+			m_DivisionMap
+		};
+		if (rDlg.DoModal() == IDOK)
+		{
+
+		}
+		else
+		{
+
+		}
+	}
+	else
+	{ // cold-feet; do not do anything
+
+	}
+
+}
+
+
+void CARALGISView::OnMenuDatabaseAdddriver()
+{
+	// TODO: Add your command handler code here
 	// TODO: Add your command handler code here
 	CDriverDlg dlgDriver(m_DriverTypeList, m_PosDriverTypeIdMap);
 	if (dlgDriver.DoModal() == IDOK)
@@ -3238,28 +3709,13 @@ void CARALGISView::OnDriverNew()
 		PrepareDriverList();
 		PreparePosDriverIdMap();
 		FillDriverList();
-		m_FormCBDriverList.SetCurSel(0);
+		m_FormCBDriverList.SetCurSel(-1);
 	}
 	else
 	{
-		// reset the driver selection to "Bilinmeyen Surucu"
-		m_FormCBDriverList.SetCurSel(0);
+		// no selection
+		m_FormCBDriverList.SetCurSel(-1);
 		return;
 	}
 
-}
-
-
-void CARALGISView::OnUserNew()
-{
-	// TODO: Add your command handler code here
-	CUserLog logUser;
-	if (logUser.Login())
-	{ // login was successful
-		MessageBox(_T("In ARALGSISView, after successful login"));
-	}
-	else
-	{ // login was unsuccessful
-		MessageBox(_T("In ARALGISView, after failed login"));
-	}
 }

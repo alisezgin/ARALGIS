@@ -14,9 +14,11 @@ IMPLEMENT_DYNAMIC(CSearchDlg, CDialogEx)
 CSearchDlg::CSearchDlg(const VectorType& _driverList,
 const VectorType& _vehicleTypeList,
 const VectorType& _gateList,
+const VectorType& _divisionList,
 MapType& _PosDriverIdMap,
-std::unordered_map<long,long>& _PosVehicleTypeIdMap,
+MapType& _PosVehicleTypeIdMap,
 MapType& _PosGateIdMap,
+MapType& _PosDivisionIdMap,
 CWnd* pParent /*=NULL*/)
 	: CDialogEx(CSearchDlg::IDD, pParent)
 	, m_DateBegin{}
@@ -26,9 +28,11 @@ CWnd* pParent /*=NULL*/)
 	, m_DriverList{ _driverList }
 	, m_VehicleTypeList{ _vehicleTypeList }
 	, m_GateList{ _gateList }
+	, m_DivisionList{ _divisionList }
 	, m_PosDriverIdMap{ _PosDriverIdMap }
 	, m_PosVehicleTypeIdMap{ _PosVehicleTypeIdMap }
 	, m_PosGateIdMap{ _PosGateIdMap }
+	, m_PosDivisionIdMap{ _PosDivisionIdMap }
 {
 }
 
@@ -45,6 +49,7 @@ void CSearchDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SEARCH_C_VTYPE, m_cVehicleType);
 	DDX_Control(pDX, IDC_SEARCH_C_DRIVER, m_cDriver);
 	DDX_Control(pDX, IDC_SEARCH_C_GATE, m_cGate);
+	DDX_Control(pDX, IDC_SEARCH_C_DIVISION, m_cDivision);
 }
 
 // reset the format of the date/time combo boxes
@@ -55,6 +60,7 @@ BOOL CSearchDlg::OnInitDialog()
 	m_DateEnd.SetFormat(L"dd-MM-yyyy HH:mm");
 	FillDriverList();
 	FillGateList();
+	FillDivisionList();
 	FillVehicleTypeList();
 	return(FALSE);
 }
@@ -146,6 +152,17 @@ void CSearchDlg::OnOK()
 	}
 	//MessageBox(_T("After Gate: ") + m_strFilter);
 
+	long posDivision = m_cDivision.GetCurSel();
+	if (posDivision != CB_ERR && posDivision > 0)
+	{
+		m_strFilter += _T(" AND [DivisionID] = '");
+		CString strDivision;
+		long id = m_PosDivisionIdMap[posDivision - 1];
+		strDivision.Format(_T("%ld"), id);
+		m_strFilter += strDivision;
+		m_strFilter += _T("'");
+	}
+
 	CDialogEx::OnOK();
 }
 
@@ -184,6 +201,19 @@ void CSearchDlg::FillGateList()
 		for (auto p : m_GateList)
 		{
 			m_cGate.InsertString(-1, p.first);
+		}
+	}
+}
+
+void CSearchDlg::FillDivisionList()
+{
+	m_cDivision.ResetContent();
+	m_cDivision.InsertString(0, CString{ _T("Butun Birlikler") });
+	if (m_DivisionList.size() > 0)
+	{
+		for (auto d : m_DivisionList)
+		{
+			m_cDivision.InsertString(-1, d.first);
 		}
 	}
 }

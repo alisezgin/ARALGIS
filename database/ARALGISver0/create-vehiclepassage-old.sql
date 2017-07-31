@@ -1,7 +1,7 @@
 USE [ARALGISver0]
 GO
 
-/****** Object:  Table [dbo].[VehiclePassage]    Script Date: 30.07.2017 23:39:33 ******/
+/****** Object:  Table [dbo].[VehiclePassage]    Script Date: 13.05.2017 16:37:12 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -16,9 +16,7 @@ CREATE TABLE [dbo].[VehiclePassage](
 	[UserID] [int] NULL,
 	[GateID] [int] NULL,
 	[DriverID] [int] NULL,
-	[VehicleTypeID] [int] NULL,
 	[PermissionGranted] [bit] NULL,
-	[DivisionID] [int] NULL,
  CONSTRAINT [PK_VehiclePassage_1] PRIMARY KEY CLUSTERED 
 (
 	[VehicleID] ASC
@@ -26,5 +24,4 @@ CREATE TABLE [dbo].[VehiclePassage](
 ) ON [PRIMARY]
 
 GO
-
 

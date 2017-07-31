@@ -18,8 +18,10 @@ CVehiclePassageSet::CVehiclePassageSet(CDatabase* pdb)
 	m_VehiclePassageUserID = -1;
 	m_VehiclePassageGateID = -1;
 	m_VehiclePassageDriverID = -1;
+	m_VehiclePassageVehicleTypeID = -1;
 	m_VehiclePassagePermissionGranted = FALSE;
-	m_nFields = 8;
+	m_VehiclePassageDivisionID = -1;
+	m_nFields = 10;
 	m_nDefaultType = snapshot;
 }
 
@@ -51,7 +53,9 @@ void CVehiclePassageSet::DoFieldExchange(CFieldExchange* pFX)
 	RFX_Long(pFX, _T("[UserID]"), m_VehiclePassageUserID);
 	RFX_Long(pFX, _T("[GateID]"), m_VehiclePassageGateID);
 	RFX_Long(pFX, _T("[DriverID]"), m_VehiclePassageDriverID);
+	RFX_Long(pFX, _T("[VehicleTypeID]"), m_VehiclePassageVehicleTypeID);
 	RFX_Bool(pFX, _T("[PermissionGranted]"), m_VehiclePassagePermissionGranted);
+	RFX_Long(pFX, _T("[DivisionID]"), m_VehiclePassageDivisionID);
 
 }
 /////////////////////////////////////////////////////////////////////////////
